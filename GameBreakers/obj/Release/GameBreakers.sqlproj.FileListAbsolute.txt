@@ -1,0 +1,9 @@
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.dacpac
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.dll
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.pdb
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\GameBreakers.dll
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\GameBreakers.pdb
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\Model.xml
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\refactor.xml
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\postdeploy.sql
+E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\predeploy.sql

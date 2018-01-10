@@ -1,0 +1,10 @@
+1/5/2018 4:56:15 PM	This log contains information about the import schema operation into project 'GameBreakers' on computer 'JOELSPC' by user 'Joel'.
+1/5/2018 4:56:15 PM	Deserializing model
+1/5/2018 4:56:15 PM	Resolving model
+1/5/2018 4:56:15 PM	Visiting imported model for types
+1/5/2018 4:56:15 PM	Scanning project for duplicate elements
+1/5/2018 4:56:15 PM	Finished duplicate element processing
+1/5/2018 4:56:16 PM	Processing extra files
+1/5/2018 4:56:16 PM	Finished importing Data-tier Application file.
+1/5/2018 4:56:16 PM	A summary of the import was saved to the following location: E:\Projects\Visual Studio\GameBreakers\GameBreakers\Import Schema Logs\GameBreakers_20180105095615.log
+1/5/2018 4:56:16 PM	Click Finish to continue...
