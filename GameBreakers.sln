@@ -7,9 +7,9 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "GameBreakers", "GameBreaker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBreakersDBManagement", "GameBreakersDBManagement\GameBreakersDBManagement.csproj", "{3933C0D5-50CB-43E7-ACCC-F47CE4009276}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-price-fetcher", "..\..\Assets\mtg-price-fetcher-master\mtg-price-fetcher.pyproj", "{961BF0BB-B91A-48B8-B58E-439267525E73}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-image-fetcher", "mtg-image-fetcher\mtg-image-fetcher.pyproj", "{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-image-fetcher", "..\..\Assets\mtg-image-fetcher\mtg-image-fetcher.pyproj", "{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-price-fetcher", "mtg-price-fetcher\mtg-price-fetcher.pyproj", "{961BF0BB-B91A-48B8-B58E-439267525E73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +27,10 @@ Global
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Release|Any CPU.Build.0 = Release|Any CPU
-		{961BF0BB-B91A-48B8-B58E-439267525E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{961BF0BB-B91A-48B8-B58E-439267525E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{961BF0BB-B91A-48B8-B58E-439267525E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{961BF0BB-B91A-48B8-B58E-439267525E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

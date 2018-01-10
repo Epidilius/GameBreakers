@@ -324,16 +324,9 @@ namespace GameBreakersDBManagement
         }
 
         //Create Functions
-        public void AddNewCard(string layout, string cardID, string name, string manaCost, int cmc, string colours, string rarity, string type, string types, string subtypes, string text, string flavourText, string power, string toughness, string imageName, string colourIdentity, string multiverseID, string set, float price, int inventory, float foilPrice, int foilInventory, Image image)
+        public void AddNewCard(string layout, string cardID, string name, string manaCost, int cmc, string colours, string rarity, string type, string types, string subtypes, string text, string flavourText, string power, string toughness, string imageName, string colourIdentity, string multiverseID, string set, float price, int inventory, float foilPrice, int foilInventory)
         {
             var cmdString = "INSERT INTO MtG (layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory, priceLastUpdated, image) VALUES (@val0, @val1, @val2, @val3, @val4, @val5, @val6, @val7, @val8, @val9, @val10, @val11, @val12, @val13, @val14, @val15, @val16, @val17, @val18, @val19, @val20, @val21, @val22, @val23)";
-            var imageData = new byte[0];
-            if (image != null)
-            {
-                MemoryStream ms = new MemoryStream();
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                imageData = ms.ToArray();
-            }
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -365,7 +358,6 @@ namespace GameBreakersDBManagement
                     comm.Parameters.AddWithValue("@val20", foilPrice);
                     comm.Parameters.AddWithValue("@val21", foilInventory);
                     comm.Parameters.AddWithValue("@val22", DateTimeOffset.Now.ToUnixTimeMilliseconds());
-                    comm.Parameters.AddWithValue("@val23", imageData);
 
                     try
                     {

@@ -30,8 +30,11 @@ namespace GameBreakersDBManagement
 
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
+        static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
+        static string LOCAL_IMAGE_PATH = @"C:\GameBreakersInventory\Images\";
+        static string IMAGE_TYPE = ".jpg";
 
-        //TODO: A button that opens a file browser, finds and parse JSON of a set and adds each card to the DB
+
         public Form1()
         {
             InitializeComponent();
@@ -158,32 +161,12 @@ namespace GameBreakersDBManagement
             {
                 foreach (DataRow card in cards.Rows)
                 {
-                    var daysBetween = Int32.Parse(ConfigurationManager.AppSettings["daysBetweenPriceCheck"]);
-                    var daysInMilliseconds = TimeSpan.FromDays(daysBetween).TotalMilliseconds;
-                    var lastUpdated = (long)card[23];
-                    
                     var set = card[18].ToString();
                     var rarity = card[7];
                     var inventory = card[20];
                     var foilInventory = card[22];
                     var price = card[19];
                     var foilPrice = card[21];
-
-                    if ((lastUpdated + daysInMilliseconds) > DateTimeOffset.Now.ToUnixTimeMilliseconds())
-                    {
-                        var newPrice = GetPrice(name, card[18].ToString(), false);
-                        if (newPrice != -1)
-                        {
-                            price = newPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(price.ToString()), false);
-                        }
-                        var newFoilPrice = GetPrice(name, card[18].ToString(), true);
-                        if (newFoilPrice != -1)
-                        {
-                            foilPrice = newFoilPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
-                        }
-                    }
 
                     if(card == cards.Rows[cards.Rows.Count-1])
                     {
@@ -195,22 +178,26 @@ namespace GameBreakersDBManagement
             }
             else
             {
+                //TODO: Add cards found here to DB
                 var id = GetMTGStocksID(name);
                 if (id == -1)
                 {
-                    //FAIL
+                    logger.LogError("Could not find card with name: " + name);
+                    return;
                 }
 
                 var cardObject = GetMTGStocksData(id);
                 if (cardObject == null)
                 {
-                    //FAIL
+                    logger.LogError("Could not find card with name: " + name + " and MTG Stocks ID: " + id);
+                    return;
                 }
 
                 var card = ParseCardData(cardObject);
                 if (card == null)
                 {
-                    //FAIL
+                    logger.LogError("Could not find parse data: " + card.ToString());
+                    return;
                 }
 
                 if(card == cardObject)
@@ -249,32 +236,12 @@ namespace GameBreakersDBManagement
             {
                 foreach (DataRow card in cards.Rows)
                 {
-                    var daysBetween = Int32.Parse(ConfigurationManager.AppSettings["daysBetweenPriceCheck"]);
-                    var daysInMilliseconds = TimeSpan.FromDays(daysBetween).TotalMilliseconds;
-                    var lastUpdated = (long)card[23];
-
                     var name = card[3].ToString();
                     var rarity = card[7];
                     var inventory = card[20];
                     var foilInventory = card[22];
                     var price = card[19];
                     var foilPrice = card[21];
-
-                    if ((lastUpdated + daysInMilliseconds) < DateTimeOffset.Now.ToUnixTimeMilliseconds())
-                    {
-                        var newPrice = GetPrice(name, card[18].ToString(), false);
-                        if (newPrice != -1)
-                        {
-                            price = newPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(price.ToString()), false);
-                        }
-                        var newFoilPrice = GetPrice(name, card[18].ToString(), true);
-                        if (newFoilPrice != -1)
-                        {
-                            foilPrice = newFoilPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
-                        }
-                    }
 
                     if (card == cards.Rows[cards.Rows.Count - 1])
                     {
@@ -284,51 +251,6 @@ namespace GameBreakersDBManagement
                     dataGridView_CardData.Rows.Add(name, set, rarity, inventory, foilInventory, price, foilPrice);
                 }
             }
-        }
-        float GetPrice(string name, string set, bool foil)
-        {
-            JObject json = null;
-            var price = 0.0f;
-
-            var nameWithoutWhitespace = Regex.Replace(name, @"\s+", "%20");
-            var setWithoutWhitespace = Regex.Replace(set, @"\s+", "%20");
-            var url = "http://127.0.0.1:5000/cards?name=ABCDE&set=FGHIJ";
-            url = url.Replace("ABCDE", nameWithoutWhitespace);
-            url = url.Replace("FGHIJ", setWithoutWhitespace);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            request.Proxy = null;
-
-            try
-            {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                using (Stream stream = response.GetResponseStream())
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    var html = reader.ReadToEnd();
-
-                    try
-                    {
-                        json = JObject.Parse(html);
-                        if (foil)
-                            price = json["price_foil"].ToObject<float>();
-                        else
-                            price = json["price"].ToObject<float>();
-                    }
-                    catch (Exception ex)
-                    {
-                        var temp = -1;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //TODO: LOGGING
-                logger.LogError("Unable to get price for card: \r\nName: " + name + "\r\n:Set: " + set + "\r\nFoil: " + foil + "\r\nError: " + ex);
-            }
-
-            return price;
         }
         int GetMTGStocksID(string name)
         {
@@ -467,46 +389,21 @@ namespace GameBreakersDBManagement
         }
 
         //IMAGE
-        Image GetImageForCard(string name, string set, int multiverseID = -1)
+        void GetImageForCard(int multiverseID)
         {
-            var imgData = new byte[0];
-
-            if (multiverseID == -1)
-            { 
-                try
-                {
-                    imgData = dbMan.GetImageForCard(name, set);
-                }
-                catch (Exception ex)
-                {
-                    if (multiverseID == -1)
-                    {
-                        var id = GetMTGStocksID(name);
-                        var cardObject = GetMTGStocksData(id);
-                        var card = ParseCardData(cardObject, set);
-
-                        multiverseID = card["multiverse_id"].ToObject<int>();
-                    }
-                    var gathererURL = Regex.Replace(@"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card", "ABCDE", multiverseID.ToString());
-                    return LoadImageFromURL(gathererURL);
-                }
-            }
-            
-            if(imgData.Length == 0)
+            try
             {
-                if(multiverseID == -1)
-                    multiverseID = dbMan.GetMultiverseID(name, set);
-                var gathererURL = Regex.Replace(@"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card", "ABCDE", multiverseID.ToString());
-                return LoadImageFromURL(gathererURL);
+                pictureBox_Card.Image = Image.FromFile(LOCAL_IMAGE_PATH + multiverseID.ToString() + IMAGE_TYPE);
             }
-
-            using (var ms = new MemoryStream(imgData))
+            catch(Exception ex)
             {
-                return Image.FromStream(ms);
+                logger.LogError("Failed to load image from file, will attempt to from URL. Multiverse ID: " + multiverseID);
+                LoadImageFromURL(multiverseID);
             }
         }
-        Image LoadImageFromURL(string url)
+        void LoadImageFromURL(int multiverseID)
         {
+            var url = GATHERER_IMAGE_URL.Replace("ABCDE", multiverseID.ToString());
             try
             {
                 var webClient = new WebClient();
@@ -514,12 +411,13 @@ namespace GameBreakersDBManagement
 
                 using (var ms = new MemoryStream(imageBytes))
                 {
-                    return Image.FromStream(ms);
+                    pictureBox_Card.Image = Image.FromStream(ms);
                 }
             }
             catch (Exception ex)
             {
-                return Properties.Resources.Magic_card_back;
+                logger.LogError("Failed to load image from URL, using back of MtG card. Multiverse ID: " + multiverseID.ToString());
+                pictureBox_Card.Image = Properties.Resources.Magic_card_back;
             }
         }
 
@@ -541,6 +439,7 @@ namespace GameBreakersDBManagement
         {
             return dbMan.GetFoilInventory(card, set);
         }
+        //TODO: This in Python?
         void AddNewSet(string file)
         {
             try
@@ -585,17 +484,14 @@ namespace GameBreakersDBManagement
                     string toughness = PrepareString(card, "toughness");
                     string imageName = PrepareString(card, "imageName");
                     string colourIdentity = PrepareString(card, "colorIdentity");
-                    //string expansion = PrepareString(card, "printings");
-                    float price = 0;// GetPrice(name, expansion, false);
+                    float price = -1;
                     int inventory = 0;
-                    float foilPrice = 0;// GetPrice(name, expansion, true);
+                    float foilPrice = -1;
                     int foilInventory = 0;
-                    //TODO: Save locally
-                    Image image = null;//GetImageForCard(name, expansion, Int32.Parse(multiverseID));
 
                     try
                     {
-                        dbMan.AddNewCard(layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory, image);
+                        dbMan.AddNewCard(layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory);
                     }
                     catch (Exception ex)
                     {
