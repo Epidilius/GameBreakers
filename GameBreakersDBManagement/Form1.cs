@@ -19,7 +19,6 @@ using System.Diagnostics;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Configuration;
-using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 
 namespace GameBreakersDBManagement
@@ -38,10 +37,7 @@ namespace GameBreakersDBManagement
             InitializeComponent();
             dbMan = DatabaseManager.GetInstace();
             logger = Logger.GetLogger();
-
-            GetPriceBeta("Lightning Bolt", "Beta Edition");
-            GetPricePython("Lightning Bolt", "Beta Edition");
-
+            
             //TODO: Compare to number of files in directory, if lower comapre each set to the DB, if missing add the set
             if(dbMan.GetAllSets().Rows.Count == 0)
             {
@@ -289,53 +285,10 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        void GetPricePython(string name, string set)
-        {
-            try
-            {
-                string importScript = "import sys" + Environment.NewLine +
-                      "sys.path.append( r\"{0}\" )" + Environment.NewLine +
-                      "from {1} import *";
-
-                // python script to load
-                string fullPath = @"C:\GameBreakersInventory\Application\scraper.py";
-
-                var engine = Python.CreateEngine();
-                ScriptScope scope = engine.CreateScope();
-
-                // import the module
-                string scriptStr = string.Format(importScript,
-                                                 Path.GetDirectoryName(fullPath),
-                                                 Path.GetFileNameWithoutExtension(fullPath));
-
-                string dir = Path.GetDirectoryName(fullPath);
-                ICollection<string> paths = engine.GetSearchPaths();
-
-                if (!String.IsNullOrWhiteSpace(dir))
-                {
-                    paths.Add(dir);
-                }
-                else
-                {
-                    paths.Add(Environment.CurrentDirectory);
-                }
-                engine.SetSearchPaths(paths);
-
-                var importSrc = engine.CreateScriptSourceFromString(scriptStr, Microsoft.Scripting.SourceCodeKind.File);
-                importSrc.Execute(scope);
-
-                // now you ca execute one-line expressions on the scope e.g.
-                string expr = "get_card_price()";
-                var result = engine.Execute(expr, scope);
-            }
-            catch (Exception ex)
-            {
-                var foo = ex.Message;
-            }
-        }
-        void GetPriceBeta(string name, string set)
+        float GetPrice(string name, string set, bool foil)
         {
             JObject json = null;
+            var price = 0.0f;
 
             var nameWithoutWhitespace = Regex.Replace(name, @"\s+", "%20");
             var setWithoutWhitespace = Regex.Replace(set, @"\s+", "%20");
@@ -358,54 +311,23 @@ namespace GameBreakersDBManagement
                     try
                     {
                         json = JObject.Parse(html);
-                        var price = json["price"].ToObject<float>();
+                        if (foil)
+                            price = json["price_foil"].ToObject<float>();
+                        else
+                            price = json["price"].ToObject<float>();
                     }
                     catch (Exception ex)
                     {
-                       var temp = -1;
+                        var temp = -1;
                     }
                 }
             }
             catch (Exception ex)
             {
                 //TODO: LOGGING
-                var temp = -1;
-            }
-        }
-        float GetPrice(string name, string set, bool foil)
-        {
-            float price = -1;
-
-            var id = GetMTGStocksID(name);
-            if (id == -1)
-            {
-                //FAIL
+                logger.LogError("Unable to get price for card: " + name + " from set: " + set);
             }
 
-            var cardObject = GetMTGStocksData(id);
-            if (cardObject == null)
-            {
-                //FAIL
-            }
-
-            var card = ParseCardData(cardObject, set);
-            if (card == null)
-            {
-                //FAIL
-            }
-
-
-            if (!foil)
-                price = float.Parse(card["latest_price"]["avg"].ToString());    //TODO: Market price?
-            else
-            {
-                var strprice = card["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
-                if (strprice == "") price = 0;
-                else price = float.Parse(strprice);
-            }
-
-            dbMan.UpdatePrice(name, set, price, foil);
-            logger.LogActivity("Updating price of card:\r\nFoil: " + foil + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + price);
             return price;
         }
         int GetMTGStocksID(string name)
