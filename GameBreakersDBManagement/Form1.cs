@@ -325,7 +325,7 @@ namespace GameBreakersDBManagement
             catch (Exception ex)
             {
                 //TODO: LOGGING
-                logger.LogError("Unable to get price for card: " + name + " from set: " + set);
+                logger.LogError("Unable to get price for card: \r\nName: " + name + "\r\n:Set: " + set + "\r\nFoil: " + foil + "\r\nError: " + ex);
             }
 
             return price;
