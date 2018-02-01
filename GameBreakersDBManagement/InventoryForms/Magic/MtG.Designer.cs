@@ -1,4 +1,4 @@
-﻿namespace GameBreakersDatabaseManagement
+﻿namespace GameBreakersDBManagement
 {
     partial class MtG
     {

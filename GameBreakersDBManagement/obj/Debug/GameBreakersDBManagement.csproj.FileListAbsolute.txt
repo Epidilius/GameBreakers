@@ -38,8 +38,8 @@ C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.AspNet.xml
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.Metadata.xml
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.xml
-C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDatabaseManagement.CCScraper.resources
-C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDatabaseManagement.CardboardConnection.resources
-C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDatabaseManagement.MtG.resources
-C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDatabaseManagement.SetEditorForm.resources
-C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDatabaseManagement.Startup.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.CCScraper.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.CardboardConnection.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.MtG.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.SetEditorForm.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Startup.resources

@@ -4,26 +4,15 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using System.Data.OleDb;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Configuration;
-using Microsoft.Scripting.Hosting;
 using System.Threading;
 using System.Globalization;
 
-namespace GameBreakersDatabaseManagement
+namespace GameBreakersDBManagement
 {
     public partial class MtG : Form
     {

@@ -8,26 +8,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameBreakersDatabaseManagement
+namespace GameBreakersDBManagement
 {
     public partial class Startup : Form
     {
+        MtG MtGForm;
+        CardboardConnection CCForm;
         public Startup()
         {
             InitializeComponent();
             Logger.Prep();
+            MtGForm = new MtG();
+            CCForm = new CardboardConnection();
         }
 
         private void button_MtG_Click(object sender, EventArgs e)
         {
-            MtG mtgForm = new MtG();
-            mtgForm.Show();
+            MtGForm.Show();
         }
 
         private void button_CardboardConnection_Click(object sender, EventArgs e)
         {
-            CardboardConnection ccForm = new CardboardConnection();
-            ccForm.Show();
+            CCForm.Show();
         }
     }
 }

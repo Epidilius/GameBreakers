@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Globalization;
 
-namespace GameBreakersDatabaseManagement
+namespace GameBreakersDBManagement
 {    
     class BackgroundDataManager : BackgroundWorker
     {

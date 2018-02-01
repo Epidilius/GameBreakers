@@ -6,7 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace GameBreakersDatabaseManagement
+namespace GameBreakersDBManagement
 {
     public static class DatabaseManager
     {

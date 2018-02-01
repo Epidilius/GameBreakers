@@ -23,7 +23,7 @@ using Microsoft.Scripting.Hosting;
 using System.Threading;
 using System.Globalization;
 
-namespace GameBreakersDatabaseManagement
+namespace GameBreakersDBManagement
 {
     public partial class CardboardConnection : Form
     {
@@ -40,45 +40,8 @@ namespace GameBreakersDatabaseManagement
         public CardboardConnection()
         {
             InitializeComponent();
-            
-            //TODO: Compare to number of files in directory, if lower comapre each set to the DB, if missing add the set
-            if(DatabaseManager.GetAllSets().Rows.Count == 0)
-            {
-                string[] files = Directory.GetFiles(@"C:\GameBreakersInventory\Set JSON\", "*.json", SearchOption.AllDirectories);
-                foreach(var file in files)
-                {
-                    AddNewSet(file);
-                }
-            }
-
-            BackgroundDataManager bgman = new BackgroundDataManager();
-            //bgman.Run();
-            bgThread = new Thread(new ThreadStart(bgman.Run));
-            bgThread.Start();
-
-            var applicationPath = @"C:\GameBreakersInventory\Application\";
-            var imageAppPath = applicationPath + @"mtg-image-fetcher\application.py";
-            var priceAppPath = applicationPath + @"mtg-price-fetcher\application.py";
-            run_cmd(@"C:\GameBreakersInventory\Application\startFetchers.bat");
         }
-
-        private void run_cmd(string command)
-        {
-            ProcessStartInfo processInfo;
-            Process process;
-
-            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
-            processInfo.CreateNoWindow = true;
-            processInfo.WorkingDirectory = @"C:\GameBreakersInventory";
-            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            processInfo.UseShellExecute = false;
-
-            process = Process.Start(processInfo);
-            process.WaitForExit();
-
-            process.Close();
-        }
-
+        
         //BUTTONS
         private void button_Search_Click(object sender, EventArgs e)
         {
