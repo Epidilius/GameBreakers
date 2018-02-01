@@ -20,3 +20,25 @@ E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\Newton
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.MtG.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.SetEditorForm.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Startup.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.csprojResolveAssemblyReference.cache
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.CCScraper.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.MtG.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.SetEditorForm.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Properties.Resources.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Startup.resources
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.csproj.GenerateResource.Cache
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.exe
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.pdb
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBreakersDBManagement.exe.config
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBreakersDBManagement.exe
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBreakersDBManagement.pdb
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Dynamic.dll
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.AspNet.dll
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.dll
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.Metadata.dll
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.dll
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Dynamic.xml
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.xml
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.AspNet.xml
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.Metadata.xml
+C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.xml

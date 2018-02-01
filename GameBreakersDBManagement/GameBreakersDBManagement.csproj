@@ -65,6 +65,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DatabaseManager.cs" />
+    <Compile Include="InventoryForms\CCScraper.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InventoryForms\CCScraper.Designer.cs">
+      <DependentUpon>CCScraper.cs</DependentUpon>
+    </Compile>
     <Compile Include="InventoryForms\MtG.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,6 +92,9 @@
     <Compile Include="Startup.Designer.cs">
       <DependentUpon>Startup.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="InventoryForms\CCScraper.resx">
+      <DependentUpon>CCScraper.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="InventoryForms\MtG.resx">
       <DependentUpon>MtG.cs</DependentUpon>
     </EmbeddedResource>
@@ -129,6 +138,7 @@
     <None Include="Resources\nfl_logo_new2.jpg" />
     <None Include="Resources\nba-logo.jpg" />
     <None Include="Resources\1200px-Major_League_Baseball_logo.svg.png" />
+    <None Include="Resources\The-Cardboard-Connection.jpg" />
     <Content Include="scraper.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,17 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "GameBreakers", "GameBreakers\GameBreakers.sqlproj", "{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBreakersDBManagement", "GameBreakersDBManagement\GameBreakersDBManagement.csproj", "{3933C0D5-50CB-43E7-ACCC-F47CE4009276}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-image-fetcher", "mtg-image-fetcher\mtg-image-fetcher.pyproj", "{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}"
-EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-price-fetcher", "mtg-price-fetcher\mtg-price-fetcher.pyproj", "{961BF0BB-B91A-48B8-B58E-439267525E73}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GBBackgroundService", "GBBackgroundService\GBBackgroundService.csproj", "{50FFC0F1-4324-42FA-9504-1E325F34F23D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardScraper", "..\CC-Scraper\CardScraper\CardScraper.csproj", "{04775286-D5CA-41AF-A0FA-F1C52E3D9BDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,24 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{986B759F-2D00-4AF8-A5BB-80A8C4BD9D7D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3933C0D5-50CB-43E7-ACCC-F47CE4009276}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{961BF0BB-B91A-48B8-B58E-439267525E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{961BF0BB-B91A-48B8-B58E-439267525E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04775286-D5CA-41AF-A0FA-F1C52E3D9BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04775286-D5CA-41AF-A0FA-F1C52E3D9BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04775286-D5CA-41AF-A0FA-F1C52E3D9BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04775286-D5CA-41AF-A0FA-F1C52E3D9BDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
