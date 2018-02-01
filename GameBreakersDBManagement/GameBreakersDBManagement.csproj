@@ -61,27 +61,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackgroundDataManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DatabaseManager.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="InventoryForms\MtG.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="InventoryForms\MtG.Designer.cs">
+      <DependentUpon>MtG.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form2.cs">
+    <Compile Include="InventoryForms\SetEditors\MtGSetEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <Compile Include="InventoryForms\SetEditors\MtGSetEditor.Designer.cs">
+      <DependentUpon>MtGSetEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Startup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Startup.Designer.cs">
+      <DependentUpon>Startup.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="InventoryForms\MtG.resx">
+      <DependentUpon>MtG.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <EmbeddedResource Include="InventoryForms\SetEditors\MtGSetEditor.resx">
+      <DependentUpon>MtGSetEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -93,6 +102,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Startup.resx">
+      <DependentUpon>Startup.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,6 +123,12 @@
     <None Include="Resources\Magic_card_back.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\mtgbg.jpg" />
+    <None Include="Resources\FIFA-Logo-old.png" />
+    <None Include="Resources\05_NHL_Shield.svg.png" />
+    <None Include="Resources\nfl_logo_new2.jpg" />
+    <None Include="Resources\nba-logo.jpg" />
+    <None Include="Resources\1200px-Major_League_Baseball_logo.svg.png" />
     <Content Include="scraper.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

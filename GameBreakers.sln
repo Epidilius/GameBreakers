@@ -11,6 +11,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-image-fetcher", "mtg-im
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "mtg-price-fetcher", "mtg-price-fetcher\mtg-price-fetcher.pyproj", "{961BF0BB-B91A-48B8-B58E-439267525E73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GBBackgroundService", "GBBackgroundService\GBBackgroundService.csproj", "{50FFC0F1-4324-42FA-9504-1E325F34F23D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{79BC8D70-A937-46B2-B7D5-611D9AACE3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{961BF0BB-B91A-48B8-B58E-439267525E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{961BF0BB-B91A-48B8-B58E-439267525E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FFC0F1-4324-42FA-9504-1E325F34F23D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

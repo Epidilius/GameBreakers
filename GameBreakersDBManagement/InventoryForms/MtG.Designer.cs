@@ -1,6 +1,6 @@
 ﻿namespace GameBreakersDBManagement
 {
-    partial class Form1
+    partial class MtG
     {
         /// <summary>
         /// Required designer variable.
@@ -28,10 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MtG));
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_Name = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button_SearchSet = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_Set = new System.Windows.Forms.TextBox();
             this.button_Search = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button_AddFoil = new System.Windows.Forms.Button();
@@ -50,9 +53,6 @@
             this.button_EditSet = new System.Windows.Forms.Button();
             this.button_SelectSet = new System.Windows.Forms.Button();
             this.pictureBox_Card = new System.Windows.Forms.PictureBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button_SearchSet = new System.Windows.Forms.Button();
-            this.textBox_Set = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
@@ -75,6 +75,7 @@
             this.textBox_Name.Name = "textBox_Name";
             this.textBox_Name.Size = new System.Drawing.Size(571, 20);
             this.textBox_Name.TabIndex = 0;
+            this.textBox_Name.GotFocus += new System.EventHandler(this.textBox_Name_GotFocus);
             // 
             // groupBox1
             // 
@@ -90,6 +91,33 @@
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search";
+            // 
+            // button_SearchSet
+            // 
+            this.button_SearchSet.Location = new System.Drawing.Point(583, 63);
+            this.button_SearchSet.Name = "button_SearchSet";
+            this.button_SearchSet.Size = new System.Drawing.Size(226, 41);
+            this.button_SearchSet.TabIndex = 5;
+            this.button_SearchSet.Text = "Search Set";
+            this.button_SearchSet.UseVisualStyleBackColor = true;
+            this.button_SearchSet.Click += new System.EventHandler(this.button_SearchSet_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 63);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "By Set:";
+            // 
+            // textBox_Set
+            // 
+            this.textBox_Set.Location = new System.Drawing.Point(6, 79);
+            this.textBox_Set.Name = "textBox_Set";
+            this.textBox_Set.Size = new System.Drawing.Size(571, 20);
+            this.textBox_Set.TabIndex = 3;
+            this.textBox_Set.GotFocus += new System.EventHandler(this.textBox_Set_GotFocus);
             // 
             // button_Search
             // 
@@ -256,32 +284,6 @@
             this.pictureBox_Card.TabIndex = 2;
             this.pictureBox_Card.TabStop = false;
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 63);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "By Set:";
-            // 
-            // button_SearchSet
-            // 
-            this.button_SearchSet.Location = new System.Drawing.Point(583, 63);
-            this.button_SearchSet.Name = "button_SearchSet";
-            this.button_SearchSet.Size = new System.Drawing.Size(226, 41);
-            this.button_SearchSet.TabIndex = 5;
-            this.button_SearchSet.Text = "Search Set";
-            this.button_SearchSet.UseVisualStyleBackColor = true;
-            this.button_SearchSet.Click += new System.EventHandler(this.button_SearchSet_Click);
-            // 
-            // textBox_Set
-            // 
-            this.textBox_Set.Location = new System.Drawing.Point(6, 79);
-            this.textBox_Set.Name = "textBox_Set";
-            this.textBox_Set.Size = new System.Drawing.Size(571, 20);
-            this.textBox_Set.TabIndex = 3;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -292,7 +294,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBox_Card);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "GameBreakers M:tG Inventory";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

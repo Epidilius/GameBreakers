@@ -118,7 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="FIFA_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FIFA-Logo-old.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Magic_card_back" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Magic_card_back.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MLB_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1200px-Major_League_Baseball_logo.svg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MTG_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mtgbg.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="nba_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\nba-logo.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="nfl_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\nfl_logo_new2.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NHL_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\05_NHL_Shield.svg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

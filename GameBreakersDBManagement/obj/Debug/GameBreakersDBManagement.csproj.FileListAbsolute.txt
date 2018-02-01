@@ -2,7 +2,6 @@ E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBr
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBreakersDBManagement.exe
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\GameBreakersDBManagement.pdb
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.csprojResolveAssemblyReference.cache
-E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Form1.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Properties.Resources.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.csproj.GenerateResource.Cache
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.csproj.CoreCompileInputs.cache
@@ -18,4 +17,6 @@ E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\Micros
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.Metadata.xml
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.dll
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.xml
-E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Form2.resources
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.MtG.resources
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.SetEditorForm.resources
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.Startup.resources

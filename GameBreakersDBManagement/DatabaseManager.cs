@@ -13,7 +13,8 @@ namespace GameBreakersDBManagement
         string ConnectionString;
         Logger logger;
         static DatabaseManager dbMan = null;
-        
+        private static readonly object _syncObject = new object();
+
         public DatabaseManager()
         {
             ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
@@ -104,14 +105,20 @@ namespace GameBreakersDBManagement
         }
         public DataTable GetAllSets()
         {
-            var dataTable = RunQuery("SELECT * FROM Sets");
-            return dataTable;
+            lock (_syncObject)
+            {
+                var dataTable = RunQuery("SELECT * FROM Sets");
+                return dataTable;
+            }
         }
         public DataTable GetAllCardsForSet(string set)
         {
-            set = set.Replace(@"'", @"''");
-            var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
-            return dataTable;
+            lock (_syncObject)
+            {
+                set = set.Replace(@"'", @"''");
+                var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
+                return dataTable;
+            }
         }
         public DataTable GetCard(string name)
         {
@@ -216,33 +223,68 @@ namespace GameBreakersDBManagement
         }
         public void UpdatePrice(string name, string set, float price, bool foil)
         {
-            name = name.Replace(@"'", @"''");
-            set = set.Replace(@"'", @"''");
-
-            var cmdString = "";
-            if (foil)
-                cmdString = "UPDATE MtG SET foilPrice = @price WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
-            else
-                cmdString = "UPDATE MtG SET price = @price, priceLastUpdated = @time WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
-
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            lock (_syncObject)
             {
-                using (SqlCommand comm = new SqlCommand())
+                name = name.Replace(@"'", @"''");
+                set = set.Replace(@"'", @"''");
+
+                var cmdString = "";
+                if (foil)
+                    cmdString = "UPDATE MtG SET foilPrice = @price WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+                else
+                    cmdString = "UPDATE MtG SET price = @price, priceLastUpdated = @time WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-
-                    comm.Parameters.AddWithValue("@price", price);
-                    comm.Parameters.AddWithValue("@time", DateTimeOffset.Now.ToUnixTimeMilliseconds());
-
-                    try
+                    using (SqlCommand comm = new SqlCommand())
                     {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
+                        comm.Connection = conn;
+                        comm.CommandText = cmdString;
+
+                        comm.Parameters.AddWithValue("@price", price);
+                        comm.Parameters.AddWithValue("@time", DateTimeOffset.Now.ToUnixTimeMilliseconds());
+
+                        try
+                        {
+                            conn.Open();
+                            comm.ExecuteNonQuery();
+                        }
+                        catch (SqlException e)
+                        {
+                            logger.LogError("Failed to update price of (foil: " + foil + ") card: " + name + " from set: " + set + " to: " + price + "\r\n" + e);
+                        }
                     }
-                    catch (SqlException e)
+                }
+            }
+        }
+        public void UpdateSetID(string set, int id)
+        {
+            lock (_syncObject)
+            {
+                //var dataTable = RunQuery("SELECT * FROM Sets WHERE SetID = \'" + id + "\'");
+                //if (dataTable.Rows.Count > 0)
+                //    return;
+
+                var cmdString = "UPDATE Sets SET SetID = @id WHERE name = \'" + set + "\'";
+
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                {
+                    using (SqlCommand comm = new SqlCommand())
                     {
-                        logger.LogError("Failed to update price of (foil: " + foil + ") card: " + name + " from set: " + set + " to: "+ price + "\r\n" + e);
+                        comm.Connection = conn;
+                        comm.CommandText = cmdString;
+
+                        comm.Parameters.AddWithValue("@id", id);
+
+                        try
+                        {
+                            conn.Open();
+                            comm.ExecuteNonQuery();
+                        }
+                        catch (SqlException e)
+                        {
+                            logger.LogError("Error adding ID: " + id + " to set: " + set);
+                        }
                     }
                 }
             }
@@ -357,7 +399,7 @@ namespace GameBreakersDBManagement
                     comm.Parameters.AddWithValue("@val19", inventory);
                     comm.Parameters.AddWithValue("@val20", foilPrice);
                     comm.Parameters.AddWithValue("@val21", foilInventory);
-                    comm.Parameters.AddWithValue("@val22", DateTimeOffset.Now.ToUnixTimeMilliseconds());
+                    comm.Parameters.AddWithValue("@val22", -1);
 
                     try
                     {

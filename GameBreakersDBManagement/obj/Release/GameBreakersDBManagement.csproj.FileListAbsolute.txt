@@ -11,10 +11,12 @@ E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Release\Micr
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Release\Microsoft.Scripting.AspNet.xml
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Release\Microsoft.Scripting.Metadata.xml
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\bin\Release\Newtonsoft.Json.xml
-E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.Form1.resources
-E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.Form2.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.Properties.Resources.resources
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.csproj.GenerateResource.Cache
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.csproj.CoreCompileInputs.cache
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.exe
 E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.pdb
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.csprojResolveAssemblyReference.cache
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.MtG.resources
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.SetEditorForm.resources
+E:\Projects\Visual Studio\GameBreakers\GameBreakersDBManagement\obj\Release\GameBreakersDBManagement.Startup.resources

@@ -11,12 +11,12 @@ using System.Text.RegularExpressions;
 
 namespace GameBreakersDBManagement
 {
-    public partial class Form2 : Form
+    public partial class SetEditorForm : Form
     {
         DatabaseManager dbMan;
         Logger logger;
         string CurrentSet;
-        public Form2()
+        public SetEditorForm()
         {
             InitializeComponent();
             dbMan = DatabaseManager.GetInstace();

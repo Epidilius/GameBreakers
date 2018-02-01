@@ -8,8 +8,6 @@ MTGSTOCKS_BASE_URL = 'https://api.mtgstocks.com/'
 MTGSTOCKS_QUERY_ID = 'search/autocomplete/'
 MTGSTOCKS_QUERY_DATA = 'prints/'
 
-SETS_PATH = MTGSTOCKS_BASE_URL + '/sets'
-
 def generate_search_url(name):
     formatted_name = urllib.parse.quote(name)
     return MTGSTOCKS_BASE_URL + MTGSTOCKS_QUERY_ID + formatted_name
@@ -33,29 +31,48 @@ def scrape_price(id):
     response = requests.get(query_url, allow_redirects=False)
     content = response.json()
 
+    price = 0
+    foilPrice = 0
+
+    try:
+        foilPrice = get_foil_price(content)
+    except Exception:
+        pass
+
+    try:
+        price = get_avg_price(content)
+    except:
+        pass
+
     return {
-        'price_foil': content['latest_price']['foil'],
-        'price': content['latest_price']['avg'],
+        'price_foil': foilPrice,
+        'price': price,
     }
 
-def card_id_from_set(name, card_set):
+def get_foil_price(content):
+    return content['latest_price']['foil']
+def get_avg_price(content):
+    return content['latest_price']['avg']
+
+def card_id_from_set(name, set):
     card_id = card_id_from_name(name)
     query_url = generate_search_url_for_id(card_id)
     response = requests.get(query_url, allow_redirects=False).json()
     
-    if response['card_set']['name'] == card_set:
+    setName = response['card_set']['name']
+    if setName == set:
         return response['id']
 
     sets = response['sets']
 
     for card in sets:
-        set_name = card['set_name'].split(" (",1)[0]
-        if set_name == card_set:
+        set_name = card['set_name']
+        if set_name == set:
             return card['id']
 
-def get_card_price(name, card_set=None):
-    if card_set is not None:
-        card_id = card_id_from_set(name, card_set)
+def get_card_price(name, set=None):
+    if set is not None:
+        card_id = card_id_from_set(name, set)
     else:
         card_id = card_id_from_name(name)
 
