@@ -382,7 +382,7 @@ namespace GameBreakersDBManagement
             //if (Regex.Replace(name, ",", String.Empty) == other.Remove(0,1))
             //   return;
             other = Regex.Replace(other, @"[^0-9a-zA-Z*]+", String.Empty);
-            dataGridView_CardList.Rows.Add(category, number, name, team, amount, odds, other);
+            dataGridView_CardList.Rows.Add(category, number, name, team, amount, odds, other, "0");
         }
     }
 }

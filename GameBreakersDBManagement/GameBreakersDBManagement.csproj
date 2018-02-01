@@ -65,22 +65,28 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DatabaseManager.cs" />
-    <Compile Include="InventoryForms\CCScraper.cs">
+    <Compile Include="InventoryForms\CC\CCScraper.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InventoryForms\CCScraper.Designer.cs">
+    <Compile Include="InventoryForms\CC\CCScraper.Designer.cs">
       <DependentUpon>CCScraper.cs</DependentUpon>
     </Compile>
-    <Compile Include="InventoryForms\MtG.cs">
+    <Compile Include="InventoryForms\CC\CardboardConnection.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InventoryForms\MtG.Designer.cs">
+    <Compile Include="InventoryForms\CC\CardboardConnection.Designer.cs">
+      <DependentUpon>CardboardConnection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InventoryForms\Magic\MtG.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InventoryForms\Magic\MtG.Designer.cs">
       <DependentUpon>MtG.cs</DependentUpon>
     </Compile>
-    <Compile Include="InventoryForms\SetEditors\MtGSetEditor.cs">
+    <Compile Include="InventoryForms\Magic\MtGSetEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InventoryForms\SetEditors\MtGSetEditor.Designer.cs">
+    <Compile Include="InventoryForms\Magic\MtGSetEditor.Designer.cs">
       <DependentUpon>MtGSetEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger.cs" />
@@ -92,13 +98,16 @@
     <Compile Include="Startup.Designer.cs">
       <DependentUpon>Startup.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="InventoryForms\CCScraper.resx">
+    <EmbeddedResource Include="InventoryForms\CC\CCScraper.resx">
       <DependentUpon>CCScraper.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InventoryForms\MtG.resx">
+    <EmbeddedResource Include="InventoryForms\CC\CardboardConnection.resx">
+      <DependentUpon>CardboardConnection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InventoryForms\Magic\MtG.resx">
       <DependentUpon>MtG.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InventoryForms\SetEditors\MtGSetEditor.resx">
+    <EmbeddedResource Include="InventoryForms\Magic\MtGSetEditor.resx">
       <DependentUpon>MtGSetEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

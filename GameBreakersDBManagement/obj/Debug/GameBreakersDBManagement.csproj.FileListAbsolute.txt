@@ -42,3 +42,4 @@ C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.AspNet.xml
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Microsoft.Scripting.Metadata.xml
 C:\Projects\GameBreakers\GameBreakersDBManagement\bin\Debug\Newtonsoft.Json.xml
+C:\Projects\GameBreakers\GameBreakersDBManagement\obj\Debug\GameBreakersDBManagement.CardboardConnection.resources

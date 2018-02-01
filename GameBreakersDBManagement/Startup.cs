@@ -23,5 +23,11 @@ namespace GameBreakersDBManagement
             MtG mtgForm = new MtG();
             mtgForm.Show();
         }
+
+        private void button_CardboardConnection_Click(object sender, EventArgs e)
+        {
+            CardboardConnection ccForm = new CardboardConnection();
+            ccForm.Show();
+        }
     }
 }

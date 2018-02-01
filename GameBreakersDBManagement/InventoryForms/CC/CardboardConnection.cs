@@ -25,7 +25,7 @@ using System.Globalization;
 
 namespace GameBreakersDBManagement
 {
-    public partial class MtG : Form
+    public partial class CardboardConnection : Form
     {
         DatabaseManager dbMan;
         Logger logger;
@@ -38,9 +38,8 @@ namespace GameBreakersDBManagement
         static string IMAGE_TYPE = ".jpg";
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
-        //TODO: Online card and price search in background thread? Then it just adds rows as it completes
-
-        public MtG()
+        //string category, string number, string name, string team, string amount, string odds, string other, string inventory
+        public CardboardConnection()
         {
             InitializeComponent();
             dbMan = DatabaseManager.GetInstace();
