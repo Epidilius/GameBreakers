@@ -1,5 +1,0 @@
-E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.dacpac
-E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.dll
-E:\Projects\Visual Studio\GameBreakers\GameBreakers\bin\Release\GameBreakers.pdb
-E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\GameBreakers.dll
-E:\Projects\Visual Studio\GameBreakers\GameBreakers\obj\Release\GameBreakers.pdb
