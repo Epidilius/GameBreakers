@@ -28,13 +28,10 @@ namespace GameBreakersDBManagement
         static string MTGSTOCKS_BASE_URL = @"https://api.mtgstocks.com/";
         static string MTGSTOCKS_QUERY_ID = @"search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"prints/";
-
-        Logger logger;
-
+        
         public BackgroundDataManager()
         {
             dbMan = DatabaseManager.GetInstace();
-            logger = Logger.GetLogger();
         }
 
         public void Run()
@@ -105,7 +102,7 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Failed to parse card: " + name + " for set: " + set);
+                    Logger.LogError("Failed to parse card: " + name + " for set: " + set);
                     throw new Exception();
                 }
             }
@@ -127,11 +124,11 @@ namespace GameBreakersDBManagement
                     try
                     {
                         dbMan.UpdateSetID(setName, setID);
-                        logger.LogActivity("Added ID: " + setID + " to set: " + setName);
+                        Logger.LogActivity("Added ID: " + setID + " to set: " + setName);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError("Failed to add ID.\r\nSet Name: " + setName + "\r\nSet ID: " + setID);
+                        Logger.LogError("Failed to add ID.\r\nSet Name: " + setName + "\r\nSet ID: " + setID);
                     }
                 }
             }
@@ -158,7 +155,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    logger.LogError("Failed to get parse HTML into JSON. \r\nHTML: " + html + "\r\nURL: " + url + "\r\nName" + name + "\r\nSet: " + set + "\r\nPrepped set name: " + preppedSetName);
+                    Logger.LogError("Failed to get parse HTML into JSON. \r\nHTML: " + html + "\r\nURL: " + url + "\r\nName" + name + "\r\nSet: " + set + "\r\nPrepped set name: " + preppedSetName);
                     return;
                 }
 
@@ -168,7 +165,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    logger.LogError("Failed to get price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
+                    Logger.LogError("Failed to get price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
                 }
                 try
                 {
@@ -176,7 +173,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    logger.LogError("Failed to get foil price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
+                    Logger.LogError("Failed to get foil price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
                 }
 
                 if(price != -1)
@@ -212,7 +209,7 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Failed to get image for ID: " + multiverseID);
+                    Logger.LogError("Failed to get image for ID: " + multiverseID);
                 }
             }
         }

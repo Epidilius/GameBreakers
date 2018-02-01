@@ -21,12 +21,9 @@ namespace GameBreakersDBManagement
 
         string fileName = "";
 
-        Logger logger;
-
         public CCScraper()
         {
             InitializeComponent();
-            logger = Logger.GetLogger();
         }
 
         //BUTTONS
@@ -42,11 +39,11 @@ namespace GameBreakersDBManagement
                 fileName = Regex.Match(textBox_URL.Text, @"(?<=com/)(.*)").Value;
                 FetchData();
 
-                logger.LogActivity("Successfuly fetched and parsed data for url: " + textBox_URL.Text);
+                Logger.LogActivity("Successfuly fetched and parsed data for url: " + textBox_URL.Text);
             }
             catch (Exception ex)
             {
-                logger.LogError("Something happened in Scrape that was not caught. Error: " + ex);
+                Logger.LogError("Something happened in Scrape that was not caught. Error: " + ex);
             }
         }
         private void button_Save_Click(object sender, EventArgs e)
@@ -59,11 +56,11 @@ namespace GameBreakersDBManagement
                 SaveData();
                 dataGridView_CardList.Rows.Clear();
 
-                logger.LogActivity("Successfuly saved data to file: " + fileName);
+                Logger.LogActivity("Successfuly saved data to file: " + fileName);
             }
             catch (Exception ex)
             {
-                logger.LogError("Something happened in Save that was not caught. Error: " + ex);
+                Logger.LogError("Something happened in Save that was not caught. Error: " + ex);
             }
         }
 
@@ -103,7 +100,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                logger.LogError("Failed to fetch data from URL: " + textBox_URL.Text + "\r\n" + ex);
+                Logger.LogError("Failed to fetch data from URL: " + textBox_URL.Text + "\r\n" + ex);
             }
 
             //TODO: Throw exception
@@ -223,7 +220,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                logger.LogError("Failed to parse a card\r\nCard data: " + card + "\r\nCategory: " + category + "\r\nError: " + ex);
+                Logger.LogError("Failed to parse a card\r\nCard data: " + card + "\r\nCategory: " + category + "\r\nError: " + ex);
             }
         }
         void AddCardMultiLineToGridView(string category, List<string> cards, int linesPerCard)
@@ -320,7 +317,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                logger.LogError("Failed to parse an array of cards\r\nCard data: " + cards + "\r\nCategory: " + category + "\r\nError: " + ex);
+                Logger.LogError("Failed to parse an array of cards\r\nCard data: " + cards + "\r\nCategory: " + category + "\r\nError: " + ex);
             }
         }
 

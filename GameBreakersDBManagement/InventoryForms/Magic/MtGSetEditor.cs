@@ -14,13 +14,11 @@ namespace GameBreakersDBManagement
     public partial class SetEditorForm : Form
     {
         DatabaseManager dbMan;
-        Logger logger;
         string CurrentSet;
         public SetEditorForm()
         {
             InitializeComponent();
             dbMan = DatabaseManager.GetInstace();
-            logger = Logger.GetLogger();
             CurrentSet = "";
             LoadSets();
         }
@@ -40,17 +38,17 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    logger.LogError("Error saving card: " + name + " from set: " + set + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Error saving card: " + name + " from set: " + set + "\r\n\r\nError message:" + ex.ToString());
                 }
             }
 
-            logger.LogActivity("Updated inventory of set: " + dataGridView_CardData.Rows[0].Cells[1].Value.ToString()); //TODO: Use CurrentSet?
+            Logger.LogActivity("Updated inventory of set: " + dataGridView_CardData.Rows[0].Cells[1].Value.ToString()); //TODO: Use CurrentSet?
         }
 
         private void button_Close_Click(object sender, EventArgs e)
         {
             if(CurrentSet != "") dbMan.UnlockSet(CurrentSet);
-            logger.LogActivity("Closing set editor");
+            Logger.LogActivity("Closing set editor");
             Close();
         }
 
@@ -122,9 +120,9 @@ namespace GameBreakersDBManagement
             var cards = dbMan.GetAllCardsForSet(comboBox_Sets.Text);
 
             dbMan.LockSet(comboBox_Sets.Text);
-            logger.LogActivity("Locked set: " + comboBox_Sets.Text);
+            Logger.LogActivity("Locked set: " + comboBox_Sets.Text);
             if (CurrentSet != "") dbMan.UnlockSet(CurrentSet);
-            logger.LogActivity("Unlocked set: " + CurrentSet);
+            Logger.LogActivity("Unlocked set: " + CurrentSet);
             CurrentSet = comboBox_Sets.Text;
 
             foreach (DataRow card in cards.Rows)

@@ -28,7 +28,6 @@ namespace GameBreakersDBManagement
     public partial class MtG : Form
     {
         DatabaseManager dbMan;
-        Logger logger;
         Thread bgThread;
 
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
@@ -42,7 +41,6 @@ namespace GameBreakersDBManagement
         {
             InitializeComponent();
             dbMan = DatabaseManager.GetInstace();
-            logger = Logger.GetLogger();
             
             //TODO: Compare to number of files in directory, if lower comapre each set to the DB, if missing add the set
             if(dbMan.GetAllSets().Rows.Count == 0)
@@ -96,7 +94,7 @@ namespace GameBreakersDBManagement
             }
             catch(Exception ex)
             {
-                logger.LogError("Error searching for card: " + textBox_Name.Text + "\r\n\r\nError message:" + ex.ToString());
+                Logger.LogError("Error searching for card: " + textBox_Name.Text + "\r\n\r\nError message:" + ex.ToString());
             }
         }
         private void button_SearchSet_Click(object sender, EventArgs e)
@@ -109,7 +107,7 @@ namespace GameBreakersDBManagement
             }
             catch(Exception ex)
             {
-                logger.LogError("Error searching for set: " + textBox_Set.Text + "\r\n\r\nError message:" + ex.ToString());
+                Logger.LogError("Error searching for set: " + textBox_Set.Text + "\r\n\r\nError message:" + ex.ToString());
             }
         }
         private void button_SelectSet_Click(object sender, EventArgs e)
@@ -130,7 +128,7 @@ namespace GameBreakersDBManagement
 
             RemoveOneFromInventory(name, set, false);
 
-            logger.LogActivity("Removed one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Removed one of card: " + name + " of set " + set + " from inventory");
 
             var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) - 1;
             if (value < 0) value = 0;
@@ -145,7 +143,7 @@ namespace GameBreakersDBManagement
 
             RemoveOneFromInventory(name, set, true);
 
-            logger.LogActivity("Removed foil one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Removed foil one of card: " + name + " of set " + set + " from inventory");
 
             var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) - 1;
             if (value < 0) value = 0;
@@ -160,7 +158,7 @@ namespace GameBreakersDBManagement
 
             AddOneToInventory(name, set, false);
 
-            logger.LogActivity("Added one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Added one of card: " + name + " of set " + set + " from inventory");
 
             var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) + 1;
             dataGridView_CardData.Rows[index].Cells[3].Value = value;
@@ -174,7 +172,7 @@ namespace GameBreakersDBManagement
 
             AddOneToInventory(name, set, true);
 
-            logger.LogActivity("Added foil one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Added foil one of card: " + name + " of set " + set + " from inventory");
 
             var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) + 1;
             dataGridView_CardData.Rows[index].Cells[4].Value = value;
@@ -242,21 +240,21 @@ namespace GameBreakersDBManagement
                 var id = GetMTGStocksID(name);
                 if (id == -1)
                 {
-                    logger.LogError("Could not find card with name: " + name);
+                    Logger.LogError("Could not find card with name: " + name);
                     return;
                 }
 
                 var cardObject = GetMTGStocksData(id);
                 if (cardObject == null)
                 {
-                    logger.LogError("Could not find card with name: " + name + " and MTG Stocks ID: " + id);
+                    Logger.LogError("Could not find card with name: " + name + " and MTG Stocks ID: " + id);
                     return;
                 }
 
                 var card = ParseCardData(cardObject);
                 if (card == null)
                 {
-                    logger.LogError("Could not find parse data: " + card.ToString());
+                    Logger.LogError("Could not find parse data: " + card.ToString());
                     return;
                 }
 
@@ -402,7 +400,7 @@ namespace GameBreakersDBManagement
             catch(Exception ex)
             {
                 //TODO: LOGGING
-                logger.LogError("Failed to get IDs for card: " + name);
+                Logger.LogError("Failed to get IDs for card: " + name);
             }
 
             if(json != null)
@@ -432,7 +430,7 @@ namespace GameBreakersDBManagement
             catch (Exception ex)
             {
                 //TODO: LOGGING
-                logger.LogError("Failed to get data for card with MTG Stocks ID: " + id + "\r\nURL: " + url);
+                Logger.LogError("Failed to get data for card with MTG Stocks ID: " + id + "\r\nURL: " + url);
                 return null;
             }
         }
@@ -546,7 +544,7 @@ namespace GameBreakersDBManagement
             }
 
             dbMan.UpdatePrice(name, set, price, foil);
-            logger.LogActivity("Updating price of card:\r\nFoil: " + foil + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + price);
+            Logger.LogActivity("Updating price of card:\r\nFoil: " + foil + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + price);
             return price;
         }
 
@@ -652,7 +650,7 @@ namespace GameBreakersDBManagement
             }
             catch(Exception ex)
             {
-                logger.LogError("Failed to load image from file, will attempt to from URL. Multiverse ID: " + multiverseID);
+                Logger.LogError("Failed to load image from file, will attempt to from URL. Multiverse ID: " + multiverseID);
             }
         }
         //TODOL Get rid of this?
@@ -671,7 +669,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                logger.LogError("Failed to load image from URL, using back of MtG card. Multiverse ID: " + multiverseID.ToString());
+                Logger.LogError("Failed to load image from URL, using back of MtG card. Multiverse ID: " + multiverseID.ToString());
                 pictureBox_Card.Image = Properties.Resources.Magic_card_back;
             }
         }
@@ -706,7 +704,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                logger.LogError("Error adding set to database, file: " + file);
+                Logger.LogError("Error adding set to database, file: " + file);
             }
         }
         void AddExpansionToDatabase(JToken cardList, string expansion, string abbreviation)
@@ -714,7 +712,7 @@ namespace GameBreakersDBManagement
             if (!dbMan.CheckIfSetExists(expansion))
             {
                 dbMan.AddNewSet(expansion, abbreviation, null);
-                logger.LogActivity("Adding new set: " + expansion + " to databse");
+                Logger.LogActivity("Adding new set: " + expansion + " to databse");
             }
             foreach (var card in cardList)
             {
@@ -751,13 +749,13 @@ namespace GameBreakersDBManagement
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError("Error adding card: " + name + " in set: " + expansion + "\r\n\r\nError message:" + ex.ToString());
+                        Logger.LogError("Error adding card: " + name + " in set: " + expansion + "\r\n\r\nError message:" + ex.ToString());
                     }
                 }
                 catch(Exception ex)
                 {
                     //TODO: THROW MY OWN EXCEPTIONS
-                    logger.LogError("Error parsing card: " + PrepareString(card, "name") + " in set: " + expansion  + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Error parsing card: " + PrepareString(card, "name") + " in set: " + expansion  + "\r\n\r\nError message:" + ex.ToString());
                 }
             }
         }
@@ -770,7 +768,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                //logger.LogError("Failed to parse data: " + index + " for card: " + card["name"].ToString());
+                //Logger.LogError("Failed to parse data: " + index + " for card: " + card["name"].ToString());
             }
 
             try
@@ -807,7 +805,7 @@ namespace GameBreakersDBManagement
             }
             catch(Exception ex)
             {
-
+                
             }
         }
     }

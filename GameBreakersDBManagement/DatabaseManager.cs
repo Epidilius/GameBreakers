@@ -11,14 +11,12 @@ namespace GameBreakersDBManagement
     class DatabaseManager
     {
         string ConnectionString;
-        Logger logger;
         static DatabaseManager dbMan = null;
         private static readonly object _syncObject = new object();
 
         public DatabaseManager()
         {
             ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
-            logger = Logger.GetLogger();
         }
         public static DatabaseManager GetInstace()
         {
@@ -157,7 +155,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to increase card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
+                        Logger.LogError("Failed to increase card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
                     }
                 }
             }
@@ -190,7 +188,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to decrease card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
+                        Logger.LogError("Failed to decrease card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
                     }
                 }
             }
@@ -216,7 +214,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to update inventory of card: " + name + " from set: " + set + " to: " + newAmount + " and foils to: " + newFoilAmount + "\r\n" + e);
+                        Logger.LogError("Failed to update inventory of card: " + name + " from set: " + set + " to: " + newAmount + " and foils to: " + newFoilAmount + "\r\n" + e);
                     }
                 }
             }
@@ -251,7 +249,7 @@ namespace GameBreakersDBManagement
                         }
                         catch (SqlException e)
                         {
-                            logger.LogError("Failed to update price of (foil: " + foil + ") card: " + name + " from set: " + set + " to: " + price + "\r\n" + e);
+                            Logger.LogError("Failed to update price of (foil: " + foil + ") card: " + name + " from set: " + set + " to: " + price + "\r\n" + e);
                         }
                     }
                 }
@@ -283,7 +281,7 @@ namespace GameBreakersDBManagement
                         }
                         catch (SqlException e)
                         {
-                            logger.LogError("Error adding ID: " + id + " to set: " + set);
+                            Logger.LogError("Error adding ID: " + id + " to set: " + set);
                         }
                     }
                 }
@@ -334,7 +332,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to lock set: " + set + "\r\n" + e);
+                        Logger.LogError("Failed to lock set: " + set + "\r\n" + e);
                     }
                 }
             }
@@ -359,7 +357,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to unlock set: " + set + "\r\n" + e);
+                        Logger.LogError("Failed to unlock set: " + set + "\r\n" + e);
                     }
                 }
             }
@@ -408,7 +406,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to add new card: " + name + " to set: " + set + "\r\n" + e);
+                        Logger.LogError("Failed to add new card: " + name + " to set: " + set + "\r\n" + e);
                     }
                 }
             }
@@ -444,7 +442,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (SqlException e)
                     {
-                        logger.LogError("Failed to add new set: " + set + "\r\n" + e);
+                        Logger.LogError("Failed to add new set: " + set + "\r\n" + e);
                     }
                 }
             }

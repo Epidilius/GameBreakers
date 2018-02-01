@@ -15,7 +15,7 @@ namespace GameBreakersDBManagement
         public Startup()
         {
             InitializeComponent();
-            button_MtG.BackgroundImageLayout = ImageLayout.Stretch;
+            Logger.Prep();
         }
 
         private void button_MtG_Click(object sender, EventArgs e)

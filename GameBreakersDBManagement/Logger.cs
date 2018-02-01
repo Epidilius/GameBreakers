@@ -7,26 +7,14 @@ using System.Threading.Tasks;
 
 namespace GameBreakersDBManagement
 {
-    class Logger
+    public static class Logger
     {
         //TODO: Use TraceSource?
         private static readonly object _syncObject = new object();
-
-        static Logger Log = null;
         static string ActivityLog = @"C:\GameBreakersInventory\Logging\ActivityLog.txt";
         static string ErrorLog = @"C:\GameBreakersInventory\Logging\ErrorLog.txt";
-
-        public static Logger GetLogger()
-        {
-            if (Log == null)
-            {
-                Log = new Logger();
-            }
-
-            return Log;
-        }
-
-        Logger()
+                
+        public static void Prep()
         {
             //TODO: Create files if they don't exist
             if (!File.Exists(ActivityLog))
@@ -41,7 +29,7 @@ namespace GameBreakersDBManagement
             }
         }
 
-        public void LogActivity(string message)
+        public static void LogActivity(string message)
         {
             //TODO: Formatting
             //TIME | ACTIVITY 
@@ -57,7 +45,7 @@ namespace GameBreakersDBManagement
             }
         }
 
-        public void LogError(string message)
+        public static void LogError(string message)
         {
             //TIME | ERROR
             lock (_syncObject)
