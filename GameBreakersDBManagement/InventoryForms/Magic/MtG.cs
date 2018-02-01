@@ -16,6 +16,9 @@ namespace GameBreakersDBManagement
 {
     public partial class MtG : Form
     {
+        //TODO: Merge the MtG search into this?
+        //TODO: Change DBMAN to build queries better
+        //TODO: Fix all errors caused by adding a new set
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
         static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";

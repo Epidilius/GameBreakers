@@ -27,7 +27,15 @@ namespace GameBreakersDBManagement
 {
     public partial class CardboardConnection : Form
     {
-        Thread bgThread;
+        //TODO: Use background threads in MtG form
+        //TODO: Save to database in ccscraper
+        //TODO: Clean up code. Start over? 
+        //TODO: Clean up designer
+        //TODO: CLean up Database manager
+        //TODO: Get rid of network calls
+        //TODO: Only query the database for stuff, not internet
+        //TODO: Remove all the static vars, I don't need them
+        //TODO: Change rows in grid view
 
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
@@ -45,41 +53,15 @@ namespace GameBreakersDBManagement
         //BUTTONS
         private void button_Search_Click(object sender, EventArgs e)
         {
-            //TODO: Call UpdateDisplays in these?
-            dataGridView_CardData.Rows.Clear();
-            try
-            {
-                new Thread(() =>
-                {
-                    SearchForCard(textBox_Name.Text);
-                }).Start();
-            }
-            catch(Exception ex)
-            {
-                Logger.LogError("Error searching for card: " + textBox_Name.Text + "\r\n\r\nError message:" + ex.ToString());
-            }
+            //TODO: Search Database for cards
         }
         private void button_SearchSet_Click(object sender, EventArgs e)
         {
-            //TODO: abbreviations search
-            dataGridView_CardData.Rows.Clear();
-            try
-            {
-                SearchForSet(textBox_Set.Text);
-            }
-            catch(Exception ex)
-            {
-                Logger.LogError("Error searching for set: " + textBox_Set.Text + "\r\n\r\nError message:" + ex.ToString());
-            }
+            //TODO: Same as name search
         }
         private void button_SelectSet_Click(object sender, EventArgs e)
         {
-            var ofd = new OpenFileDialog();
-            DialogResult result = ofd.ShowDialog(); // Show the dialog.
-            if (result == DialogResult.OK) // Test result.
-            {
-                AddNewSet(ofd.FileName);
-            }
+            //TODO: Open CCScraper
         }
         private void button_RemoveSingle_Click(object sender, EventArgs e)  //TODO: Condense these
         {
@@ -96,21 +78,6 @@ namespace GameBreakersDBManagement
             if (value < 0) value = 0;
             dataGridView_CardData.Rows[index].Cells[3].Value = value;
         }
-        private void button_RemoveFoil_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            RemoveOneFromInventory(name, set, true);
-
-            Logger.LogActivity("Removed foil one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) - 1;
-            if (value < 0) value = 0;
-            dataGridView_CardData.Rows[index].Cells[4].Value = value;
-        }
         private void button_AddSingle_Click(object sender, EventArgs e)
         {
             var index = dataGridView_CardData.CurrentCell.RowIndex;
@@ -125,22 +92,9 @@ namespace GameBreakersDBManagement
             var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) + 1;
             dataGridView_CardData.Rows[index].Cells[3].Value = value;
         }
-        private void button_AddFoil_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            AddOneToInventory(name, set, true);
-
-            Logger.LogActivity("Added foil one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) + 1;
-            dataGridView_CardData.Rows[index].Cells[4].Value = value;
-        }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
+            //TODO: Setup a CC Set Editor?
             SetEditorForm setEditor = new SetEditorForm();
             setEditor.Show();
         }
@@ -186,6 +140,7 @@ namespace GameBreakersDBManagement
                     }
 
                     name = card[3].ToString();
+                    //TODO: Do this in CCSCraper
                     AddCardToRow(new Dictionary<string, object> {
                         { "name", name },
                         { "set", set },
