@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {
     public partial class Startup : Form
     {

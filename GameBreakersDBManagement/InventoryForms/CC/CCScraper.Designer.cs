@@ -1,4 +1,4 @@
-﻿namespace GameBreakersDBManagement
+﻿namespace GameBreakersDatabaseManagement
 {
     partial class CCScraper
     {

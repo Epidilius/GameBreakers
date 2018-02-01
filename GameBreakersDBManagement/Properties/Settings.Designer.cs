@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GameBreakersDBManagement.Properties
+namespace GameBreakersDatabaseManagement.Properties
 {
 
 

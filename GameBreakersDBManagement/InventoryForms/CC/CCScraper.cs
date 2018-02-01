@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {
     public partial class CCScraper : Form
     {

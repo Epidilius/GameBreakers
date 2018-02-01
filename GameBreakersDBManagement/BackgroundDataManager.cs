@@ -14,11 +14,10 @@ using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Globalization;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {    
     class BackgroundDataManager : BackgroundWorker
     {
-        DatabaseManager dbMan;
         static string PYTHON_PRICE_URL = "http://127.0.0.1:5001/cards?name=ABCDE&set=FGHIJ";
         static string PYTHON_IMAGE_URL = "http://127.0.0.1:5000/cards?multiverse_id=ABCDE";
         static string LOCAL_IMAGE_PATH = @"C:\GameBreakersInventory\Images\";
@@ -31,7 +30,7 @@ namespace GameBreakersDBManagement
         
         public BackgroundDataManager()
         {
-            dbMan = DatabaseManager.GetInstace();
+            
         }
 
         public void Run()
@@ -41,7 +40,7 @@ namespace GameBreakersDBManagement
 
         void IterateThroughSets()
         {
-            var sets = dbMan.GetAllSets().Rows;
+            var sets = DatabaseManager.GetAllSets().Rows;
 
             foreach (DataRow set in sets)
             {
@@ -50,7 +49,7 @@ namespace GameBreakersDBManagement
         }
         void IterateThroughSet(string setName)
         {
-            var cards = dbMan.GetAllCardsForSet(setName);
+            var cards = DatabaseManager.GetAllCardsForSet(setName);
 
             foreach (DataRow card in cards.Rows)
             {
@@ -114,7 +113,7 @@ namespace GameBreakersDBManagement
 
                 var json = JObject.Parse(html);
 
-                dbMan.UpdateSetID(set, json["card_set"]["id"].ToObject<int>());
+                DatabaseManager.UpdateSetID(set, json["card_set"]["id"].ToObject<int>());
 
                 foreach(var card in json["sets"])
                 {
@@ -123,7 +122,7 @@ namespace GameBreakersDBManagement
 
                     try
                     {
-                        dbMan.UpdateSetID(setName, setID);
+                        DatabaseManager.UpdateSetID(setName, setID);
                         Logger.LogActivity("Added ID: " + setID + " to set: " + setName);
                     }
                     catch (Exception ex)
@@ -178,11 +177,11 @@ namespace GameBreakersDBManagement
 
                 if(price != -1)
                 {
-                    dbMan.UpdatePrice(name, set, price, false);
+                    DatabaseManager.UpdatePrice(name, set, price, false);
                 }
                 if(foilPrice != -1)
                 {
-                    dbMan.UpdatePrice(name, set, foilPrice, true);
+                    DatabaseManager.UpdatePrice(name, set, foilPrice, true);
                 }
             }
         }

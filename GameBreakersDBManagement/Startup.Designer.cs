@@ -1,4 +1,4 @@
-﻿namespace GameBreakersDBManagement
+﻿namespace GameBreakersDatabaseManagement
 {
     partial class Startup
     {
@@ -46,7 +46,7 @@
             // 
             // button_CardboardConnection
             // 
-            this.button_CardboardConnection.BackgroundImage = global::GameBreakersDBManagement.Properties.Resources.The_Cardboard_Connection;
+            this.button_CardboardConnection.BackgroundImage = global::GameBreakersDatabaseManagement.Properties.Resources.The_Cardboard_Connection;
             this.button_CardboardConnection.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button_CardboardConnection.Cursor = System.Windows.Forms.Cursors.Default;
             this.button_CardboardConnection.Location = new System.Drawing.Point(254, 18);
@@ -71,7 +71,7 @@
             // 
             // button_MtG
             // 
-            this.button_MtG.BackgroundImage = global::GameBreakersDBManagement.Properties.Resources.MTG_Logo;
+            this.button_MtG.BackgroundImage = global::GameBreakersDatabaseManagement.Properties.Resources.MTG_Logo;
             this.button_MtG.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button_MtG.Cursor = System.Windows.Forms.Cursors.Default;
             this.button_MtG.Location = new System.Drawing.Point(20, 20);

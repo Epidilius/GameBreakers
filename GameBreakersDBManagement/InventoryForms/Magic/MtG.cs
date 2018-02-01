@@ -23,13 +23,10 @@ using Microsoft.Scripting.Hosting;
 using System.Threading;
 using System.Globalization;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {
     public partial class MtG : Form
     {
-        DatabaseManager dbMan;
-        Thread bgThread;
-
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
         static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
@@ -40,44 +37,7 @@ namespace GameBreakersDBManagement
         public MtG()
         {
             InitializeComponent();
-            dbMan = DatabaseManager.GetInstace();
-            
-            //TODO: Compare to number of files in directory, if lower comapre each set to the DB, if missing add the set
-            if(dbMan.GetAllSets().Rows.Count == 0)
-            {
-                string[] files = Directory.GetFiles(@"C:\GameBreakersInventory\Set JSON\", "*.json", SearchOption.AllDirectories);
-                foreach(var file in files)
-                {
-                    AddNewSet(file);
-                }
-            }
-
-            BackgroundDataManager bgman = new BackgroundDataManager();
-            //bgman.Run();
-            bgThread = new Thread(new ThreadStart(bgman.Run));
-            bgThread.Start();
-
-            var applicationPath = @"C:\GameBreakersInventory\Application\";
-            var imageAppPath = applicationPath + @"mtg-image-fetcher\application.py";
-            var priceAppPath = applicationPath + @"mtg-price-fetcher\application.py";
-            run_cmd(@"C:\GameBreakersInventory\Application\startFetchers.bat");
-        }
-
-        private void run_cmd(string command)
-        {
-            ProcessStartInfo processInfo;
-            Process process;
-
-            processInfo = new ProcessStartInfo("cmd.exe", "/c " + command);
-            processInfo.CreateNoWindow = true;
-            processInfo.WorkingDirectory = @"C:\GameBreakersInventory";
-            processInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            processInfo.UseShellExecute = false;
-
-            process = Process.Start(processInfo);
-            process.WaitForExit();
-
-            process.Close();
+            //TODO: Get data from mtg-json
         }
 
         //BUTTONS
@@ -186,7 +146,7 @@ namespace GameBreakersDBManagement
         //SEARCH
         void SearchForCard(string name)
         {
-            var cards = dbMan.GetCard(name);
+            var cards = DatabaseManager.GetCard(name);
 
             if (cards.Rows.Count > 0)
             {
@@ -205,7 +165,7 @@ namespace GameBreakersDBManagement
                         if (newPrice != -1)
                         {
                             price = newPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(price.ToString()), false);
+                            DatabaseManager.UpdatePrice(name, set, float.Parse(price.ToString()), false);
                         }
                     }
                     if (foilPrice < 0)
@@ -214,7 +174,7 @@ namespace GameBreakersDBManagement
                         if (newFoilPrice != -1)
                         {
                             foilPrice = newFoilPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
+                            DatabaseManager.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
                         }
                     }
 
@@ -301,12 +261,12 @@ namespace GameBreakersDBManagement
                         { "price", price },
                         { "foilPrice", foilPrice } });
 
-                GetImageForCard(dbMan.GetMultiverseID(cardName, set));
+                GetImageForCard(DatabaseManager.GetMultiverseID(cardName, set));
             }
         }
         void SearchForSet(string set)
         {
-            var cards = dbMan.GetAllCardsForSet(set);
+            var cards = DatabaseManager.GetAllCardsForSet(set);
 
             if (cards.Rows.Count > 0)
             {
@@ -325,7 +285,7 @@ namespace GameBreakersDBManagement
                         if (newPrice != -1)
                         {
                             price = newPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(price.ToString()), false);
+                            DatabaseManager.UpdatePrice(name, set, float.Parse(price.ToString()), false);
                         }
                     }
                     if (foilPrice < 0)
@@ -334,7 +294,7 @@ namespace GameBreakersDBManagement
                         if (newFoilPrice != -1)
                         {
                             foilPrice = newFoilPrice;
-                            dbMan.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
+                            DatabaseManager.UpdatePrice(name, set, float.Parse(foilPrice.ToString()), true);
                         }
                     }
 
@@ -543,7 +503,7 @@ namespace GameBreakersDBManagement
                 }
             }
 
-            dbMan.UpdatePrice(name, set, price, foil);
+            DatabaseManager.UpdatePrice(name, set, price, foil);
             Logger.LogActivity("Updating price of card:\r\nFoil: " + foil + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + price);
             return price;
         }
@@ -678,19 +638,19 @@ namespace GameBreakersDBManagement
         void AddOneToInventory(string card, string set, bool foil)
         {
             //TODO: Do I like this single line function?
-            dbMan.AddOneToInventory(card, set, foil);
+            DatabaseManager.AddOneToInventory(card, set, foil);
         }
         void RemoveOneFromInventory(string card, string set, bool foil)
         {
-            dbMan.RemoveOneToInventory(card, set, foil);
+            DatabaseManager.RemoveOneToInventory(card, set, foil);
         }
         int GetInventory(string card, string set)
         {
-            return dbMan.GetInventory(card, set);
+            return DatabaseManager.GetInventory(card, set);
         }
         int GetFoilInventory(string card, string set)
         {
-            return dbMan.GetFoilInventory(card, set);
+            return DatabaseManager.GetFoilInventory(card, set);
         }
         //TODO: This in Python?
         void AddNewSet(string file)
@@ -709,9 +669,9 @@ namespace GameBreakersDBManagement
         }
         void AddExpansionToDatabase(JToken cardList, string expansion, string abbreviation)
         {
-            if (!dbMan.CheckIfSetExists(expansion))
+            if (!DatabaseManager.CheckIfSetExists(expansion))
             {
-                dbMan.AddNewSet(expansion, abbreviation, null);
+                DatabaseManager.AddNewSet(expansion, abbreviation, null);
                 Logger.LogActivity("Adding new set: " + expansion + " to databse");
             }
             foreach (var card in cardList)
@@ -719,7 +679,7 @@ namespace GameBreakersDBManagement
                 try
                 {
                     string multiverseID = PrepareString(card, "multiverseid");
-                    if (dbMan.CheckIfCardExists(multiverseID))
+                    if (DatabaseManager.CheckIfCardExists(multiverseID))
                         continue;
 
                     string layout = PrepareString(card, "layout");
@@ -745,7 +705,7 @@ namespace GameBreakersDBManagement
 
                     try
                     {
-                        dbMan.AddNewCard(layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory);
+                        DatabaseManager.AddNewCard(layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory);
                     }
                     catch (Exception ex)
                     {
@@ -801,7 +761,7 @@ namespace GameBreakersDBManagement
                 var set = dataGridView_CardData.Rows[dgvIndex].Cells[1].Value.ToString();
 
                 //TODO:: Get ID from name and set
-                GetImageForCard(dbMan.GetMultiverseID(card, set));
+                GetImageForCard(DatabaseManager.GetMultiverseID(card, set));
             }
             catch(Exception ex)
             {

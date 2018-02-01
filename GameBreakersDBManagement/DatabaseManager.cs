@@ -6,30 +6,15 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {
-    class DatabaseManager
+    public static class DatabaseManager
     {
-        string ConnectionString;
-        static DatabaseManager dbMan = null;
+        static string ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
         private static readonly object _syncObject = new object();
 
-        public DatabaseManager()
-        {
-            ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
-        }
-        public static DatabaseManager GetInstace()
-        {
-            if(dbMan == null)
-            {
-                dbMan = new DatabaseManager();
-            }
-
-            return dbMan;
-        }
-
         //Utility Functions
-        SqlCommand CreateCommand(string query)
+        static SqlCommand CreateCommand(string query)
         {
             SqlConnection con = new SqlConnection(ConnectionString);
 
@@ -40,20 +25,20 @@ namespace GameBreakersDBManagement
 
             return command;
         }
-        SqlDataAdapter CreateDataAdapter(SqlCommand command)
+        static SqlDataAdapter CreateDataAdapter(SqlCommand command)
         {
             SqlDataAdapter adapter = new SqlDataAdapter(command);
 
             return adapter;
         }
-        DataTable CreateDataTable(SqlDataAdapter dataAdapter)
+        static DataTable CreateDataTable(SqlDataAdapter dataAdapter)
         {
             DataTable table = new DataTable();
             dataAdapter.Fill(table);
 
             return table;
         }
-        DataTable RunQuery(string query)   //TODO: Rename this
+        static DataTable RunQuery(string query)   //TODO: Rename this
         {
             SqlCommand command = CreateCommand(query);
             SqlDataAdapter adapter = CreateDataAdapter(command);
@@ -63,21 +48,21 @@ namespace GameBreakersDBManagement
         }
 
         //Get Functions
-        public int GetInventory(string card, string set)
+        public static int GetInventory(string card, string set)
         {
             card = card.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
             var dataTable = RunQuery("SELECT INVENTORY FROM MtG WHERE NAME = \'" + card + "\' AND EXPANSION = \'" + set + "\'");
             return (int)dataTable.Rows[0]["inventory"];
         }
-        public int GetFoilInventory(string card, string set)
+        public static int GetFoilInventory(string card, string set)
         {
             card = card.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
             var dataTable = RunQuery("SELECT FOILINVENTORY FROM MtG WHERE NAME = \'" + card + "\' AND EXPANSION = \'" + set + "\'");            
             return (int)dataTable.Rows[0]["foilInventory"];
         }
-        public int GetMultiverseID(string card, string set)
+        public static int GetMultiverseID(string card, string set)
         {
             card = card.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
@@ -85,7 +70,7 @@ namespace GameBreakersDBManagement
             var id = dataTable.Rows[0]["multiverseID"].ToString();
             return Int32.Parse(id);
         }
-        public byte[] GetImageForCard(string card, string set)
+        public static byte[] GetImageForCard(string card, string set)
         {
             card = card.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
@@ -101,7 +86,7 @@ namespace GameBreakersDBManagement
 
             return data;
         }
-        public DataTable GetAllSets()
+        public static DataTable GetAllSets()
         {
             lock (_syncObject)
             {
@@ -109,7 +94,7 @@ namespace GameBreakersDBManagement
                 return dataTable;
             }
         }
-        public DataTable GetAllCardsForSet(string set)
+        public static DataTable GetAllCardsForSet(string set)
         {
             lock (_syncObject)
             {
@@ -118,16 +103,16 @@ namespace GameBreakersDBManagement
                 return dataTable;
             }
         }
-        public DataTable GetCard(string name)
+        public static DataTable GetCard(string name)
         {
             name = name.Replace(@"'", @"''");
             var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME = \'" + name + "\'");
             return dataTable;
         }
 
-        //TODO: Change these to use my utility funcs
+        //TODO: Change these to use my utility funcs. See my other project that uses this class
         //Modify Functions
-        public void AddOneToInventory(string name, string set, bool foil)
+        public static void AddOneToInventory(string name, string set, bool foil)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
@@ -160,7 +145,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void RemoveOneToInventory(string name, string set, bool foil)
+        public static void RemoveOneToInventory(string name, string set, bool foil)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
@@ -193,7 +178,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void UpdateInventory(string name, string set, int newAmount, int newFoilAmount)
+        public static void UpdateInventory(string name, string set, int newAmount, int newFoilAmount)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
@@ -219,7 +204,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void UpdatePrice(string name, string set, float price, bool foil)
+        public static void UpdatePrice(string name, string set, float price, bool foil)
         {
             lock (_syncObject)
             {
@@ -255,7 +240,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void UpdateSetID(string set, int id)
+        public static void UpdateSetID(string set, int id)
         {
             lock (_syncObject)
             {
@@ -290,21 +275,21 @@ namespace GameBreakersDBManagement
 
 
         //Check/Toggle Functions
-        public bool CheckIfCardExists(string multiverseID)
+        public static bool CheckIfCardExists(string multiverseID)
         {
             var dataTable = RunQuery("SELECT * FROM MtG WHERE MULTIVERSEID = \'" + multiverseID + "\'");
             
             if(dataTable.Rows.Count == 0) return false;
             return true;
         }
-        public bool CheckIfSetExists(string set)
+        public static bool CheckIfSetExists(string set)
         {
             var dataTable = RunQuery("SELECT * FROM Sets WHERE Name = \'" + set + "\'");
 
             if (dataTable.Rows.Count == 0) return false;
             return true;
         }
-        public bool IsSetLocked(string set)
+        public static bool IsSetLocked(string set)
         {
             var dataTable = RunQuery("SELECT Locked FROM Sets WHERE Name = \'" + set + "\'");
 
@@ -312,7 +297,7 @@ namespace GameBreakersDBManagement
 
             return data;
         }
-        public void LockSet(string set)
+        public static void LockSet(string set)
         {
             var cmdString = "UPDATE Sets SET Locked = @lock WHERE Name = \'" + set + "\'";
 
@@ -337,7 +322,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void UnlockSet(string set)
+        public static void UnlockSet(string set)
         {
             var cmdString = "UPDATE Sets SET Locked = @lock WHERE Name = \'" + set + "\'";
 
@@ -364,7 +349,7 @@ namespace GameBreakersDBManagement
         }
 
         //Create Functions
-        public void AddNewCard(string layout, string cardID, string name, string manaCost, int cmc, string colours, string rarity, string type, string types, string subtypes, string text, string flavourText, string power, string toughness, string imageName, string colourIdentity, string multiverseID, string set, float price, int inventory, float foilPrice, int foilInventory)
+        public static void AddNewCard(string layout, string cardID, string name, string manaCost, int cmc, string colours, string rarity, string type, string types, string subtypes, string text, string flavourText, string power, string toughness, string imageName, string colourIdentity, string multiverseID, string set, float price, int inventory, float foilPrice, int foilInventory)
         {
             var cmdString = "INSERT INTO MtG (layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory, priceLastUpdated, image) VALUES (@val0, @val1, @val2, @val3, @val4, @val5, @val6, @val7, @val8, @val9, @val10, @val11, @val12, @val13, @val14, @val15, @val16, @val17, @val18, @val19, @val20, @val21, @val22, @val23)";
 
@@ -411,7 +396,7 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        public void AddNewSet(string set, string abbreviation, Image symbol)
+        public static void AddNewSet(string set, string abbreviation, Image symbol)
         {
             var cmdString = "INSERT INTO Sets (name, abbreviation, symbol, locked) VALUES (@val1, @val2, @val3, @val4)";
 

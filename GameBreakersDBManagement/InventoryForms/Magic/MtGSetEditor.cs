@@ -9,16 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 
-namespace GameBreakersDBManagement
+namespace GameBreakersDatabaseManagement
 {
     public partial class SetEditorForm : Form
     {
-        DatabaseManager dbMan;
         string CurrentSet;
         public SetEditorForm()
         {
             InitializeComponent();
-            dbMan = DatabaseManager.GetInstace();
             CurrentSet = "";
             LoadSets();
         }
@@ -34,7 +32,7 @@ namespace GameBreakersDBManagement
 
                 try
                 {
-                    dbMan.UpdateInventory(name, set, inventory, foilInventory);
+                    DatabaseManager.UpdateInventory(name, set, inventory, foilInventory);
                 }
                 catch(Exception ex)
                 {
@@ -47,14 +45,14 @@ namespace GameBreakersDBManagement
 
         private void button_Close_Click(object sender, EventArgs e)
         {
-            if(CurrentSet != "") dbMan.UnlockSet(CurrentSet);
+            if(CurrentSet != "") DatabaseManager.UnlockSet(CurrentSet);
             Logger.LogActivity("Closing set editor");
             Close();
         }
 
         void LoadSets()
         {
-            var setList = dbMan.GetAllSets();
+            var setList = DatabaseManager.GetAllSets();
             
             foreach(DataRow set in setList.Rows)
             {
@@ -75,7 +73,7 @@ namespace GameBreakersDBManagement
 
         void GetImageForCard(string name, string set)
         {
-            var mid = dbMan.GetMultiverseID(name, set);
+            var mid = DatabaseManager.GetMultiverseID(name, set);
             var gathererURL = Regex.Replace(@"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card", "ABCDE", mid.ToString());
             LoadImageFromURL(gathererURL);
         }
@@ -112,16 +110,16 @@ namespace GameBreakersDBManagement
             if (String.IsNullOrWhiteSpace(comboBox_Sets.Text))
                 return;
 
-            if (dbMan.IsSetLocked(comboBox_Sets.Text))
+            if (DatabaseManager.IsSetLocked(comboBox_Sets.Text))
                 return; //TODO: Alert user?
 
 
             dataGridView_CardData.Rows.Clear();
-            var cards = dbMan.GetAllCardsForSet(comboBox_Sets.Text);
+            var cards = DatabaseManager.GetAllCardsForSet(comboBox_Sets.Text);
 
-            dbMan.LockSet(comboBox_Sets.Text);
+            DatabaseManager.LockSet(comboBox_Sets.Text);
             Logger.LogActivity("Locked set: " + comboBox_Sets.Text);
-            if (CurrentSet != "") dbMan.UnlockSet(CurrentSet);
+            if (CurrentSet != "") DatabaseManager.UnlockSet(CurrentSet);
             Logger.LogActivity("Unlocked set: " + CurrentSet);
             CurrentSet = comboBox_Sets.Text;
 
