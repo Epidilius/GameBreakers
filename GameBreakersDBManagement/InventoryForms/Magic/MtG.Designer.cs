@@ -51,7 +51,6 @@
             this.button_RemoveSingle = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button_EditSet = new System.Windows.Forms.Button();
-            this.button_SelectSet = new System.Windows.Forms.Button();
             this.pictureBox_Card = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -246,7 +245,6 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.button_EditSet);
-            this.groupBox3.Controls.Add(this.button_SelectSet);
             this.groupBox3.Location = new System.Drawing.Point(834, 12);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(222, 154);
@@ -264,16 +262,6 @@
             this.button_EditSet.UseVisualStyleBackColor = true;
             this.button_EditSet.Click += new System.EventHandler(this.button_EditSet_Click);
             // 
-            // button_SelectSet
-            // 
-            this.button_SelectSet.Location = new System.Drawing.Point(6, 16);
-            this.button_SelectSet.Name = "button_SelectSet";
-            this.button_SelectSet.Size = new System.Drawing.Size(210, 61);
-            this.button_SelectSet.TabIndex = 15;
-            this.button_SelectSet.Text = "Add Set";
-            this.button_SelectSet.UseVisualStyleBackColor = true;
-            this.button_SelectSet.Click += new System.EventHandler(this.button_SelectSet_Click);
-            // 
             // pictureBox_Card
             // 
             this.pictureBox_Card.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox_Card.Image")));
@@ -284,7 +272,7 @@
             this.pictureBox_Card.TabIndex = 2;
             this.pictureBox_Card.TabStop = false;
             // 
-            // Form1
+            // MtG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -293,7 +281,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBox_Card);
-            this.Name = "Form1";
+            this.Name = "MtG";
             this.Text = "GameBreakers M:tG Inventory";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -318,7 +306,6 @@
         private System.Windows.Forms.Button button_AddFoil;
         private System.Windows.Forms.Button button_RemoveFoil;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button_SelectSet;
         private System.Windows.Forms.Button button_EditSet;
         private System.Windows.Forms.DataGridViewTextBoxColumn CardName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Set;

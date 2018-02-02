@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,6 +11,7 @@ namespace GameBreakersDBManagement
 {
     public static class DatabaseManager
     {
+        //TODO: Refactor this class
         static string ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
         private static readonly object _syncObject = new object();
 
@@ -22,6 +24,54 @@ namespace GameBreakersDBManagement
             command.Connection = con;
             command.CommandType = CommandType.Text;
             command.CommandText = query;
+
+            return command;
+        }
+        static SqlCommand CreateCommandWithArgs(string query, Dictionary<string, object> values)
+        {
+            SqlConnection con = new SqlConnection(ConnectionString);
+
+            SqlCommand command = new SqlCommand();
+            command.Connection = con;
+            command.CommandType = CommandType.Text;
+
+            var firstHalf = "";
+            var secondHalf = "";
+
+            int i = 0;
+            var firstLoop = true;
+
+            foreach(KeyValuePair<string, object> value in values)
+            {
+                if(firstLoop)
+                {
+                    firstHalf += "(";
+                    secondHalf += "(";
+                    firstLoop = false;
+                }
+                else
+                {
+                    firstHalf += ", ";
+                    secondHalf += ", ";
+                }
+
+                firstHalf += value.Key;
+                secondHalf += "@val" + i.ToString();
+                i++;
+            }
+
+            firstHalf += ")";
+            secondHalf += ")";
+
+            query += firstHalf + " VALUES " + secondHalf;
+
+            command.CommandText = query;
+
+            foreach (KeyValuePair<string, object> value in values)
+            {
+                command.Parameters.AddWithValue("@val" + i.ToString(), value.Value.ToString());
+                i++;
+            }
 
             return command;
         }
@@ -40,11 +90,25 @@ namespace GameBreakersDBManagement
         }
         static DataTable RunQuery(string query)   //TODO: Rename this
         {
-            SqlCommand command = CreateCommand(query);
-            SqlDataAdapter adapter = CreateDataAdapter(command);
-            DataTable table = CreateDataTable(adapter);
+            lock (_syncObject)
+            {
+                SqlCommand command = CreateCommand(query);
+                SqlDataAdapter adapter = CreateDataAdapter(command);
+                DataTable table = CreateDataTable(adapter);
 
-            return table;
+                return table;
+            }
+        }
+        static DataTable RunQueryWithArgs(string query, Dictionary<string, object> values)  
+        {
+            lock (_syncObject)
+            {
+                SqlCommand command = CreateCommandWithArgs(query, values);
+                SqlDataAdapter adapter = CreateDataAdapter(command);
+                DataTable table = CreateDataTable(adapter);
+
+                return table;
+            }
         }
 
         //Get Functions
@@ -88,189 +152,86 @@ namespace GameBreakersDBManagement
         }
         public static DataTable GetAllSets()
         {
-            lock (_syncObject)
-            {
-                var dataTable = RunQuery("SELECT * FROM Sets");
-                return dataTable;
-            }
+            var dataTable = RunQuery("SELECT * FROM Sets");
+            return dataTable;
         }
         public static DataTable GetAllCardsForSet(string set)
         {
-            lock (_syncObject)
-            {
-                set = set.Replace(@"'", @"''");
-                var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
-                return dataTable;
-            }
+            set = set.Replace(@"'", @"''");
+            var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
+            return dataTable;
         }
         public static DataTable GetCard(string name)
         {
             name = name.Replace(@"'", @"''");
-            var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME = \'" + name + "\'");
+            var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME LIKE \'%" + name + "%\'");
             return dataTable;
         }
-
-        //TODO: Change these to use my utility funcs. See my other project that uses this class
+        
         //Modify Functions
         public static void AddOneToInventory(string name, string set, bool foil)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
-            var cmdString = "UPDATE MtG ";
+            var query = "UPDATE MtG ";
             if (foil)
             {
-                cmdString += "SET foilInventory = foilInventory + 1 ";
+                query += "SET foilInventory = foilInventory + 1 ";
             }
             else
             {
-                cmdString += "SET Inventory = Inventory + 1 ";
+                query += "SET Inventory = Inventory + 1 ";
             }
-            cmdString += "WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+            query += "WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to increase card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
-                    }
-                }
-            }
+            RunQuery(query);
         }
         public static void RemoveOneToInventory(string name, string set, bool foil)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
-            var cmdString = "UPDATE MtG ";
+            var query = "UPDATE MtG ";
             if (foil)
             {
-                cmdString += "SET foilInventory = foilInventory - 1 ";
+                query += "SET foilInventory = foilInventory - 1 ";
             }
             else
             {
-                cmdString += "SET Inventory = Inventory - 1 ";
+                query += "SET Inventory = Inventory - 1 ";
             }
-            cmdString += "WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+            query += "WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to decrease card: " + name + " from set: " + set + " by 1" + "\r\n" + e);
-                    }
-                }
-            }
+            RunQuery(query);
         }
         public static void UpdateInventory(string name, string set, int newAmount, int newFoilAmount)
         {
             name = name.Replace(@"'", @"''");
             set = set.Replace(@"'", @"''");
-            var cmdString = "UPDATE MtG SET foilInventory = " + newFoilAmount + ", inventory = " + newAmount;
+            var query = "UPDATE MtG SET foilInventory = " + newFoilAmount + ", inventory = " + newAmount;
 
-            cmdString += " WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+            query += " WHERE NAME = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to update inventory of card: " + name + " from set: " + set + " to: " + newAmount + " and foils to: " + newFoilAmount + "\r\n" + e);
-                    }
-                }
-            }
+            RunQuery(query);
         }
         public static void UpdatePrice(string name, string set, float price, bool foil)
         {
-            lock (_syncObject)
-            {
-                name = name.Replace(@"'", @"''");
-                set = set.Replace(@"'", @"''");
+            name = name.Replace(@"'", @"''");
+            set = set.Replace(@"'", @"''");
 
-                var cmdString = "";
-                if (foil)
-                    cmdString = "UPDATE MtG SET foilPrice = @price WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
-                else
-                    cmdString = "UPDATE MtG SET price = @price, priceLastUpdated = @time WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+            var query = "";
+            if (foil)
+                query = "UPDATE MtG SET foilPrice = @val0, priceLastUpdated = @val1 WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
+            else
+                query = "UPDATE MtG SET price = @val0, priceLastUpdated = @val1 WHERE name = \'" + name + "\' AND EXPANSION = \'" + set + "\'";
 
-                using (SqlConnection conn = new SqlConnection(ConnectionString))
-                {
-                    using (SqlCommand comm = new SqlCommand())
-                    {
-                        comm.Connection = conn;
-                        comm.CommandText = cmdString;
-
-                        comm.Parameters.AddWithValue("@price", price);
-                        comm.Parameters.AddWithValue("@time", DateTimeOffset.Now.ToUnixTimeMilliseconds());
-
-                        try
-                        {
-                            conn.Open();
-                            comm.ExecuteNonQuery();
-                        }
-                        catch (SqlException e)
-                        {
-                            Logger.LogError("Failed to update price of (foil: " + foil + ") card: " + name + " from set: " + set + " to: " + price + "\r\n" + e);
-                        }
-                    }
-                }
-            }
+            query = query.Replace("@val0", "\'" + price.ToString() + "\'");
+            query = query.Replace("@val1", "\'" + DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() + "\'");
+            RunQuery(query);
         }
         public static void UpdateSetID(string set, int id)
         {
-            lock (_syncObject)
-            {
-                //var dataTable = RunQuery("SELECT * FROM Sets WHERE SetID = \'" + id + "\'");
-                //if (dataTable.Rows.Count > 0)
-                //    return;
-
-                var cmdString = "UPDATE Sets SET SetID = @id WHERE name = \'" + set + "\'";
-
-                using (SqlConnection conn = new SqlConnection(ConnectionString))
-                {
-                    using (SqlCommand comm = new SqlCommand())
-                    {
-                        comm.Connection = conn;
-                        comm.CommandText = cmdString;
-
-                        comm.Parameters.AddWithValue("@id", id);
-
-                        try
-                        {
-                            conn.Open();
-                            comm.ExecuteNonQuery();
-                        }
-                        catch (SqlException e)
-                        {
-                            Logger.LogError("Error adding ID: " + id + " to set: " + set);
-                        }
-                    }
-                }
-            }
+            var query = "UPDATE Sets SET SetID = \'" + id.ToString() + "\' WHERE name = \'" + set + "\'";
+            RunQuery(query);
         }
 
 
@@ -299,106 +260,30 @@ namespace GameBreakersDBManagement
         }
         public static void LockSet(string set)
         {
-            var cmdString = "UPDATE Sets SET Locked = @lock WHERE Name = \'" + set + "\'";
-
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-
-                    comm.Parameters.AddWithValue("@lock", true);
-
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to lock set: " + set + "\r\n" + e);
-                    }
-                }
-            }
+            var query = "UPDATE Sets SET Locked = true WHERE Name = \'" + set + "\'";
+            RunQuery(query);
         }
         public static void UnlockSet(string set)
         {
-            var cmdString = "UPDATE Sets SET Locked = @lock WHERE Name = \'" + set + "\'";
-
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-
-                    comm.Parameters.AddWithValue("@lock", false);
-
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to unlock set: " + set + "\r\n" + e);
-                    }
-                }
-            }
+            var query = "UPDATE Sets SET Locked = false WHERE Name = \'" + set + "\'";
+            RunQuery(query);
         }
 
         //Create Functions
-        public static void AddNewCard(string layout, string cardID, string name, string manaCost, int cmc, string colours, string rarity, string type, string types, string subtypes, string text, string flavourText, string power, string toughness, string imageName, string colourIdentity, string multiverseID, string set, float price, int inventory, float foilPrice, int foilInventory)
+        public static void AddNewCard(string type, Dictionary<string, object> values)
         {
-            var cmdString = "INSERT INTO MtG (layout, cardID, name, manaCost, cmc, colours, rarity, type, types, subtypes, text, flavourText, power, toughness, imageName, colourIdentity, multiverseID, expansion, price, inventory, foilPrice, foilInventory, priceLastUpdated, image) VALUES (@val0, @val1, @val2, @val3, @val4, @val5, @val6, @val7, @val8, @val9, @val10, @val11, @val12, @val13, @val14, @val15, @val16, @val17, @val18, @val19, @val20, @val21, @val22, @val23)";
+            var query = "INSERT INTO ";
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
+            if (type.ToLower() == "mtg")
+                query += "MtG ";
+            else if (type.ToLower() == "non_mtg")
+                query += "Non_Mtg ";
 
-                    comm.Parameters.AddWithValue("@val0", layout);
-                    comm.Parameters.AddWithValue("@val1", cardID);
-                    comm.Parameters.AddWithValue("@val2", name);
-                    comm.Parameters.AddWithValue("@val3", manaCost);
-                    comm.Parameters.AddWithValue("@val4", cmc);
-                    comm.Parameters.AddWithValue("@val5", colours);
-                    comm.Parameters.AddWithValue("@val6", rarity);
-                    comm.Parameters.AddWithValue("@val7", type);
-                    comm.Parameters.AddWithValue("@val8", types);
-                    comm.Parameters.AddWithValue("@val9", subtypes);
-                    comm.Parameters.AddWithValue("@val10", text);
-                    comm.Parameters.AddWithValue("@val11", flavourText);
-                    comm.Parameters.AddWithValue("@val12", power);
-                    comm.Parameters.AddWithValue("@val13", toughness);
-                    comm.Parameters.AddWithValue("@val14", imageName);
-                    comm.Parameters.AddWithValue("@val15", colourIdentity);
-                    comm.Parameters.AddWithValue("@val16", multiverseID);
-                    comm.Parameters.AddWithValue("@val17", set);
-                    comm.Parameters.AddWithValue("@val18", price);
-                    comm.Parameters.AddWithValue("@val19", inventory);
-                    comm.Parameters.AddWithValue("@val20", foilPrice);
-                    comm.Parameters.AddWithValue("@val21", foilInventory);
-                    comm.Parameters.AddWithValue("@val22", -1);
-
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to add new card: " + name + " to set: " + set + "\r\n" + e);
-                    }
-                }
-            }
+            RunQueryWithArgs(query, values);
         }
-        public static void AddNewSet(string set, string abbreviation, Image symbol)
+        public static void AddNewSet(string name, string abbreviation, Image symbol, string type)
         {
-            var cmdString = "INSERT INTO Sets (name, abbreviation, symbol, locked) VALUES (@val1, @val2, @val3, @val4)";
+            var query = "INSERT INTO Sets ";
 
             //TODO: Use the CSS thing instead?
             byte[] symbolData = new byte[0];
@@ -408,29 +293,17 @@ namespace GameBreakersDBManagement
                 symbol.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                 symbolData = ms.ToArray();
             }
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand comm = new SqlCommand())
-                {
-                    comm.Connection = conn;
-                    comm.CommandText = cmdString;
-                    
-                    comm.Parameters.AddWithValue("@val1", set);
-                    comm.Parameters.AddWithValue("@val2", abbreviation);
-                    comm.Parameters.AddWithValue("@val3", symbolData);
-                    comm.Parameters.AddWithValue("@val4", false);
 
-                    try
-                    {
-                        conn.Open();
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (SqlException e)
-                    {
-                        Logger.LogError("Failed to add new set: " + set + "\r\n" + e);
-                    }
-                }
-            }
+            Dictionary<string, object> values = new Dictionary<string, object>()
+            {
+                { "name", name },
+                { "abbreviation", abbreviation },
+                { "symbol", symbolData },
+                { "locked", false },
+                { "type", type }
+            };
+
+            RunQueryWithArgs(query, values);
         }
     }
 }
