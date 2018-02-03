@@ -49,8 +49,7 @@ namespace GameBreakersDBManagement
             {
                 if (SearchThread.IsAlive) SearchThread.Abort();
                 SearchThread = new Thread(BeginSearchThread);
-                SearchThread.Start();
-                
+                SearchThread.Start();                
             }
             catch (Exception ex)
             {
@@ -159,7 +158,7 @@ namespace GameBreakersDBManagement
         }
         bool SearchDatabaseForCard(string name)
         {
-            var cards = DatabaseManager.GetCard(name);
+            var cards = DatabaseManager.GetMagicCard(name);
 
             if (cards.Rows.Count > 0)
             {
@@ -372,7 +371,10 @@ namespace GameBreakersDBManagement
         JToken ParseCardData(JObject cardData, string set = "")
         {
             //TODO: Seems to be failing on planeswalkers and lands
-            if (set == "" || cardData["card_set"]["name"].ToString() == set)
+            var cardSetName = cardData["card_set"]["name"].ToString();
+            if (cardSetName.Contains("Magic 2"))
+                cardSetName = cardSetName.Split(new string[] { " (" }, StringSplitOptions.None).First();
+            if (set == "" || cardSetName == set)
             {
                 return cardData;
             }
@@ -383,7 +385,7 @@ namespace GameBreakersDBManagement
                 return cardData;
             }
 
-            set = PrepString(set);
+            set = PrepareSetString(set);
 
             foreach (var card in sets)
             {
@@ -437,7 +439,7 @@ namespace GameBreakersDBManagement
                 var set = dataGridView_CardData.Rows[i].Cells[1].Value.ToString();
                 var price = float.Parse(dataGridView_CardData.Rows[i].Cells[5].Value.ToString());
                 var foilPrice = float.Parse(dataGridView_CardData.Rows[i].Cells[5].Value.ToString());
-
+                
                 ThreadPool.QueueUserWorkItem(UpdatePrice, new object[] { i, name, set, price, foilPrice });
             }
         }
@@ -445,7 +447,7 @@ namespace GameBreakersDBManagement
         //PRICE
         void BeginPriceUpdate()
         {
-            var query = "select name, expansion from MtG where (price < 0 or foilPrice < 0)";
+            var query = "select name, expansion from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0)";
             var cardsToUpdate = DatabaseManager.RunQuery(query);
 
             foreach(DataRow card in cardsToUpdate.Rows)
@@ -456,75 +458,73 @@ namespace GameBreakersDBManagement
                 if(name.Contains("("))
                     name = card[0].ToString().Split(new string[] { " (" }, StringSplitOptions.None ).First();
 
-                GetPrice(name, set, true);
-                GetPrice(name, set, false);
+                var prices = GetPrice(name, set);
+
+                DatabaseManager.UpdatePrice(name, set, prices["price"], false);
+                DatabaseManager.UpdatePrice(name, set, prices["foilPrice"], true);
             }
         }
-        float GetPrice(string name, string set, bool foil)
+        Dictionary<string, float> GetPrice(string name, string set)
         {
-            float price = -1;
+            set = PrepareSetString(set);
+            Dictionary<string, float> prices = new Dictionary<string, float> { { "price", -1 }, { "foilPrice", -1 } };
 
             var id = GetMTGStocksID(name);
             if (id == -1)
             {
                 //FAIL
-                return -1;
+                return prices;
             }
 
             var cardObject = GetMTGStocksData(id, name, set);
             if (cardObject == null)
             {
                 //FAIL
-                return -1;
+                return prices;
             }
 
             var card = ParseCardData(cardObject, set);
             if (card == null)
             {
                 //FAIL
-                return -1;
+                return prices;
             }
 
-
-            if (!foil)
-                try
-                {
-                    price = float.Parse(card["latest_price"]["avg"].ToString());    //TODO: Market price?
-                }
-                catch (Exception ex)
-                {
-                    price = float.Parse(card["latest_price"].ToString());
-                }
-            else
+            try
+            {
+                prices["price"] = float.Parse(card["latest_price"]["avg"].ToString());    //TODO: Market price?
+            }
+            catch (Exception ex)
+            {
+                prices["price"] = float.Parse(card["latest_price"].ToString());
+            }
+            
+            try
+            {
+                var strprice = card["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
+                if (strprice == "") prices["foilPrice"] = 0;
+                else prices["foilPrice"] = float.Parse(strprice);
+            }
+            catch (Exception ex)
             {
                 try
                 {
-                    var strprice = card["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
-                    if (strprice == "") price = 0;
-                    else price = float.Parse(strprice);
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        var nestedCardObject = GetMTGStocksData(Int32.Parse(card["id"].ToString()), name, set);
-                        var nestedCardData = ParseCardData(nestedCardObject);
+                    var nestedCardObject = GetMTGStocksData(Int32.Parse(card["id"].ToString()), name, set);
+                    var nestedCardData = ParseCardData(nestedCardObject);
 
-                        var strprice = nestedCardData["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
-                        if (strprice == "") price = 0;
-                        else price = float.Parse(strprice);
-                    }
-                    catch (Exception exNested)
-                    {
-                        //No foil
-                        price = 0;
-                    }
+                    var strprice = nestedCardData["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
+                    if (strprice == "") prices["foilPrice"] = 0;
+                    else prices["foilPrice"] = float.Parse(strprice);
+                }
+                catch (Exception exNested)
+                {
+                    //No foil
+                    prices["foilPrice"] = 0;
                 }
             }
 
-            DatabaseManager.UpdatePrice(name, set, price, foil);
-            Logger.LogActivity("Updating price of card:\r\nFoil: " + foil + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + price);
-            return price;
+            Logger.LogActivity("Updating price of card:" + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + prices);
+            return prices;
         }
         void UpdatePrice(object state)
         {
@@ -535,22 +535,18 @@ namespace GameBreakersDBManagement
             var price = float.Parse(args[3].ToString());
             var foilPrice = float.Parse(args[4].ToString());
             
-            if (price < 0)
+            if (price < 0 || foilPrice < 0)
             {
-                var newPrice = GetPrice(name, set, false);
-                if (newPrice != -1)
+                var newPrices = GetPrice(name, set);
+                if (newPrices["price"] != -1)
                 {
-                    price = newPrice;
+                    price = newPrices["price"];
                     DatabaseManager.UpdatePrice(name, set, price, false);
                     UpdatePriceOnGUI(i, price, false);
                 }
-            }
-            if (foilPrice < 0)
-            {
-                var newFoilPrice = GetPrice(name, set, true);
-                if (newFoilPrice != -1)
+                if (newPrices["foilPrice"] != -1)
                 {
-                    foilPrice = newFoilPrice;
+                    foilPrice = newPrices["foilPrice"];
                     DatabaseManager.UpdatePrice(name, set, foilPrice, true);
                     UpdatePriceOnGUI(i, price, true);
                 }
@@ -565,20 +561,29 @@ namespace GameBreakersDBManagement
                 return;
             }
 
-            //if (!SearchThread.IsAlive)
-            //    return;
+            if (!SearchThread.IsAlive)
+                return;
 
             if (!foil)   dataGridView_CardData.Rows[row].Cells[5].Value = price;
             else        dataGridView_CardData.Rows[row].Cells[6].Value = price;
         }
 
         //UTIL
-        string PrepString(string dataStr)
+        string PrepareSetString(string dataStr)
         {
             var loweredSet = dataStr.ToLower();
             var finalName = dataStr;
 
-            if (loweredSet.Contains("fourth"))
+            if(loweredSet.Contains("magic: the gathering-"))
+            {
+                finalName = dataStr.Replace("Magic: the Gathering-", String.Empty);
+            }
+            else if(loweredSet.Contains("Magic 2"))
+            {
+                var splitName = finalName.Split(' ');
+                finalName = splitName[0] + " " + splitName[1];
+            }
+            else if (loweredSet.Contains("fourth"))
             {
                 finalName = dataStr.Replace("Fourth", "4th");
             }

@@ -172,10 +172,10 @@ namespace GameBreakersDBManagement
             var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
             return dataTable;
         }
-        public static DataTable GetCard(string name)
+        public static DataTable GetMagicCard(string name)
         {
             name = name.Replace(@"'", @"''");
-            var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME LIKE \'%" + name + "%\'");
+            var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME LIKE \'%" + name + "%\' and onlineOnlyVersion = 0");
             return dataTable;
         }
         
@@ -278,15 +278,20 @@ namespace GameBreakersDBManagement
         }
         public static void LockSet(string set)
         {
-            var query = "UPDATE Sets SET Locked = true WHERE Name = \'" + set + "\'";
+            var query = "UPDATE Sets SET Locked = 1 WHERE Name = \'" + set + "\'";
             RunQuery(query);
         }
         public static void UnlockSet(string set)
         {
-            var query = "UPDATE Sets SET Locked = false WHERE Name = \'" + set + "\'";
+            var query = "UPDATE Sets SET Locked = 0 WHERE Name = \'" + set + "\'";
             RunQuery(query);
         }
-        
+        public static void UnlockAllSets()
+        {
+            var query = "UPDATE Sets SET Locked = 0";
+            RunQuery(query);
+        }
+
         //Create Functions
         public static void AddNewCard(string type, Dictionary<string, object> values)
         {

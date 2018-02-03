@@ -126,13 +126,19 @@ namespace GameBreakersDBManagement
             foreach (DataRow card in cards.Rows)
             {
                 var name = card[3];
-                var set = card[18];
+                var set = card[17];
                 var rarity = card[7];
-                var inventory = card[20];
-                var foilInventory = card[22];
+                var inventory = card[19];
+                var foilInventory = card[21];
 
                 dataGridView_CardData.Rows.Add(name, set, rarity, inventory, foilInventory);
             }
+        }
+
+        private void SetEditorForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (CurrentSet != "") DatabaseManager.UnlockSet(CurrentSet);
+            Logger.LogActivity("Closing set editor");
         }
     }
 }

@@ -20,6 +20,7 @@ namespace GameBreakersDBManagement
             Logger.Prep();
             MtGForm = new MtG();
             CCForm = new CardboardConnection();
+            DatabaseManager.UnlockAllSets();
 
             //TODO: Query MtG Json for data. Do this here or in MtG form?
         }

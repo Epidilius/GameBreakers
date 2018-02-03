@@ -30,23 +30,6 @@
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.button_AddSingle = new System.Windows.Forms.Button();
-            this.button_RemoveSingle = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button_SelectSet = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.textBox_Name = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button_Name = new System.Windows.Forms.Button();
-            this.textBox_Team = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button_Team = new System.Windows.Forms.Button();
-            this.button_Number = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox_Number = new System.Windows.Forms.TextBox();
-            this.button_Set = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox_Set = new System.Windows.Forms.TextBox();
             this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,6 +37,23 @@
             this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button_AddSingle = new System.Windows.Forms.Button();
+            this.button_RemoveSingle = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button_SelectSet = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button_Set = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_Set = new System.Windows.Forms.TextBox();
+            this.button_Number = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox_Number = new System.Windows.Forms.TextBox();
+            this.button_Team = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_Team = new System.Windows.Forms.TextBox();
+            this.button_Name = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox_Name = new System.Windows.Forms.TextBox();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -88,6 +88,48 @@
             this.dataGridView_CardData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_CardData.Size = new System.Drawing.Size(798, 231);
             this.dataGridView_CardData.TabIndex = 12;
+            // 
+            // Category
+            // 
+            this.Category.HeaderText = "Category";
+            this.Category.Name = "Category";
+            this.Category.ReadOnly = true;
+            // 
+            // Number
+            // 
+            this.Number.HeaderText = "Number";
+            this.Number.Name = "Number";
+            this.Number.ReadOnly = true;
+            // 
+            // PlayerName
+            // 
+            this.PlayerName.HeaderText = "Name";
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.ReadOnly = true;
+            // 
+            // Team
+            // 
+            this.Team.HeaderText = "Team";
+            this.Team.Name = "Team";
+            this.Team.ReadOnly = true;
+            // 
+            // PrintRun
+            // 
+            this.PrintRun.HeaderText = "Print Run";
+            this.PrintRun.Name = "PrintRun";
+            this.PrintRun.ReadOnly = true;
+            // 
+            // Odds
+            // 
+            this.Odds.HeaderText = "Odds";
+            this.Odds.Name = "Odds";
+            this.Odds.ReadOnly = true;
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            this.Inventory.ReadOnly = true;
             // 
             // button_AddSingle
             // 
@@ -150,57 +192,32 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Search";
             // 
-            // textBox_Name
+            // button_Set
             // 
-            this.textBox_Name.Location = new System.Drawing.Point(6, 32);
-            this.textBox_Name.Name = "textBox_Name";
-            this.textBox_Name.Size = new System.Drawing.Size(571, 20);
-            this.textBox_Name.TabIndex = 0;
+            this.button_Set.Location = new System.Drawing.Point(583, 157);
+            this.button_Set.Name = "button_Set";
+            this.button_Set.Size = new System.Drawing.Size(226, 41);
+            this.button_Set.TabIndex = 11;
+            this.button_Set.Text = "Search Set";
+            this.button_Set.UseVisualStyleBackColor = true;
+            this.button_Set.Click += new System.EventHandler(this.button_Set_Click);
             // 
-            // label1
+            // label4
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "By Name:";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 157);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "By Set:";
             // 
-            // button_Name
+            // textBox_Set
             // 
-            this.button_Name.Location = new System.Drawing.Point(583, 16);
-            this.button_Name.Name = "button_Name";
-            this.button_Name.Size = new System.Drawing.Size(226, 41);
-            this.button_Name.TabIndex = 2;
-            this.button_Name.Text = "Search Name";
-            this.button_Name.UseVisualStyleBackColor = true;
-            this.button_Name.Click += new System.EventHandler(this.button_Name_Click);
-            // 
-            // textBox_Team
-            // 
-            this.textBox_Team.Location = new System.Drawing.Point(6, 79);
-            this.textBox_Team.Name = "textBox_Team";
-            this.textBox_Team.Size = new System.Drawing.Size(571, 20);
-            this.textBox_Team.TabIndex = 3;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 63);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "By Team:";
-            // 
-            // button_Team
-            // 
-            this.button_Team.Location = new System.Drawing.Point(583, 63);
-            this.button_Team.Name = "button_Team";
-            this.button_Team.Size = new System.Drawing.Size(226, 41);
-            this.button_Team.TabIndex = 5;
-            this.button_Team.Text = "Search Team";
-            this.button_Team.UseVisualStyleBackColor = true;
-            this.button_Team.Click += new System.EventHandler(this.button_Team_Click);
+            this.textBox_Set.Location = new System.Drawing.Point(6, 173);
+            this.textBox_Set.Name = "textBox_Set";
+            this.textBox_Set.Size = new System.Drawing.Size(571, 20);
+            this.textBox_Set.TabIndex = 9;
+            this.textBox_Set.Enter += new System.EventHandler(this.textBox_Set_Enter);
             // 
             // button_Number
             // 
@@ -227,74 +244,61 @@
             this.textBox_Number.Name = "textBox_Number";
             this.textBox_Number.Size = new System.Drawing.Size(571, 20);
             this.textBox_Number.TabIndex = 6;
+            this.textBox_Number.Enter += new System.EventHandler(this.textBox_Number_Enter);
             // 
-            // button_Set
+            // button_Team
             // 
-            this.button_Set.Location = new System.Drawing.Point(583, 157);
-            this.button_Set.Name = "button_Set";
-            this.button_Set.Size = new System.Drawing.Size(226, 41);
-            this.button_Set.TabIndex = 11;
-            this.button_Set.Text = "Search Set";
-            this.button_Set.UseVisualStyleBackColor = true;
-            this.button_Set.Click += new System.EventHandler(this.button_Set_Click);
+            this.button_Team.Location = new System.Drawing.Point(583, 63);
+            this.button_Team.Name = "button_Team";
+            this.button_Team.Size = new System.Drawing.Size(226, 41);
+            this.button_Team.TabIndex = 5;
+            this.button_Team.Text = "Search Team";
+            this.button_Team.UseVisualStyleBackColor = true;
+            this.button_Team.Click += new System.EventHandler(this.button_Team_Click);
             // 
-            // label4
+            // label2
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 157);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "By Set:";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 63);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "By Team:";
             // 
-            // textBox_Set
+            // textBox_Team
             // 
-            this.textBox_Set.Location = new System.Drawing.Point(6, 173);
-            this.textBox_Set.Name = "textBox_Set";
-            this.textBox_Set.Size = new System.Drawing.Size(571, 20);
-            this.textBox_Set.TabIndex = 9;
+            this.textBox_Team.Location = new System.Drawing.Point(6, 79);
+            this.textBox_Team.Name = "textBox_Team";
+            this.textBox_Team.Size = new System.Drawing.Size(571, 20);
+            this.textBox_Team.TabIndex = 3;
+            this.textBox_Team.Enter += new System.EventHandler(this.textBox_Team_Enter);
             // 
-            // Category
+            // button_Name
             // 
-            this.Category.HeaderText = "Category";
-            this.Category.Name = "Category";
-            this.Category.ReadOnly = true;
+            this.button_Name.Location = new System.Drawing.Point(583, 16);
+            this.button_Name.Name = "button_Name";
+            this.button_Name.Size = new System.Drawing.Size(226, 41);
+            this.button_Name.TabIndex = 2;
+            this.button_Name.Text = "Search Name";
+            this.button_Name.UseVisualStyleBackColor = true;
+            this.button_Name.Click += new System.EventHandler(this.button_Name_Click);
             // 
-            // Number
+            // label1
             // 
-            this.Number.HeaderText = "Number";
-            this.Number.Name = "Number";
-            this.Number.ReadOnly = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "By Name:";
             // 
-            // PlayerName
+            // textBox_Name
             // 
-            this.PlayerName.HeaderText = "Name";
-            this.PlayerName.Name = "PlayerName";
-            this.PlayerName.ReadOnly = true;
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            this.Team.ReadOnly = true;
-            // 
-            // PrintRun
-            // 
-            this.PrintRun.HeaderText = "Print Run";
-            this.PrintRun.Name = "PrintRun";
-            this.PrintRun.ReadOnly = true;
-            // 
-            // Odds
-            // 
-            this.Odds.HeaderText = "Odds";
-            this.Odds.Name = "Odds";
-            this.Odds.ReadOnly = true;
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            this.Inventory.ReadOnly = true;
+            this.textBox_Name.Location = new System.Drawing.Point(6, 32);
+            this.textBox_Name.Name = "textBox_Name";
+            this.textBox_Name.Size = new System.Drawing.Size(571, 20);
+            this.textBox_Name.TabIndex = 0;
+            this.textBox_Name.Enter += new System.EventHandler(this.textBox_Name_Enter);
             // 
             // CardboardConnection
             // 

@@ -147,7 +147,7 @@
             this.button_LoadSet.UseVisualStyleBackColor = true;
             this.button_LoadSet.Click += new System.EventHandler(this.button_LoadSet_Click);
             // 
-            // Form2
+            // SetEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -159,8 +159,9 @@
             this.Controls.Add(this.button_Close);
             this.Controls.Add(this.button_Save);
             this.Controls.Add(this.dataGridView_CardData);
-            this.Name = "Form2";
+            this.Name = "SetEditorForm";
             this.Text = "Set Editor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SetEditorForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Card)).EndInit();
             this.ResumeLayout(false);

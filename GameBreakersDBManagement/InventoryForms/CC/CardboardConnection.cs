@@ -253,5 +253,22 @@ namespace GameBreakersDBManagement
 
             return data;
         }
+
+        private void textBox_Name_Enter(object sender, EventArgs e)
+        {
+            AcceptButton = button_Name;
+        }
+        private void textBox_Team_Enter(object sender, EventArgs e)
+        {
+            AcceptButton = button_Team;
+        }
+        private void textBox_Number_Enter(object sender, EventArgs e)
+        {
+            AcceptButton = button_Number;
+        }
+        private void textBox_Set_Enter(object sender, EventArgs e)
+        {
+            AcceptButton = button_Set;
+        }
     }
 }
