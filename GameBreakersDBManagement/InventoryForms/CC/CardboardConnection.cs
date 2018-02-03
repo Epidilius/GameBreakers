@@ -27,21 +27,9 @@ namespace GameBreakersDBManagement
 {
     public partial class CardboardConnection : Form
     {
-        //TODO: Use background threads in MtG form
+        //TODO: Update database to use one table, cards?
+        //TODO: Update files to call a function in DBMan (CreateQuery) then call RunQuery
         //TODO: Save to database in ccscraper
-        //TODO: Clean up code. Start over? 
-        //TODO: Clean up designer
-        //TODO: CLean up Database manager
-        //TODO: Get rid of network calls
-        //TODO: Only query the database for stuff, not internet
-        //TODO: Remove all the static vars, I don't need them
-        //TODO: Change rows in grid view
-
-        static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
-        static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
-        static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
-        static string LOCAL_IMAGE_PATH = @"C:\GameBreakersInventory\Images\";
-        static string IMAGE_TYPE = ".jpg";
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
         //string category, string number, string name, string team, string amount, string odds, string other, string inventory
@@ -49,27 +37,35 @@ namespace GameBreakersDBManagement
         {
             InitializeComponent();
         }
-        
+
         //BUTTONS
         private void button_Name_Click(object sender, EventArgs e)
         {
-            //TODO: Search Database for cards
-        }
-        private void button_Number_Click(object sender, EventArgs e)
-        {
-            //TODO: Same as name search
-        }
-        private void button_Set_Click(object sender, EventArgs e)
-        {
+            var query = "SELECT * FROM Non_Mtg WHERE NAME LIKE \'%" + textBox_Name.Text + "%\'";
+            var matches = DatabaseManager.RunQuery(query);
 
+            AddTableToRow(matches);
         }
         private void button_Team_Click(object sender, EventArgs e)
         {
+            var query = "SELECT * FROM Non_Mtg WHERE TEAM LIKE \'%" + textBox_Team.Text + "%\'";
+            var matches = DatabaseManager.RunQuery(query);
 
+            AddTableToRow(matches);
         }
-        private void button_Search_Click(object sender, EventArgs e)
+        private void button_Number_Click(object sender, EventArgs e)
         {
+            var query = "SELECT * FROM Non_Mtg WHERE NUMBER LIKE \'" + textBox_Number.Text + "\'";
+            var matches = DatabaseManager.RunQuery(query);
 
+            AddTableToRow(matches);
+        }
+        private void button_Set_Click(object sender, EventArgs e)
+        {
+            var query = "SELECT * FROM Non_Mtg WHERE CATEGORY LIKE \'%" + textBox_Set.Text + "%\'";
+            var matches = DatabaseManager.RunQuery(query);
+
+            AddTableToRow(matches);
         }
         private void button_SelectSet_Click(object sender, EventArgs e)
         {
@@ -80,30 +76,30 @@ namespace GameBreakersDBManagement
         {
             var index = dataGridView_CardData.CurrentCell.RowIndex;
 
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
+            var name = dataGridView_CardData.Rows[index].Cells[2].Value.ToString();
+            var category = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
 
-            RemoveOneFromInventory(name, set, false);
+            RemoveOneFromInventory(name, category);
 
-            Logger.LogActivity("Removed one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Removed one of card: " + name + " of set " + category + " from inventory");
 
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) - 1;
+            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[6].Value.ToString()) - 1;
             if (value < 0) value = 0;
-            dataGridView_CardData.Rows[index].Cells[3].Value = value;
+            dataGridView_CardData.Rows[index].Cells[6].Value = value;
         }
         private void button_AddSingle_Click(object sender, EventArgs e)
         {
             var index = dataGridView_CardData.CurrentCell.RowIndex;
 
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
+            var name = dataGridView_CardData.Rows[index].Cells[2].Value.ToString();
+            var category = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
 
-            AddOneToInventory(name, set, false);
+            AddOneToInventory(name, category);
 
-            Logger.LogActivity("Added one of card: " + name + " of set " + set + " from inventory");
+            Logger.LogActivity("Added one of card: " + name + " of set " + category + " from inventory");
 
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) + 1;
-            dataGridView_CardData.Rows[index].Cells[3].Value = value;
+            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[6].Value.ToString()) + 1;
+            dataGridView_CardData.Rows[index].Cells[6].Value = value;
         }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
@@ -111,46 +107,36 @@ namespace GameBreakersDBManagement
             SetEditorForm setEditor = new SetEditorForm();
             setEditor.Show();
         }
-
-        //SEARCH
-        void SearchForCard(string name)
-        {
-            var cards = DatabaseManager.GetCard(name);
-
-            if (cards.Rows.Count < 1)
-                return;
-
-            foreach (DataRow card in cards.Rows)
-            {
-                var category = card[18].ToString().ToString();
-                var number = card[7].ToString();
-                var team = float.Parse(card[22].ToString());
-                var printRun = float.Parse(card[19].ToString());
-                var odds = float.Parse(card[21].ToString());
-                var other = "";
-                var inventory = "";
-                
-                name = card[3].ToString();
-                AddCardToRow(new Dictionary<string, object> {
-                    { "category", category },
-                    { "number", number},
-                    { "name", name},
-                    { "team", team},
-                    { "printRun", printRun},
-                    { "odds", odds },
-                    { "other", other},
-                    { "inventory", inventory} });
-            }            
-        }
-
+        
         //UTIL
-        private void textBox_Name_GotFocus(object sender, EventArgs e)
+        void AddTableToRow(DataTable table)
         {
-            AcceptButton = button_Name;
-        }
-        private void textBox_Set_GotFocus(object sender, EventArgs e)
-        {
-            AcceptButton = button_Number;
+            dataGridView_CardData.Rows.Clear();
+            if (table.Rows.Count > 1)
+            {
+                foreach (DataRow card in table.Rows)
+                {
+                    Dictionary<string, object> values = new Dictionary<string, object>();
+
+                    var category    = card[1];
+                    var number      = card[2];
+                    var name        = card[3];
+                    var team        = card[4];
+                    var printRun    = card[5];
+                    var odds        = card[6];
+                    var inventory   = card[7];
+
+                    values.Add("category", category);
+                    values.Add("number", number);
+                    values.Add("name", name);
+                    values.Add("team", team);
+                    values.Add("printRun", printRun);
+                    values.Add("odds", odds);
+                    values.Add("inventory", inventory);
+
+                    AddCardToRow(values);
+                }
+            }
         }
         void AddCardToRow(Dictionary<string, object> cardData)
         {
@@ -167,25 +153,34 @@ namespace GameBreakersDBManagement
             var team        = cardData["team"];
             var printRun    = cardData["printRun"];
             var odds        = cardData["odds"];
-            var other       = cardData["other"];
             var inventory   = cardData["inventory"];
 
-            dataGridView_CardData.Rows.Add(category, number, name, team, printRun, odds, other, inventory);
+            dataGridView_CardData.Rows.Add(category, number, name, team, printRun, odds, inventory);
         }
         
         //INVENTORY
-        void AddOneToInventory(string card, string set, bool foil)
+        void AddOneToInventory(string name, string category)
         {
-            //TODO: Do I like this single line function?
-            DatabaseManager.AddOneToInventory(card, set, foil);
+            var query = "UPDATE Non_Mtg SET INVENTORY = INVENTORY + 1 WHERE NAME = \'" + name + "\' AND CATEGORY = \'" + category + "\'";
+            DatabaseManager.RunQuery(query);
         }
-        void RemoveOneFromInventory(string card, string set, bool foil)
+        void RemoveOneFromInventory(string name, string category)
         {
-            DatabaseManager.RemoveOneToInventory(card, set, foil);
+            try
+            {
+                var query = "UPDATE Non_Mtg SET INVENTORY = INVENTORY - 1 WHERE NAME = \'" + name + "\' AND CATEGORY = \'" + category + "\'";
+                DatabaseManager.RunQuery(query);
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
-        int GetInventory(string card, string set)
+        int GetInventory(string name, string category)
         {
-            return DatabaseManager.GetInventory(card, set);
+            var query = "SELECT INVENTORY FROM Non_Mtg WHERE NAME = \'" + name + "\' AND CATEGORY = \'" + category + "\'";
+            var dataTable = DatabaseManager.RunQuery(query);
+            return (int)dataTable.Rows[0]["inventory"];
         }
         void AddNewSet(string file)
         {
@@ -246,6 +241,7 @@ namespace GameBreakersDBManagement
         string PrepareString(JToken card, string index)
         {
             var data = "";
+
             try
             {
                 data = card[index].ToString();
@@ -253,20 +249,6 @@ namespace GameBreakersDBManagement
             catch (Exception ex)
             {
                 //Logger.LogError("Failed to parse data: " + index + " for card: " + card["name"].ToString());
-            }
-
-            try
-            {
-                if (index == "colors" || index == "types" || index == "subtypes" || index == "colorIdentity" || index == "printings")
-                    data = Regex.Replace(data, @"[^0-9a-zA-Z,]+", "");
-                if (index == "printings")
-                {
-                    data = data.Split(',').Last();
-                }
-            }
-            catch (Exception ex)
-            {
-                
             }
 
             return data;

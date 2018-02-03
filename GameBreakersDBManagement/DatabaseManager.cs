@@ -60,6 +60,7 @@ namespace GameBreakersDBManagement
                 i++;
             }
 
+            i = 0;
             firstHalf += ")";
             secondHalf += ")";
 
@@ -69,7 +70,17 @@ namespace GameBreakersDBManagement
 
             foreach (KeyValuePair<string, object> value in values)
             {
-                command.Parameters.AddWithValue("@val" + i.ToString(), value.Value.ToString());
+                try
+                {
+                    if(!String.IsNullOrWhiteSpace(value.Value.ToString()))
+                        command.Parameters.AddWithValue("@val" + i.ToString(), value.Value);
+                    else
+                        command.Parameters.AddWithValue("@val" + i.ToString(), "");
+                }
+                catch(Exception ex)
+                {
+                    command.Parameters.AddWithValue("@val" + i.ToString(), "");
+                }
                 i++;
             }
 
@@ -88,7 +99,7 @@ namespace GameBreakersDBManagement
 
             return table;
         }
-        static DataTable RunQuery(string query)   //TODO: Rename this
+        public static DataTable RunQuery(string query)   //TODO: Rename this
         {
             lock (_syncObject)
             {
@@ -99,7 +110,7 @@ namespace GameBreakersDBManagement
                 return table;
             }
         }
-        static DataTable RunQueryWithArgs(string query, Dictionary<string, object> values)  
+        public static DataTable RunQueryWithArgs(string query, Dictionary<string, object> values)  
         {
             lock (_syncObject)
             {
@@ -250,6 +261,13 @@ namespace GameBreakersDBManagement
             if (dataTable.Rows.Count == 0) return false;
             return true;
         }
+        public static bool CheckIfSetExistsByAbbreviation(string setAbbr)
+        {
+            var dataTable = RunQuery("SELECT * FROM Sets WHERE Abbreviation = \'" + setAbbr + "\'");
+
+            if (dataTable.Rows.Count == 0) return false;
+            return true;
+        }
         public static bool IsSetLocked(string set)
         {
             var dataTable = RunQuery("SELECT Locked FROM Sets WHERE Name = \'" + set + "\'");
@@ -268,7 +286,7 @@ namespace GameBreakersDBManagement
             var query = "UPDATE Sets SET Locked = false WHERE Name = \'" + set + "\'";
             RunQuery(query);
         }
-
+        
         //Create Functions
         public static void AddNewCard(string type, Dictionary<string, object> values)
         {

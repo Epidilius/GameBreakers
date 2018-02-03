@@ -39,36 +39,32 @@
             this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Other = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardList)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox_URL
             // 
-            this.textBox_URL.Location = new System.Drawing.Point(18, 45);
-            this.textBox_URL.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.textBox_URL.Location = new System.Drawing.Point(12, 29);
             this.textBox_URL.Name = "textBox_URL";
-            this.textBox_URL.Size = new System.Drawing.Size(1506, 26);
+            this.textBox_URL.Size = new System.Drawing.Size(1005, 20);
             this.textBox_URL.TabIndex = 0;
             this.textBox_URL.Text = "https://www.cardboardconnection.com/2017-panini-limited-football-nfl-cards";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 20);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(13, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 20);
+            this.label1.Size = new System.Drawing.Size(29, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "URL";
             // 
             // button_Scrape
             // 
-            this.button_Scrape.Location = new System.Drawing.Point(1534, 18);
-            this.button_Scrape.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.button_Scrape.Location = new System.Drawing.Point(1023, 12);
             this.button_Scrape.Name = "button_Scrape";
-            this.button_Scrape.Size = new System.Drawing.Size(238, 128);
+            this.button_Scrape.Size = new System.Drawing.Size(159, 83);
             this.button_Scrape.TabIndex = 2;
             this.button_Scrape.Text = "Collect Data";
             this.button_Scrape.UseVisualStyleBackColor = true;
@@ -76,10 +72,9 @@
             // 
             // button_Save
             // 
-            this.button_Save.Location = new System.Drawing.Point(1534, 155);
-            this.button_Save.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.button_Save.Location = new System.Drawing.Point(1023, 101);
             this.button_Save.Name = "button_Save";
-            this.button_Save.Size = new System.Drawing.Size(238, 128);
+            this.button_Save.Size = new System.Drawing.Size(159, 83);
             this.button_Save.TabIndex = 3;
             this.button_Save.Text = "Save Data";
             this.button_Save.UseVisualStyleBackColor = true;
@@ -95,12 +90,10 @@
             this.Team,
             this.PrintRun,
             this.Odds,
-            this.Other,
             this.Inventory});
-            this.dataGridView_CardList.Location = new System.Drawing.Point(20, 86);
-            this.dataGridView_CardList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.dataGridView_CardList.Location = new System.Drawing.Point(13, 56);
             this.dataGridView_CardList.Name = "dataGridView_CardList";
-            this.dataGridView_CardList.Size = new System.Drawing.Size(1506, 614);
+            this.dataGridView_CardList.Size = new System.Drawing.Size(1004, 399);
             this.dataGridView_CardList.TabIndex = 4;
             // 
             // Category
@@ -133,11 +126,6 @@
             this.Odds.HeaderText = "Odds";
             this.Odds.Name = "Odds";
             // 
-            // Other
-            // 
-            this.Other.HeaderText = "Other";
-            this.Other.Name = "Other";
-            // 
             // Inventory
             // 
             this.Inventory.HeaderText = "Inventory";
@@ -145,15 +133,14 @@
             // 
             // CCScraper
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1791, 718);
+            this.ClientSize = new System.Drawing.Size(1194, 467);
             this.Controls.Add(this.dataGridView_CardList);
             this.Controls.Add(this.button_Save);
             this.Controls.Add(this.button_Scrape);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_URL);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "CCScraper";
             this.Text = "Cardboard Connections Data Scraper";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardList)).EndInit();
@@ -175,7 +162,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Team;
         private System.Windows.Forms.DataGridViewTextBoxColumn PrintRun;
         private System.Windows.Forms.DataGridViewTextBoxColumn Odds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Other;
         private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
     }
 }

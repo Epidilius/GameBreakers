@@ -56,7 +56,7 @@ namespace GameBreakersDBManagement
                 SaveData();
                 dataGridView_CardList.Rows.Clear();
 
-                Logger.LogActivity("Successfuly saved data to file: " + fileName);
+                Logger.LogActivity("Successfuly saved data to database");
             }
             catch (Exception ex)
             {
@@ -157,7 +157,7 @@ namespace GameBreakersDBManagement
                 var number  = Regex.Match(card, @"([^\s]+)").Value;
                 var name    = Regex.Match(card, @"(?<=" + number + @" )(.*?)(?= -)").Value;
                 var team    = Regex.Match(card, @"(?<=- )(.*?)(?= #)").Value;
-                var amount  = Regex.Match(card, @"(?<=#/ )(.*)").Value;
+                var printRun  = Regex.Match(card, @"(?<=#/ )(.*)").Value;
                 var odds    = Regex.Match(card, @"(?<=: )(.*)").Value;
                 
                 if (String.IsNullOrWhiteSpace(name))
@@ -174,49 +174,34 @@ namespace GameBreakersDBManagement
                         team = Regex.Match(card, @"(?<=- )(.*)").Value;
                     }
                 }
-                if (String.IsNullOrWhiteSpace(amount))
+                if (String.IsNullOrWhiteSpace(printRun))
                 {
 
                 }
+                
+                //if (!String.IsNullOrWhiteSpace(odds))
+                //{
+                //    if (!odds.Any(char.IsDigit))
+                //    {
+                //        odds = String.Empty;
+                //    }
+                //    else
+                //    {
+                //        var temp = odds;
+                //        temp = Regex.Replace(temp, ":", String.Empty);
+                //        temp = Regex.Replace(temp, @"\d", String.Empty);
 
-                var other = card;
-                other = Regex.Replace(other, @"\b" + odds + @"\b", String.Empty);
-                other = Regex.Replace(other, @"\b" + number + @"\b", String.Empty);
-                other = Regex.Replace(other, name, String.Empty);
-                other = Regex.Replace(other, team, String.Empty);
-                other = Regex.Replace(other, @"\b" + amount + @"\b", String.Empty);
-                other = Regex.Replace(other, "  -  #/ ", String.Empty);
-                other = Regex.Replace(other, "  - ", String.Empty);
-                other = Regex.Replace(other, " : ", String.Empty);
-                other = Regex.Replace(other, ",", String.Empty);
+                //        if (Regex.Replace(temp, @"\s", String.Empty).Length > 1)
+                //        {
+                //            temp = temp.Substring(1);
+                //            if (temp[0] == ' ')
+                //                temp = temp.Substring(1);
+                //            odds = Regex.Replace(odds, temp, String.Empty);
+                //        }
+                //    }
+                //}
 
-                if (!String.IsNullOrWhiteSpace(odds))
-                {
-                    if (!odds.Any(char.IsDigit))
-                    {
-                        other = odds;
-                        odds = String.Empty;
-
-                        other = Regex.Replace(other, "&nbsp;", String.Empty);
-                    }
-                    else
-                    {
-                        var temp = odds;
-                        temp = Regex.Replace(temp, ":", String.Empty);
-                        temp = Regex.Replace(temp, @"\d", String.Empty);
-
-                        if (Regex.Replace(temp, @"\s", String.Empty).Length > 1)
-                        {
-                            temp = temp.Substring(1);
-                            if (temp[0] == ' ')
-                                temp = temp.Substring(1);
-                            other = temp;
-                            odds = Regex.Replace(odds, temp, String.Empty);
-                        }
-                    }
-                }
-
-                AddRow(category, number, name, team, amount, odds, other);
+                AddRow(category, number, name, team, printRun, odds);
             }
             catch (Exception ex)
             {
@@ -233,13 +218,12 @@ namespace GameBreakersDBManagement
                 for(int i = 0; i < cards.Count; i += linesPerCard)
                 {
 
-                    var number  = "";
-                    var name    = "";
-                    var team    = "";
-                    var amount  = "";
-                    var odds    = "";
-                    var other   = "";
-                    var card    = "";
+                    var number      = "";
+                    var name        = "";
+                    var team        = "";
+                    var printRun    = "";
+                    var odds        = "";
+                    var card        = "";
 
                     for(int j = 0; j < linesPerCard; j++)
                     {
@@ -248,6 +232,10 @@ namespace GameBreakersDBManagement
                         {
                             var data = cards[index];
 
+                            if(data[0] == ' ')
+                            {
+                                data = data.Substring(1);
+                            }
                             number = data.Split(' ').First();
 
                             if(allNames.Contains(number))
@@ -267,7 +255,10 @@ namespace GameBreakersDBManagement
                             split = split.Last().Split(new string[] { " #/ " }, StringSplitOptions.None);
 
                             team = split.First();
-                            amount = split.Last();
+                            if(split.Length > 1)
+                                printRun = split.Last();
+
+                            var temp = -1;
                         }
                         else
                         {
@@ -292,27 +283,16 @@ namespace GameBreakersDBManagement
 
                         team = Regex.Replace(team, " 1/1*", String.Empty);
 
-                        if(oldTeamName == amount)
+                        if(oldTeamName == printRun)
                         {
-                            amount = Regex.Replace(amount, team, String.Empty);
+                            printRun = Regex.Replace(printRun, team, String.Empty);
+                            var temp = -1;
                         }
                     }
 
                     card = Regex.Replace(card, "&nbsp;", String.Empty);
-
-                    other = card;
-                    other = Regex.Replace(other, @"\b" + odds + @"\b", String.Empty);
-                    other = Regex.Replace(other, @"\b" + number + @"\b", String.Empty);
-                    other = Regex.Replace(other, @"\b" + amount + @"\b", String.Empty);
-
-                    var names = name.Split(new string[] { ", " }, StringSplitOptions.None);
-                    foreach (string playerName in names)
-                        other = Regex.Replace(other, playerName, String.Empty);
-                    var teams = team.Split(new string[] { ", " }, StringSplitOptions.None);
-                    foreach (string playerTeam in teams)
-                        other = Regex.Replace(other, playerTeam, String.Empty);
                     
-                    AddRow(category, number, name, team, amount, odds, other);
+                    AddRow(category, number, name, team, printRun, odds);
                 }
             }
             catch (Exception ex)
@@ -339,28 +319,60 @@ namespace GameBreakersDBManagement
 
         void SaveData()
         {
-            var sb = new StringBuilder();
-
-            var headers = dataGridView_CardList.Columns.Cast<DataGridViewColumn>();
-            sb.AppendLine(string.Join(",", headers.Select(column => "\"" + column.HeaderText + "\"").ToArray()));
-
-            foreach (DataGridViewRow row in dataGridView_CardList.Rows)
+            for (int i = 0; i < dataGridView_CardList.Rows.Count - 1; i++)
             {
-                var cells = row.Cells.Cast<DataGridViewCell>();
-                sb.AppendLine(string.Join(",", cells.Select(cell => "\"" + cell.Value + "\"").ToArray()));
+                Dictionary<string, object> values = new Dictionary<string, object>();
+
+                values.Add("category", dataGridView_CardList.Rows[i].Cells[0].Value.ToString());
+                values.Add("number", dataGridView_CardList.Rows[i].Cells[1].Value.ToString());
+                values.Add("name", dataGridView_CardList.Rows[i].Cells[2].Value.ToString());
+                values.Add("team", dataGridView_CardList.Rows[i].Cells[3].Value.ToString());
+                values.Add("printRun", dataGridView_CardList.Rows[i].Cells[4].Value.ToString());
+                values.Add("odds", dataGridView_CardList.Rows[i].Cells[5].Value.ToString());
+                values.Add("inventory", dataGridView_CardList.Rows[i].Cells[6].Value.ToString());
+
+                if (!DatabaseManager.CheckIfSetExists(values["category"].ToString()))
+                {
+                    DatabaseManager.AddNewSet(values["category"].ToString(), null, null, "non_mtg");
+                    Logger.LogActivity("Adding new set: " + values["category"].ToString() + " to databse");
+                }
+
+                if (CheckForDuplicates(values)) continue;
+
+                try
+                {
+                    DatabaseManager.AddNewCard("non_mtg", values);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error adding card: " + values["name"] + " in set: " + values["category"].ToString() + "\r\n\r\nError message:" + ex.ToString());
+                }
             }
+        }
+        bool CheckForDuplicates(Dictionary<string, object> values)
+        {
+            var name = values["name"].ToString().Replace("'", "''");
 
-            var file = FILE_PATH + fileName + FILE_SUFFIX;
+            var potentialDuplicates = DatabaseManager.RunQuery("SELECT * FROM Non_Mtg WHERE NAME LIKE \'%" + name + "%\'");
 
-            if (File.Exists(file))
+            if (potentialDuplicates.Rows.Count > 0)
             {
-                File.Delete(file);
-            }
+                foreach (DataRow match in potentialDuplicates.Rows)
+                {
+                    var matchCount = 1;
 
-            using (var stream = File.Open(file, FileMode.OpenOrCreate))
-            {
-                stream.Write(Encoding.ASCII.GetBytes(sb.ToString()), 0, Encoding.ASCII.GetByteCount(sb.ToString()));
+                    if (match[1].ToString() == values["category"].ToString()) matchCount++;
+                    if (match[2].ToString() == values["number"].ToString()) matchCount++;
+                    if (match[3].ToString() == values["name"].ToString()) matchCount++;
+                    if (match[4].ToString() == values["team"].ToString()) matchCount++;
+                    if (match[5].ToString() == values["printRun"].ToString()) matchCount++;
+                    if (match[6].ToString() == values["odds"].ToString()) matchCount++;
+
+                    if (matchCount == 7)
+                        return true;
+                }
             }
+            return false;
         }
 
         //GRID VIEW HANDLERS
@@ -368,7 +380,7 @@ namespace GameBreakersDBManagement
         {
 
         }
-        void AddRow(string category, string number, string name, string team, string amount, string odds, string other)
+        void AddRow(string category, string number, string name, string team, string amount, string odds)
         {
             if (number.ToLower() == "shop")
                 return;
@@ -378,8 +390,7 @@ namespace GameBreakersDBManagement
                 return;
             //if (Regex.Replace(name, ",", String.Empty) == other.Remove(0,1))
             //   return;
-            other = Regex.Replace(other, @"[^0-9a-zA-Z*]+", String.Empty);
-            dataGridView_CardList.Rows.Add(category, number, name, team, amount, odds, other, "0");
+            dataGridView_CardList.Rows.Add(category, number, name, team, amount, odds, "0");
         }
     }
 }
