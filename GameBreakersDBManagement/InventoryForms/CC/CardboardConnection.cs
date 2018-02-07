@@ -33,6 +33,7 @@ namespace GameBreakersDBManagement
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
         //string category, string number, string name, string team, string amount, string odds, string other, string inventory
+        //TODO: Stop the service that keeps starting, I dont want it 
         public CardboardConnection()
         {
             InitializeComponent();
@@ -119,14 +120,16 @@ namespace GameBreakersDBManagement
                     Dictionary<string, object> values = new Dictionary<string, object>();
 
                     var category    = card[1];
-                    var number      = card[2];
-                    var name        = card[3];
-                    var team        = card[4];
-                    var printRun    = card[5];
-                    var odds        = card[6];
-                    var inventory   = card[7];
+                    var subCategory = card[2];
+                    var number      = card[3];
+                    var name        = card[4];
+                    var team        = card[5];
+                    var printRun    = card[6];
+                    var odds        = card[7];
+                    var inventory   = card[8];
 
                     values.Add("category", category);
+                    values.Add("subCategory", subCategory);
                     values.Add("number", number);
                     values.Add("name", name);
                     values.Add("team", team);
@@ -148,6 +151,7 @@ namespace GameBreakersDBManagement
             }
 
             var category    = cardData["category"];
+            var subCategory = cardData["subCategory"];
             var number      = cardData["number"];
             var name        = cardData["name"];
             var team        = cardData["team"];
@@ -155,7 +159,7 @@ namespace GameBreakersDBManagement
             var odds        = cardData["odds"];
             var inventory   = cardData["inventory"];
 
-            dataGridView_CardData.Rows.Add(category, number, name, team, printRun, odds, inventory);
+            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, inventory);
         }
         
         //INVENTORY
@@ -193,7 +197,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error adding set to database, file: " + file);
+                Logger.LogError("Adding MtG set to database", ex.ToString(), file);
             }
         }
         void AddExpansionToDatabase(JToken cardList, string expansion, string abbreviation)
@@ -228,13 +232,13 @@ namespace GameBreakersDBManagement
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("Error adding card: " + values["name"] + " in set: " + expansion + "\r\n\r\nError message:" + ex.ToString());
+                        Logger.LogError("Adding MtG card to database", ex.ToString(), card.ToString());
                     }
                 }
                 catch(Exception ex)
                 {
                     //TODO: THROW MY OWN EXCEPTIONS
-                    Logger.LogError("Error parsing card: " + PrepareString(card, "name") + " in set: " + expansion  + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Preparing MtG card data to be added to database", ex.ToString(), card.ToString());
                 }
             }
         }

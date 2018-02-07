@@ -101,7 +101,7 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Failed to parse card: " + name + " for set: " + set);
+                    Logger.LogError("Attempting to parse card", ex.ToString(), "Name: " + name + "\r\nSet: " + set + "\r\nHTML: " + html);
                     throw new Exception();
                 }
             }
@@ -127,7 +127,7 @@ namespace GameBreakersDBManagement
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("Failed to add ID.\r\nSet Name: " + setName + "\r\nSet ID: " + setID);
+                        Logger.LogError("Attempting to add ID", ex.ToString(), "Set: " + setName + "\r\nID: " + setID);
                     }
                 }
             }
@@ -154,7 +154,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    Logger.LogError("Failed to get parse HTML into JSON. \r\nHTML: " + html + "\r\nURL: " + url + "\r\nName" + name + "\r\nSet: " + set + "\r\nPrepped set name: " + preppedSetName);
+                    Logger.LogError("Atempting to parse HTML into JSON.", ex.ToString(), "HTML: " + html + "\r\nURL: " + url + "\r\nName" + name + "\r\nSet: " + set + "\r\nPrepped set name: " + preppedSetName);
                     return;
                 }
 
@@ -164,7 +164,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    Logger.LogError("Failed to get price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
+                    Logger.LogError("Atempting to get price for card", ex.ToString(), "Name: " + name + "\r\nSet: " + set + "\r\nSet Name: " + preppedSetName);
                 }
                 try
                 {
@@ -172,7 +172,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    Logger.LogError("Failed to get foil price for card: " + name + " from set: " + set + ", using set name: " + preppedSetName);
+                    Logger.LogError("Atempting to get foil price for card", ex.ToString(), "Name: " + name + "\r\nSet: " + set + "\r\nSet Name: " + preppedSetName);
                 }
 
                 if(price != -1)
@@ -208,7 +208,7 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Failed to get image for ID: " + multiverseID);
+                    Logger.LogError("Atempting to get image for ID", ex.ToString(), multiverseID.ToString());
                 }
             }
         }

@@ -43,7 +43,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Something happened in Scrape that was not caught. Error: " + ex);
+                Logger.LogError("Something happened in Scrape that was not caught", ex.ToString(), null);
             }
         }
         private void button_Save_Click(object sender, EventArgs e)
@@ -60,7 +60,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Something happened in Save that was not caught. Error: " + ex);
+                Logger.LogError("Something happened in Save that was not caught", ex.ToString(), null);
             }
         }
 
@@ -100,7 +100,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to fetch data from URL: " + textBox_URL.Text + "\r\n" + ex);
+                Logger.LogError("Fetching Cardboard Connection data from url.", ex.ToString(), textBox_URL.Text);
             }
 
             //TODO: Throw exception
@@ -205,7 +205,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to parse a card\r\nCard data: " + card + "\r\nCategory: " + category + "\r\nError: " + ex);
+                Logger.LogError("Failed to parse Carboard Connection card", ex.ToString(), "Card: " + card + "\r\nCategory: " + category);
             }
         }
         void AddCardMultiLineToGridView(string category, List<string> cards, int linesPerCard)
@@ -297,7 +297,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to parse an array of cards\r\nCard data: " + cards + "\r\nCategory: " + category + "\r\nError: " + ex);
+                Logger.LogError("Failed to parse an array of Cardboard Connection cards", ex.ToString(), "Cards: " + cards.ToString() + "\r\nCategory: " + category);
             }
         }
 
@@ -319,23 +319,25 @@ namespace GameBreakersDBManagement
 
         void SaveData()
         {
+            //TODO: Parse file name correctly
+            if (!DatabaseManager.CheckIfSetExists(fileName))
+            {
+                DatabaseManager.AddNewSet(fileName, null, null, "non_mtg");
+                Logger.LogActivity("Adding new set: " + fileName + " to databse");
+            }
+
             for (int i = 0; i < dataGridView_CardList.Rows.Count - 1; i++)
             {
                 Dictionary<string, object> values = new Dictionary<string, object>();
 
-                values.Add("category", dataGridView_CardList.Rows[i].Cells[0].Value.ToString());
+                values.Add("category", fileName);
+                values.Add("subCategory", dataGridView_CardList.Rows[i].Cells[0].Value.ToString());
                 values.Add("number", dataGridView_CardList.Rows[i].Cells[1].Value.ToString());
                 values.Add("name", dataGridView_CardList.Rows[i].Cells[2].Value.ToString());
                 values.Add("team", dataGridView_CardList.Rows[i].Cells[3].Value.ToString());
                 values.Add("printRun", dataGridView_CardList.Rows[i].Cells[4].Value.ToString());
                 values.Add("odds", dataGridView_CardList.Rows[i].Cells[5].Value.ToString());
                 values.Add("inventory", dataGridView_CardList.Rows[i].Cells[6].Value.ToString());
-
-                if (!DatabaseManager.CheckIfSetExists(values["category"].ToString()))
-                {
-                    DatabaseManager.AddNewSet(values["category"].ToString(), null, null, "non_mtg");
-                    Logger.LogActivity("Adding new set: " + values["category"].ToString() + " to databse");
-                }
 
                 if (CheckForDuplicates(values)) continue;
 
@@ -345,7 +347,7 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("Error adding card: " + values["name"] + " in set: " + values["category"].ToString() + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Attempting to add CC card to database", ex.ToString(), dataGridView_CardList.Rows[i].ToString());
                 }
             }
         }

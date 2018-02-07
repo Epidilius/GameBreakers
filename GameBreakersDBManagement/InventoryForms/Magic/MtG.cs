@@ -53,7 +53,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error searching for card: " + textBox_Name.Text + "\r\n\r\nError message:" + ex.ToString());
+                Logger.LogError("Attempting to search for MtG card", ex.Message, textBox_Name.Text);
             }
         }
         private void button_SearchSet_Click(object sender, EventArgs e)
@@ -71,7 +71,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error searching for set: " + textBox_Set.Text + "\r\n\r\nError message:" + ex.ToString());
+                Logger.LogError("Attempting to search for MtG set", ex.Message, textBox_Set.Text);
             }
         }
         private void button_RemoveSingle_Click(object sender, EventArgs e)  //TODO: Condense these
@@ -193,21 +193,21 @@ namespace GameBreakersDBManagement
             var id = GetMTGStocksID(name);
             if (id == -1)
             {
-                Logger.LogError("Could not find card with name: " + name);
+                Logger.LogError("Searching MTG Stocks for MtG card by name", "No card found for name: " + name, null);
                 return false;
             }
 
             var cardObject = GetMTGStocksData(id, name, "NA");
             if (cardObject == null)
             {
-                Logger.LogError("Could not find card with name: " + name + " and MTG Stocks ID: " + id);
+                Logger.LogError("Searching MTG Stocks for MtG card by ID", "No card named " + name + " found for ID: " + id, null);
                 return false;
             }
 
             var card = ParseCardData(cardObject);
             if (card == null)
             {
-                Logger.LogError("Could not parse card data: " + card.ToString());
+                Logger.LogError("Attempting to parse MTG Stocks data", "Failed to parse data", cardObject.ToString());
                 return false;
             }
 
@@ -263,17 +263,16 @@ namespace GameBreakersDBManagement
         void SearchForSet(string set)
         {
             var cards = DatabaseManager.GetAllCardsForSet(set);
-
             if (cards.Rows.Count > 0)
             {
                 foreach (DataRow card in cards.Rows)
                 {
                     var name = card[3].ToString();
                     var rarity = card[7];
-                    var inventory = card[20];
-                    var foilInventory = card[22];
-                    var price = float.Parse(card[19].ToString());
-                    var foilPrice = float.Parse(card[21].ToString());
+                    var inventory = card[19];
+                    var foilInventory = card[21];
+                    var price = float.Parse(card[18].ToString());
+                    var foilPrice = float.Parse(card[20].ToString());
 
                     AddCardToRow(new Dictionary<string, object> {
                         { "name", name },
@@ -287,8 +286,7 @@ namespace GameBreakersDBManagement
             }
         }
         int GetMTGStocksID(string name)
-        {
-            
+        {            
             JObject json = null;
 
             var nameWithoutWhitespace = Regex.Replace(name, @"\s+", "%20");
@@ -305,6 +303,13 @@ namespace GameBreakersDBManagement
                 using (StreamReader reader = new StreamReader(stream))
                 {
                     var html = reader.ReadToEnd();
+
+                    if(html == "null")
+                    {
+                        Logger.LogError("Attempting to get IDs for card: " + name, "HTML returned was null", url);
+                        return -1;
+                    }
+
                     html = Regex.Replace(html, @"[\[\]']+", "");
 
                     try
@@ -314,27 +319,33 @@ namespace GameBreakersDBManagement
                     catch (Exception ex)
                     {
                         var htmlArray = html.Split('{');
-                        var targetString = "\"name\":\"" + name + "\"";
-                        foreach (var htmlChunk in htmlArray)
+                        var targetString = "\"name\":\"" + name.Replace("'", String.Empty);// + "\""; TODO: Add this back in, figure something else out for split cards
+                        for(int i = 0; i < htmlArray.Count(); i++)
                         {
+                            var htmlChunk = RemoveDiacritics(htmlArray[i]);
 
+                            if (htmlChunk.Contains("\\\""))
+                                htmlChunk = htmlChunk.Replace("\\\"", "\"");
+                            if (htmlChunk.Contains("..."))
+                                htmlChunk = htmlChunk.Replace("...", String.Empty);
                             if (htmlChunk.ToLower().Contains(targetString.ToLower()))
                             {
                                 //var idString = htmlChunk.Split(new string[] { "\"name\":\"" }, StringSplitOptions.None).First();
                                 var idString = htmlChunk.ToLower().Replace(targetString.ToLower(), "");
+                                idString = idString.Split(',').First();
                                 idString = idString.Replace("\"", "");
-                                idString = idString.Replace(",", "");
                                 idString = idString.Replace("}", "");
                                 return Int32.Parse(idString.Split(':').Last());
                             }
                         }
+
+                        Logger.LogError("Attempting to get IDs for card: " + name, "No match was found", url);
                     }
                 }
             }
             catch (Exception ex)
             {
-                //TODO: LOGGING
-                Logger.LogError("Failed to get IDs for card: " + name);
+                Logger.LogError("Attempting to get IDs for card: " + name, ex.Message, url);
             }
 
             if (json != null)
@@ -363,8 +374,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                //TODO: LOGGING
-                Logger.LogError("Failed to get data for card with MTG Stocks ID: " + id + "\r\n: Card Name: " + name + "\r\nExpansion: " + set + "\r\nURL: " + url);
+                Logger.LogError("Attempting to get data for card with MTG Stocks ID", ex.Message, "ID: " + id + " | Card Name: " + name + " | Expansion: " + set + " | URL: " + url);
                 return null;
             }
         }
@@ -384,9 +394,7 @@ namespace GameBreakersDBManagement
             {
                 return cardData;
             }
-
-            set = PrepareSetString(set);
-
+            
             foreach (var card in sets)
             {
                 try
@@ -418,6 +426,9 @@ namespace GameBreakersDBManagement
                     }
                 }
             }
+
+            Logger.LogError("Attempting to find a match for card with MTG Stocks data", "No match found", "Set: " + set + " | Name: " + cardData["name"]);// + " | Card Data: " + cardData.ToString());
+
             return null;
         }
         void SearchComplete()
@@ -447,21 +458,59 @@ namespace GameBreakersDBManagement
         //PRICE
         void BeginPriceUpdate()
         {
-            var query = "select name, expansion from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0)";
+            //TODO: Move the parsing logic out to other functions, call them in GetPrice
+            //TODO: Deal with the transformed version of cards better
+            //TODO: Currently, B.F.M. (Big Furry Monster) is getting parsed to B.R.M. I have to fix this
+            var query = "select name, expansion, types, layout from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0 and layout != 'double-faced' and layout != 'meld')";
             var cardsToUpdate = DatabaseManager.RunQuery(query);
 
-            foreach(DataRow card in cardsToUpdate.Rows)
+            for(int i = 0; i < cardsToUpdate.Rows.Count; i++)
             {
-                var name = card[0].ToString();
+                var card = cardsToUpdate.Rows[i];
+                var name = RemoveDiacritics(card[0].ToString());
                 var set = card[1].ToString();
+                var types = card[2].ToString();
+                var layout = card[3].ToString();
 
-                if(name.Contains("("))
-                    name = card[0].ToString().Split(new string[] { " (" }, StringSplitOptions.None ).First();
+                if (name.Contains("("))
+                {
+                    name = card[0].ToString().Split(new string[] { " (" }, StringSplitOptions.None).First();
+                }
+                if(types.ToLower().Contains("land"))
+                {
+                    name += " - " + set;
+                }
 
+                if(name == "Our Market Research Shows That Players Like Really Long Card Names So We Made this Card to Have the Absolute Longest Card Name Ever Elemental")
+                {
+                    name = "Our Market Research";
+                }
+                if(name.ToLower().Contains("token card"))
+                {
+                    name = name.Split(new string[] { " token" }, StringSplitOptions.None).First();
+                    name += " Token";
+                }
+                if(layout == "token")
+                {
+                    name += " Token";
+                }
+                
                 var prices = GetPrice(name, set);
 
-                DatabaseManager.UpdatePrice(name, set, prices["price"], false);
-                DatabaseManager.UpdatePrice(name, set, prices["foilPrice"], true);
+                if(types.ToLower().Contains("land") && prices["price"] == -1f)
+                {
+                    name = name.Split(new string[] { " - " }, StringSplitOptions.None).First();
+                    prices = GetPrice(name, set);
+                }
+
+                if (types.ToLower().Contains("plane") && prices["price"] == -1f)
+                {
+                    set = "Oversize Cards";
+                    prices = GetPrice(name, set);
+                }
+
+                DatabaseManager.UpdatePrice(card[0].ToString(), card[1].ToString(), prices["price"], false);
+                DatabaseManager.UpdatePrice(card[0].ToString(), card[1].ToString(), prices["foilPrice"], true);
             }
         }
         Dictionary<string, float> GetPrice(string name, string set)
@@ -497,6 +546,7 @@ namespace GameBreakersDBManagement
             catch (Exception ex)
             {
                 prices["price"] = float.Parse(card["latest_price"].ToString());
+                if(prices["price"] == 0) prices["price"] = float.Parse(card["latest_price_mkm"].ToString());
             }
             
             try
@@ -523,7 +573,7 @@ namespace GameBreakersDBManagement
                 }
             }
 
-            Logger.LogActivity("Updating price of card:" + "\r\nCard Name: " + name + "\r\nSet: " + set + "\r\nPrice: " + prices);
+            Logger.LogActivity("Updating price of card:" + " | Card Name: " + name + " | Set: " + set + " | Price: " + prices["price"] + " | Foil Price: " + prices["foilPrice"]);
             return prices;
         }
         void UpdatePrice(object state)
@@ -574,22 +624,25 @@ namespace GameBreakersDBManagement
             var loweredSet = dataStr.ToLower();
             var finalName = dataStr;
 
-            if(loweredSet.Contains("magic: the gathering-"))
+            if(loweredSet.Contains("magic: the gathering"))
             {
-                finalName = dataStr.Replace("Magic: the Gathering-", String.Empty);
+                if(loweredSet.Contains('—'))
+                    finalName = dataStr.Split(new string[] { "Magic: The Gathering—" }, StringSplitOptions.None).Last();
+                else 
+                    finalName = dataStr.Split(new string[] { "Magic: The Gathering-" }, StringSplitOptions.None).Last();
             }
-            else if(loweredSet.Contains("Magic 2"))
+            else if(loweredSet.Contains("magic 2"))
             {
                 var splitName = finalName.Split(' ');
                 finalName = splitName[0] + " " + splitName[1];
             }
             else if (loweredSet.Contains("fourth"))
             {
-                finalName = dataStr.Replace("Fourth", "4th");
+                finalName = dataStr;//.Replace("Fourth", "4th");
             }
             else if (loweredSet.Contains("fifth"))
             {
-                finalName = dataStr.Replace("Fifth", "5th");
+                finalName = dataStr;//.Replace("Fifth", "5th");
             }
             else if (loweredSet.Contains("sixth"))
             {
@@ -624,6 +677,63 @@ namespace GameBreakersDBManagement
             {
                 finalName = dataStr.Replace(" Edition", "");
             }
+            else if (loweredSet.Contains("commander") && loweredSet.Contains("edition"))
+            {
+                finalName = dataStr.Replace(" Edition", "");
+            }
+            else if(loweredSet.Contains("time spiral \"timeshifted\""))
+            {
+                finalName = "Timeshifted";
+            }
+            else if(loweredSet.Contains("ravnica: city of guilds"))
+            {
+                finalName = "Ravnica";
+            }
+            else if(loweredSet.Contains("modern event deck 2014"))
+            {
+                finalName = "Modern Event Deck";
+            }
+            else if (loweredSet.Contains("media inserts"))
+            {
+                finalName = "Media Promos";
+            }
+            else if(loweredSet.Contains("''"))
+            {
+                finalName = dataStr.Replace("''", "'");
+            }
+            else if(loweredSet.Contains("("))
+            {
+                finalName = dataStr.Split(new string[] { " (" }, StringSplitOptions.None).First();
+            }
+            else if(loweredSet.Contains("planechase"))
+            {
+                if (loweredSet.Contains("anthology"))
+                {
+                    finalName = "Oversize Cards";
+                }
+                else
+                {
+                    finalName = dataStr.Replace(" Edition", String.Empty);
+                }
+            }
+            else if (loweredSet.Contains("duel decks"))
+            {
+                if(loweredSet.Contains("anthology"))
+                {
+                    finalName = "Duel Decks: Anthology";
+                }
+                else
+                {
+                    //god damn period
+                }
+            }
+            else if(loweredSet.Contains("expeditions"))
+            {
+                finalName = dataStr.Replace("Expeditions", "Expedition");
+            }
+
+            //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            //return textInfo.ToTitleCase(finalName);
 
             return finalName;
         }
@@ -660,8 +770,8 @@ namespace GameBreakersDBManagement
                 return;
             }
 
-            var name = cardData["name"];
-            var set = cardData["set"];
+            var name = cardData["name"].ToString().Replace("''", "'");
+            var set = cardData["set"].ToString().Replace("''", "'");
             var rarity = cardData["rarity"];
             var inventory = cardData["inventory"];
             var foilInventory = cardData["foilInventory"];
@@ -716,7 +826,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to fetch data from URL: " + MTGJSON_URL + "\r\n" + ex);
+                Logger.LogError("Attempting to fetch MtG data from URL", ex.Message, MTGJSON_URL);
             }
 
             return "No Response";
@@ -725,17 +835,13 @@ namespace GameBreakersDBManagement
         //IMAGE
         void GetImageForCard(int multiverseID)
         {
-            try
-            {
-                LoadImageFromURL(multiverseID);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Failed to load image from file, will attempt to from URL. Multiverse ID: " + multiverseID);
-            }
+            LoadImageFromURL(multiverseID);
         }
         void GetImageForFirstCard()
         {
+            if (dataGridView_CardData.Rows.Count < 2)
+                return;
+
             var name = dataGridView_CardData.Rows[0].Cells[0].Value.ToString();
             var set = dataGridView_CardData.Rows[0].Cells[1].Value.ToString();
 
@@ -758,7 +864,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to load image from URL, using back of MtG card. Multiverse ID: " + multiverseID.ToString());
+                Logger.LogError("Attempting to load image from URL", ex.Message, multiverseID.ToString());
                 pictureBox_Card.Image = Properties.Resources.Magic_card_back;
             }
         }
@@ -799,7 +905,7 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error adding set to database.\r\nData: " + setData);
+                Logger.LogError("Attempting to add set to database", ex.Message, setData);
             }
         }
         void AddExpansionToDatabase(JToken cardList, string expansion, string abbreviation)
@@ -849,13 +955,13 @@ namespace GameBreakersDBManagement
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("Error adding card: " + values["name"] + " in set: " + expansion + "\r\n\r\nError message:" + ex.ToString());
+                        Logger.LogError("Attempting to add MtG card to database", ex.Message, values.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
                     //TODO: THROW MY OWN EXCEPTIONS
-                    Logger.LogError("Error parsing card: " + PrepareString(card, "name") + " in set: " + expansion + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Attempting to parse card", ex.Message, card.ToString());
                 }
             }
         }
@@ -890,6 +996,7 @@ namespace GameBreakersDBManagement
 
         private void dataGridView_CardData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            int multiverseID = -1;
             if (dataGridView_CardData.Rows.Count == 0 || dataGridView_CardData.CurrentCell == null)
             {
                 return;
@@ -900,11 +1007,13 @@ namespace GameBreakersDBManagement
                 var card = dataGridView_CardData.Rows[dgvIndex].Cells[0].Value.ToString();
                 var set = dataGridView_CardData.Rows[dgvIndex].Cells[1].Value.ToString();
 
-                GetImageForCard(DatabaseManager.GetMultiverseID(card, set));
+                multiverseID = DatabaseManager.GetMultiverseID(card, set);
+
+                GetImageForCard(multiverseID);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Error fetching image for card\r\nError: " + ex);
+                Logger.LogError("Attempting tp fetch image for card", ex.Message, multiverseID.ToString());
             }
         }
     }

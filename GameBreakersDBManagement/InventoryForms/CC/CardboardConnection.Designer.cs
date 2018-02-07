@@ -30,13 +30,6 @@
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_AddSingle = new System.Windows.Forms.Button();
             this.button_RemoveSingle = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -54,6 +47,14 @@
             this.button_Name = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_Name = new System.Windows.Forms.TextBox();
+            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SubCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -77,6 +78,7 @@
             this.dataGridView_CardData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_CardData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Category,
+            this.SubCategory,
             this.Number,
             this.PlayerName,
             this.Team,
@@ -88,48 +90,6 @@
             this.dataGridView_CardData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_CardData.Size = new System.Drawing.Size(798, 231);
             this.dataGridView_CardData.TabIndex = 12;
-            // 
-            // Category
-            // 
-            this.Category.HeaderText = "Category";
-            this.Category.Name = "Category";
-            this.Category.ReadOnly = true;
-            // 
-            // Number
-            // 
-            this.Number.HeaderText = "Number";
-            this.Number.Name = "Number";
-            this.Number.ReadOnly = true;
-            // 
-            // PlayerName
-            // 
-            this.PlayerName.HeaderText = "Name";
-            this.PlayerName.Name = "PlayerName";
-            this.PlayerName.ReadOnly = true;
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            this.Team.ReadOnly = true;
-            // 
-            // PrintRun
-            // 
-            this.PrintRun.HeaderText = "Print Run";
-            this.PrintRun.Name = "PrintRun";
-            this.PrintRun.ReadOnly = true;
-            // 
-            // Odds
-            // 
-            this.Odds.HeaderText = "Odds";
-            this.Odds.Name = "Odds";
-            this.Odds.ReadOnly = true;
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            this.Inventory.ReadOnly = true;
             // 
             // button_AddSingle
             // 
@@ -300,6 +260,53 @@
             this.textBox_Name.TabIndex = 0;
             this.textBox_Name.Enter += new System.EventHandler(this.textBox_Name_Enter);
             // 
+            // Category
+            // 
+            this.Category.HeaderText = "Category";
+            this.Category.Name = "Category";
+            // 
+            // SubCategory
+            // 
+            this.SubCategory.HeaderText = "Sub Category";
+            this.SubCategory.Name = "SubCategory";
+            this.SubCategory.ReadOnly = true;
+            // 
+            // Number
+            // 
+            this.Number.HeaderText = "Number";
+            this.Number.Name = "Number";
+            this.Number.ReadOnly = true;
+            // 
+            // PlayerName
+            // 
+            this.PlayerName.HeaderText = "Name";
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.ReadOnly = true;
+            // 
+            // Team
+            // 
+            this.Team.HeaderText = "Team";
+            this.Team.Name = "Team";
+            this.Team.ReadOnly = true;
+            // 
+            // PrintRun
+            // 
+            this.PrintRun.HeaderText = "Print Run";
+            this.PrintRun.Name = "PrintRun";
+            this.PrintRun.ReadOnly = true;
+            // 
+            // Odds
+            // 
+            this.Odds.HeaderText = "Odds";
+            this.Odds.Name = "Odds";
+            this.Odds.ReadOnly = true;
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            this.Inventory.ReadOnly = true;
+            // 
             // CardboardConnection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,6 +347,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox_Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn Category;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SubCategory;
         private System.Windows.Forms.DataGridViewTextBoxColumn Number;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Team;

@@ -10,10 +10,17 @@ namespace GameBreakersDBManagement
     public static class Logger
     {
         //TODO: Use TraceSource?
+        //TODO: Push to database
         private static readonly object _syncObject = new object();
         static string ActivityLog = @"C:\GameBreakersInventory\Logging\ActivityLog.txt";
         static string ErrorLog = @"C:\GameBreakersInventory\Logging\ErrorLog.txt";
-                
+
+        private static readonly Dictionary<string, string> ValidActions = new Dictionary<string, string>
+        {
+            { "Fetch ID", "Error One" },
+            { "Fetch Data", "Error Two" }
+        };
+
         public static void Prep()
         {
             //TODO: Create files if they don't exist
@@ -45,16 +52,21 @@ namespace GameBreakersDBManagement
             }
         }
 
-        public static void LogError(string message)
+        public static void LogError(string attemptedAction, string error, string extraData)
         {
-            //TIME | ERROR
             lock (_syncObject)
             {
-                message = "\r\n----    ----    ----    ----\r\n" + DateTime.Now.ToString() + "\r\n" + message;
-                StreamWriter file = new StreamWriter(ErrorLog, true);
-                file.WriteLine(message);
+                Dictionary<string, object> values = new Dictionary<string, object>
+                {
+                    { "AttemptedAction", attemptedAction },
+                    { "Error", error },
+                    { "ExtraData", extraData },
+                    { "TimeOfError", DateTime.Now.ToString() }
+                };
 
-                file.Close();
+                var query = "INSERT INTO Errors ";
+
+                DatabaseManager.RunQueryWithArgs(query, values);
             }
         }
     }

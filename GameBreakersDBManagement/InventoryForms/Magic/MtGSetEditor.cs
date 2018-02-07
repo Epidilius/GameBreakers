@@ -36,7 +36,7 @@ namespace GameBreakersDBManagement
                 }
                 catch(Exception ex)
                 {
-                    Logger.LogError("Error saving card: " + name + " from set: " + set + "\r\n\r\nError message:" + ex.ToString());
+                    Logger.LogError("Attempting to save card from set editor", ex.ToString(), "Name: " + name + "\r\nSet: " + set);
                 }
             }
 
