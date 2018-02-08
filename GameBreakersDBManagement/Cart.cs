@@ -12,19 +12,45 @@ namespace GameBreakersDBManagement
 {
     public partial class Cart : Form
     {
+        static string ITEM_DELIMITER = "|";
+        int ID;
+
         public Cart()
         {
             InitializeComponent();
         }
 
-        private void button_CompleteSale_Click(object sender, EventArgs e)
+        public Cart(int id)
         {
+            InitializeComponent();
 
+            ID = id;
+            CartUpdated();
         }
 
         public void CartUpdated()
         {
             //TODO: Update cart from DB
+            var query = "SELECT * FROM ActiveCarts WHERE ID = " + ID;
+            var cartData = DatabaseManager.RunQuery(query);
+        }
+        void ParseCartData(DataTable cartData)
+        {
+            
+        }
+
+
+        private void button_CompleteSale_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void button_Cancel_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void button_Save_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

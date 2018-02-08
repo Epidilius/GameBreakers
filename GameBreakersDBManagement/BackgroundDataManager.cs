@@ -15,7 +15,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 
 namespace GameBreakersDBManagement
-{    
+{
     class BackgroundDataManager : BackgroundWorker
     {
         static string PYTHON_PRICE_URL = "http://127.0.0.1:5001/cards?name=ABCDE&set=FGHIJ";
@@ -27,10 +27,10 @@ namespace GameBreakersDBManagement
         static string MTGSTOCKS_BASE_URL = @"https://api.mtgstocks.com/";
         static string MTGSTOCKS_QUERY_ID = @"search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"prints/";
-        
+
         public BackgroundDataManager()
         {
-            
+
         }
 
         public void Run()
@@ -56,10 +56,10 @@ namespace GameBreakersDBManagement
                 var name = card[3].ToString();
                 var stringID = card[17].ToString();
                 var multiverseID = -1;
-                if(!String.IsNullOrWhiteSpace(stringID))
+                if (!String.IsNullOrWhiteSpace(stringID))
                     multiverseID = Int32.Parse(stringID);
 
-                double timeLastUpdated = double.Parse(card[23].ToString());              
+                double timeLastUpdated = double.Parse(card[23].ToString());
 
                 GetImageForCard(0);
                 if (PriceOldEnoughToUpdate(timeLastUpdated) || float.Parse(card[19].ToString()) < 0 || float.Parse(card[21].ToString()) < 0)
@@ -115,7 +115,7 @@ namespace GameBreakersDBManagement
 
                 DatabaseManager.UpdateSetID(set, json["card_set"]["id"].ToObject<int>());
 
-                foreach(var card in json["sets"])
+                foreach (var card in json["sets"])
                 {
                     var setID = card["set_id"].ToObject<int>();
                     var setName = card["set_name"].ToString();
@@ -152,7 +152,7 @@ namespace GameBreakersDBManagement
                     html = wc.DownloadString(url);
                     json = JObject.Parse(html);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogError("Atempting to parse HTML into JSON.", ex.ToString(), "HTML: " + html + "\r\nURL: " + url + "\r\nName" + name + "\r\nSet: " + set + "\r\nPrepped set name: " + preppedSetName);
                     return;
@@ -162,7 +162,7 @@ namespace GameBreakersDBManagement
                 {
                     price = json["price"].ToObject<float>();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogError("Atempting to get price for card", ex.ToString(), "Name: " + name + "\r\nSet: " + set + "\r\nSet Name: " + preppedSetName);
                 }
@@ -170,16 +170,16 @@ namespace GameBreakersDBManagement
                 {
                     foilPrice = json["price_foil"].ToObject<float>();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogError("Atempting to get foil price for card", ex.ToString(), "Name: " + name + "\r\nSet: " + set + "\r\nSet Name: " + preppedSetName);
                 }
 
-                if(price != -1)
+                if (price != -1)
                 {
                     DatabaseManager.UpdatePrice(name, set, price, false);
                 }
-                if(foilPrice != -1)
+                if (foilPrice != -1)
                 {
                     DatabaseManager.UpdatePrice(name, set, foilPrice, true);
                 }
@@ -237,7 +237,7 @@ namespace GameBreakersDBManagement
             {
                 finalName = set.Replace("Eighth", "8th");
             }
-            else if(loweredSet.Contains("ninth"))
+            else if (loweredSet.Contains("ninth"))
             {
                 finalName = set.Replace("Ninth", "9th");
             }
@@ -248,7 +248,7 @@ namespace GameBreakersDBManagement
 
             return finalName;
         }
-                
+
         //URLS
         string GeneratePriceURL(string name, string setName)
         {

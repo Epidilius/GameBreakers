@@ -19,11 +19,11 @@ namespace GameBreakersDBManagement
         //TODO: Merge the MtG search into this?
         //TODO: Fix all errors caused by adding a new set
         //TODO: General refactoring
-        static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
+        static string MTGSTOCKS_QUERY_ID   = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
-        static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
-        static string MTGJSON_URL = @"https://mtgjson.com/sets.html";
-        static string MTGJSON_DATA_URL = @"https://mtgjson.com/json/SET-x.json";
+        static string GATHERER_IMAGE_URL   = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
+        static string MTGJSON_URL          = @"https://mtgjson.com/sets.html";
+        static string MTGJSON_DATA_URL     = @"https://mtgjson.com/json/SET-x.json";
 
         Thread SearchThread;
 
