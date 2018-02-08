@@ -18,6 +18,7 @@ namespace GameBreakersDBManagement
     {
         //TODO: Merge the MtG search into this?
         //TODO: Fix all errors caused by adding a new set
+        //TODO: General refactoring
         static string MTGSTOCKS_QUERY_ID = @"https://api.mtgstocks.com/search/autocomplete/";
         static string MTGSTOCKS_QUERY_DATA = @"https://api.mtgstocks.com/prints/";
         static string GATHERER_IMAGE_URL = @"http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=ABCDE&type=card";
@@ -458,7 +459,6 @@ namespace GameBreakersDBManagement
         //PRICE
         void BeginPriceUpdate()
         {
-            //TODO: Move the parsing logic out to other functions, call them in GetPrice
             //TODO: Deal with the transformed version of cards better
             //TODO: Currently, B.F.M. (Big Furry Monster) is getting parsed to B.R.M. I have to fix this
             var query = "select name, expansion, types, layout from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0 and layout != 'double-faced' and layout != 'meld')";
@@ -467,54 +467,21 @@ namespace GameBreakersDBManagement
             for(int i = 0; i < cardsToUpdate.Rows.Count; i++)
             {
                 var card = cardsToUpdate.Rows[i];
-                var name = RemoveDiacritics(card[0].ToString());
-                var set = card[1].ToString();
-                var types = card[2].ToString();
-                var layout = card[3].ToString();
-
-                if (name.Contains("("))
-                {
-                    name = card[0].ToString().Split(new string[] { " (" }, StringSplitOptions.None).First();
-                }
-                if(types.ToLower().Contains("land"))
-                {
-                    name += " - " + set;
-                }
-
-                if(name == "Our Market Research Shows That Players Like Really Long Card Names So We Made this Card to Have the Absolute Longest Card Name Ever Elemental")
-                {
-                    name = "Our Market Research";
-                }
-                if(name.ToLower().Contains("token card"))
-                {
-                    name = name.Split(new string[] { " token" }, StringSplitOptions.None).First();
-                    name += " Token";
-                }
-                if(layout == "token")
-                {
-                    name += " Token";
-                }
-                
-                var prices = GetPrice(name, set);
-
-                if(types.ToLower().Contains("land") && prices["price"] == -1f)
-                {
-                    name = name.Split(new string[] { " - " }, StringSplitOptions.None).First();
-                    prices = GetPrice(name, set);
-                }
-
-                if (types.ToLower().Contains("plane") && prices["price"] == -1f)
-                {
-                    set = "Oversize Cards";
-                    prices = GetPrice(name, set);
-                }
+                                
+                var prices = GetPrice(card);
 
                 DatabaseManager.UpdatePrice(card[0].ToString(), card[1].ToString(), prices["price"], false);
                 DatabaseManager.UpdatePrice(card[0].ToString(), card[1].ToString(), prices["foilPrice"], true);
             }
         }
-        Dictionary<string, float> GetPrice(string name, string set)
+        Dictionary<string, float> GetPrice(DataRow cardData)
         {
+            var name = cardData[0].ToString();
+            var set = cardData[1].ToString();
+            var types = cardData[2].ToString();
+            var layout = cardData[3].ToString();
+
+            name = PrepareNameString(name, set, types, layout);
             set = PrepareSetString(set);
             Dictionary<string, float> prices = new Dictionary<string, float> { { "price", -1 }, { "foilPrice", -1 } };
 
@@ -573,6 +540,18 @@ namespace GameBreakersDBManagement
                 }
             }
 
+            if (types.ToLower().Contains("land") && prices["price"] == -1f)
+            {
+                name = name.Split(new string[] { " - " }, StringSplitOptions.None).First();
+                prices = GetPrice(cardData);
+            }
+
+            if (types.ToLower().Contains("plane") && prices["price"] == -1f)
+            {
+                set = "Oversize Cards";
+                prices = GetPrice(cardData);
+            }
+
             Logger.LogActivity("Updating price of card:" + " | Card Name: " + name + " | Set: " + set + " | Price: " + prices["price"] + " | Foil Price: " + prices["foilPrice"]);
             return prices;
         }
@@ -584,10 +563,12 @@ namespace GameBreakersDBManagement
             var set = args[2].ToString();
             var price = float.Parse(args[3].ToString());
             var foilPrice = float.Parse(args[4].ToString());
-            
+            var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set.Replace("'", "''") + "')";
+            var card = DatabaseManager.RunQuery(query).Rows[0];
+
             if (price < 0 || foilPrice < 0)
             {
-                var newPrices = GetPrice(name, set);
+                var newPrices = GetPrice(card);
                 if (newPrices["price"] != -1)
                 {
                     price = newPrices["price"];
@@ -736,6 +717,33 @@ namespace GameBreakersDBManagement
             //return textInfo.ToTitleCase(finalName);
 
             return finalName;
+        }
+        string PrepareNameString(string name, string set, string types, string layout)
+        {
+            if (name.Contains("("))
+            {
+                name = name.Split(new string[] { " (" }, StringSplitOptions.None).First();
+            }
+            if (types.ToLower().Contains("land"))
+            {
+                name += " - " + set;
+            }
+
+            if (name == "Our Market Research Shows That Players Like Really Long Card Names So We Made this Card to Have the Absolute Longest Card Name Ever Elemental")
+            {
+                name = "Our Market Research";
+            }
+            if (name.ToLower().Contains("token card"))
+            {
+                name = name.Split(new string[] { " token" }, StringSplitOptions.None).First();
+                name += " Token";
+            }
+            if (layout == "token")
+            {
+                name += " Token";
+            }
+
+            return name;
         }
         string RemoveDiacritics(string text)
         {

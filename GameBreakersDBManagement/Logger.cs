@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace GameBreakersDBManagement
 {
@@ -61,7 +62,8 @@ namespace GameBreakersDBManagement
                     { "AttemptedAction", attemptedAction },
                     { "Error", error },
                     { "ExtraData", extraData },
-                    { "TimeOfError", DateTime.Now.ToString() }
+                    { "TimeOfError", DateTime.Now.ToString() },
+                    { "ParentFunction", new StackFrame(1).GetMethod().Name }
                 };
 
                 var query = "INSERT INTO Errors ";
