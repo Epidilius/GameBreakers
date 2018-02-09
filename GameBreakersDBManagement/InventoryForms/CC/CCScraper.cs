@@ -1,7 +1,9 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.OleDb;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
@@ -16,10 +18,7 @@ namespace GameBreakersDBManagement
 {
     public partial class CCScraper : Form
     {
-        static string FILE_PATH = @"C:\GameBreakersInventory\Card Data\";
-        static string FILE_SUFFIX = ".csv";
-
-        string fileName = "";
+        static string FILE_LOCATION = @"C:\GameBreakersInventory\Data.xlsx";
 
         public CCScraper()
         {
@@ -31,12 +30,11 @@ namespace GameBreakersDBManagement
         {
             try
             {
-                dataGridView_CardList.Rows.Clear();
+                //dataGridView_CardList.Rows.Clear();
                 //TODO: Exception popup
                 if (!ValidateURL())
                     return;
 
-                fileName = Regex.Match(textBox_URL.Text, @"(?<=com/)(.*)").Value;
                 FetchData();
 
                 Logger.LogActivity("Successfuly fetched and parsed data for url: " + textBox_URL.Text);
@@ -50,9 +48,6 @@ namespace GameBreakersDBManagement
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(fileName))
-                    return;
-
                 SaveData();
                 dataGridView_CardList.Rows.Clear();
 
@@ -67,10 +62,6 @@ namespace GameBreakersDBManagement
         //DATA HANDLERS
         void FetchData()
         {
-            //https://www.cardboardconnection.com/2017-18-sp-game-used-hockey-cards
-            //https://www.cardboardconnection.com/2017-18-sp-game-used-hockey-cards
-            //var testing = new WebClient().DownloadString("https://www.cardboardconnection.com/2017-18-sp-game-used-hockey-cards");
-
             string html = "No Response";
             HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(textBox_URL.Text);
 
@@ -111,42 +102,168 @@ namespace GameBreakersDBManagement
         }
         void ParseHTML(string html)
         {
-            var splitHtml = html.Split(new string[] { "<h3 class=\"hot-title\">" }, StringSplitOptions.None).Skip(1);
-            foreach (string checklist in splitHtml)
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
+            var node = doc.DocumentNode.SelectNodes("//div[@class='postTabs_divs']")[0];
+
+            var setData = GetSetData(node);
+
+            var url = GetXLSXURL(node);
+            if(DownloadXLSXFile(url))
             {
-                ParseChecklist(checklist);
+                LoadXLSXIntoGridView();
             }
-        }
-        void ParseChecklist(string checklist)
-        {
-            var category = checklist.Split(new string[] { "</h3>" }, StringSplitOptions.None).First();
-            category = Regex.Replace(category, " Set Checklist", String.Empty);
-            var matches = Regex.Matches(checklist, "<div class=\"ezcol(.*)</div>", RegexOptions.Singleline)[0].ToString().Split(new string[] { "<br /></div>" }, StringSplitOptions.None);
-
-            List<string> cards = new string[matches.Length].ToList();
-
-            foreach(string match in matches)
-            {
-                if (match.Contains("auth-bio clearfix"))
-                    break;
-
-                cards = cards.Concat(Regex.Replace(match, "<.*?>", string.Empty).Split('\n')).ToList();
-            }            
-
-            if (category.ToLower().Contains("dual") || category.ToLower().Contains("combos"))
-                AddCardMultiLineToGridView(category, cards, 2);
-            else if (category.ToLower().Contains("trio"))
-                AddCardMultiLineToGridView(category, cards, 3);
-            else if (category.ToLower().Contains("quad"))
-                AddCardMultiLineToGridView(category, cards, 4);
             else
             {
-                foreach (string card in cards)
+                ParseHTMLData(node);
+            }
+        }
+        string GetXLSXURL(HtmlNode node)
+        {            
+            var checklistDescriptions = node.SelectNodes("//a[text()[contains(., 'xlsx')]]");
+            var test = node.SelectNodes("//a[@href]");
+            foreach(var desc in test)
+            {
+                var attribute = desc.Attributes["href"].Value;
+
+                if(attribute.ToLower().Contains("xlsx"))
                 {
-                    if(!String.IsNullOrWhiteSpace(card))
-                        AddCardToGridView(category, card);
+                    return attribute;
                 }
             }
+
+            return String.Empty;
+        }
+        bool DownloadXLSXFile(string url)
+        {
+            try
+            {
+                if (File.Exists(FILE_LOCATION))
+                    File.Delete(FILE_LOCATION);
+
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, FILE_LOCATION);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Fetching Cardboard Connection .xlsx from url.", ex.ToString(), textBox_URL.Text);
+            }
+
+            return false;
+        }
+        void LoadXLSXIntoGridView()
+        {
+            String name = "Sheet1";
+            String constr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" +
+                            FILE_LOCATION +
+                            ";Extended Properties='Excel 12.0 XML;HDR=YES;';";
+
+            OleDbConnection con = new OleDbConnection(constr);
+            OleDbCommand oconn = new OleDbCommand("Select * From [" + name + "$]", con);
+            con.Open();
+
+            OleDbDataAdapter sda = new OleDbDataAdapter(oconn);
+            DataTable data = new DataTable();
+            sda.Fill(data);
+            dataGridView_CardList.DataSource = data;
+        }
+        void ParseHTMLData(HtmlNode node)
+        {
+            var htmlChunks = node.InnerHtml.Split(new string[] { "<div class=\"ezcol-divider\">" }, StringSplitOptions.None);
+            
+            for(int i = 0; i < htmlChunks.Count(); i++)
+            {
+                var doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(htmlChunks[i]);
+
+                var listTitle        = doc.DocumentNode.SelectNodes("//h3[contains(@class, 'hot-title')]");
+                var listDescriptions = doc.DocumentNode.SelectNodes("//div[contains(@class, 'checklistdesc')]");
+                var cardLists        = doc.DocumentNode.SelectNodes("//div[contains(@class, 'ezcol-one-half')]");
+
+                var titleString       = "";
+                var descriptionString = "";
+                var cardString        = "";
+
+                foreach (var title in listTitle)
+                {
+                    titleString += title.InnerText;
+                }
+                foreach (var desc in listDescriptions)
+                {
+                    if (descriptionString != "")
+                        descriptionString += "|";
+                    descriptionString += desc.InnerText;
+                }
+                foreach (var card in cardLists)
+                {
+                    cardString += card.InnerText;
+                }
+                //"Shop for complete base sets on eBay:"
+
+                //Multis come in different flavours
+                //AS2-CD Jeff Carter/Drew Doughty - Kings
+                //1 Nail Yakupov - Edmonton Oilers
+                //Nathan MacKinnon -Colorado Avalanche
+
+                var cards = cardString.Split('\n');
+                
+
+                for(int j = 0; j < cards.Count(); j++)
+                {
+                    var card = cards[j];
+                    while (card[0] == ' ' || card[0] == '|')
+                    {
+                        card = card.Substring(1);
+                    }
+
+                    if (Char.IsDigit(card, 0))
+                    {
+                        //"1 Don Cherry - Boston Bruins #/ 49"
+                    }
+                    else
+                    {
+                        //"Eric Lindros - Philadelphia Flyers"
+                        var temp = -1;
+                    }
+                }
+
+                var test = -1;
+            }
+        }
+        Dictionary<string, string> GetSetData(HtmlNode node)
+        {
+            var set = Regex.Replace(node.SelectNodes("//h2").First().InnerHtml, " Checklist", String.Empty);
+            var year = set.Split(' ').First();
+            var sport = FindSport(set);
+            var brand = set;
+            brand = Regex.Replace(set, year + " ", String.Empty);
+            brand = Regex.Replace(brand, " " + sport, String.Empty);
+
+            return new Dictionary<string, string>
+            {
+                { "Set", set },
+                { "Year", year },
+                { "Sport", sport },
+                { "Brand", brand }
+            };
+        }
+        string FindSport(string set)
+        {
+            var query = "SELECT * FROM SportList";
+            var results = DatabaseManager.RunQuery(query);
+
+            foreach(DataRow sport in results.Rows)
+            {
+                if(set.Contains(sport[0].ToString()))
+                {
+                    return sport[0].ToString();
+                }
+            }
+
+            return String.Empty;
         }
         void AddCardToGridView(string category, string card)
         {
@@ -178,28 +295,6 @@ namespace GameBreakersDBManagement
                 {
 
                 }
-                
-                //if (!String.IsNullOrWhiteSpace(odds))
-                //{
-                //    if (!odds.Any(char.IsDigit))
-                //    {
-                //        odds = String.Empty;
-                //    }
-                //    else
-                //    {
-                //        var temp = odds;
-                //        temp = Regex.Replace(temp, ":", String.Empty);
-                //        temp = Regex.Replace(temp, @"\d", String.Empty);
-
-                //        if (Regex.Replace(temp, @"\s", String.Empty).Length > 1)
-                //        {
-                //            temp = temp.Substring(1);
-                //            if (temp[0] == ' ')
-                //                temp = temp.Substring(1);
-                //            odds = Regex.Replace(odds, temp, String.Empty);
-                //        }
-                //    }
-                //}
 
                 AddRow(category, number, name, team, printRun, odds);
             }
@@ -319,6 +414,8 @@ namespace GameBreakersDBManagement
 
         void SaveData()
         {
+            var fileName = "";
+            fileName = Regex.Match(textBox_URL.Text, @"(?<=com/)(.*)").Value;
             //TODO: Parse file name correctly
             if (!DatabaseManager.CheckIfSetExists(fileName))
             {

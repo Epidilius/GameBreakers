@@ -34,6 +34,7 @@ namespace GameBreakersDBManagement
         public MtG()
         {
             InitializeComponent();
+            LoadCarts();
             SearchThread = new Thread(BeginSearchThread);
             new Thread(() =>
             {
@@ -75,70 +76,12 @@ namespace GameBreakersDBManagement
                 Logger.LogError("Attempting to search for MtG set", ex.Message, textBox_Set.Text);
             }
         }
-        private void button_RemoveSingle_Click(object sender, EventArgs e)  //TODO: Condense these
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            RemoveOneFromInventory(name, set, false);
-
-            Logger.LogActivity("Removed one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) - 1;
-            if (value < 0) value = 0;
-            dataGridView_CardData.Rows[index].Cells[3].Value = value;
-        }
-        private void button_RemoveFoil_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            RemoveOneFromInventory(name, set, true);
-
-            Logger.LogActivity("Removed foil one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) - 1;
-            if (value < 0) value = 0;
-            dataGridView_CardData.Rows[index].Cells[4].Value = value;
-        }
-        private void button_AddSingle_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            AddOneToInventory(name, set, false);
-
-            Logger.LogActivity("Added one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[3].Value.ToString()) + 1;
-            dataGridView_CardData.Rows[index].Cells[3].Value = value;
-        }
-        private void button_AddFoil_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[index].Cells[1].Value.ToString();
-
-            AddOneToInventory(name, set, true);
-
-            Logger.LogActivity("Added foil one of card: " + name + " of set " + set + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[4].Value.ToString()) + 1;
-            dataGridView_CardData.Rows[index].Cells[4].Value = value;
-        }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
             SetEditorForm setEditor = new SetEditorForm();
             setEditor.Show();
         }
-
+        
         //SEARCH
         void BeginSearchThread()
         {
@@ -878,22 +821,6 @@ namespace GameBreakersDBManagement
         }
 
         //INVENTORY
-        void AddOneToInventory(string card, string set, bool foil)
-        {
-            //TODO: Do I like this single line function?
-            DatabaseManager.AddOneToInventory(card, set, foil);
-        }
-        void RemoveOneFromInventory(string card, string set, bool foil)
-        {
-            try
-            {
-                DatabaseManager.RemoveOneToInventory(card, set, foil);
-            }
-            catch(Exception ex)
-            {
-
-            }
-        }
         int GetInventory(string card, string set)
         {
             return DatabaseManager.GetInventory(card, set);
@@ -1024,6 +951,118 @@ namespace GameBreakersDBManagement
                 Logger.LogError("Attempting tp fetch image for card", ex.Message, multiverseID.ToString());
             }
         }
+
+        //CART
+        void LoadCarts()
+        {
+            dataGridView_Carts.Rows.Clear();
+
+            var query = "SELECT ID, CustomerName FROM ActiveCarts";
+            var cartData = DatabaseManager.RunQuery(query);
+
+            foreach (DataRow cart in cartData.Rows)
+            {
+                var cartID       = cart[0].ToString();
+                var cartCustomer = cart[1].ToString();
+
+                dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+            }
+        }
+        private void button_AddToCart_Click(object sender, EventArgs e)
+        {
+            var mtgIndex  = dataGridView_CardData.CurrentCell.RowIndex;
+            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+
+            try
+            {
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0];
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1];
+                var cartID   = dataGridView_Carts.Rows[cartIndex].Cells[0];
+
+                //TODO: Make query to insert card into cart
+            }
+            catch(Exception ex)
+            {
+                //TODO: Message? Issue is most likely having not selected a cart or card
+            }
+        }
+        private void button_AddFoilToCart_Click(object sender, EventArgs e)
+        {
+            var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
+            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+
+            try
+            {
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0] + " *F*";
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1];
+                var cartID   = dataGridView_Carts.Rows[cartIndex].Cells[0];
+
+                //TODO: Make query to insert card into cart
+            }
+            catch (Exception ex)
+            {
+                //TODO: Message? Issue is most likely having not selected a cart or card
+            }
+        }
+        private void button_OpenCart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+                var cartID    = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                Cart cart = new Cart(cartID);
+                cart.Show();
+
+                //TODO: New Cart form
+            }
+            catch (Exception ex)
+            {
+                //TODO: Message? Issue is most likely having not selected a cart or card
+            }
+        }
+        private void button_DeleteCart_Click(object sender, EventArgs e)
+        {
+
+            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+
+            if (cartIndex < 1)
+                return;
+
+            try
+            {
+                var cartID = dataGridView_Carts.Rows[cartIndex].Cells[0].Value.ToString();
+
+                var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?",
+                                         "Delete cart: " + cartID,
+                                         MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    var query = "DELETE FROM ActiveCarts WHERE ID = " + cartID;
+                    DatabaseManager.RunQuery(query);
+
+                    LoadCarts();
+                }
+            }
+            catch(Exception ex)
+            {
+                //TODO: Log it
+            }
+        }
+        private void button_NewCart_Click(object sender, EventArgs e)
+        {
+            var query = "INSERT INTO ActiveCarts";
+
+            Dictionary<string, object> values = new Dictionary<string, object>
+            {
+                { "CustomerName", "GameBreakers" }
+            };
+
+            DatabaseManager.RunQueryWithArgs(query, values);
+
+            LoadCarts();
+        }
+        
     }
 }
 

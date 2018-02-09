@@ -33,13 +33,6 @@
             this.button_Scrape = new System.Windows.Forms.Button();
             this.button_Save = new System.Windows.Forms.Button();
             this.dataGridView_CardList = new System.Windows.Forms.DataGridView();
-            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardList)).BeginInit();
             this.SuspendLayout();
             // 
@@ -49,7 +42,8 @@
             this.textBox_URL.Name = "textBox_URL";
             this.textBox_URL.Size = new System.Drawing.Size(1005, 20);
             this.textBox_URL.TabIndex = 0;
-            this.textBox_URL.Text = "https://www.cardboardconnection.com/2017-panini-limited-football-nfl-cards";
+            this.textBox_URL.Text = "https://www.cardboardconnection.com/2013-14-panini-national-treasures-hockey-card" +
+    "s";
             // 
             // label1
             // 
@@ -83,53 +77,10 @@
             // dataGridView_CardList
             // 
             this.dataGridView_CardList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_CardList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Category,
-            this.Number,
-            this.PlayerName,
-            this.Team,
-            this.PrintRun,
-            this.Odds,
-            this.Inventory});
             this.dataGridView_CardList.Location = new System.Drawing.Point(13, 56);
             this.dataGridView_CardList.Name = "dataGridView_CardList";
             this.dataGridView_CardList.Size = new System.Drawing.Size(1004, 399);
             this.dataGridView_CardList.TabIndex = 4;
-            // 
-            // Category
-            // 
-            this.Category.HeaderText = "Category";
-            this.Category.Name = "Category";
-            // 
-            // Number
-            // 
-            this.Number.HeaderText = "Number";
-            this.Number.Name = "Number";
-            // 
-            // PlayerName
-            // 
-            this.PlayerName.HeaderText = "Name";
-            this.PlayerName.Name = "PlayerName";
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            // 
-            // PrintRun
-            // 
-            this.PrintRun.HeaderText = "Print Run";
-            this.PrintRun.Name = "PrintRun";
-            // 
-            // Odds
-            // 
-            this.Odds.HeaderText = "Odds";
-            this.Odds.Name = "Odds";
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
             // 
             // CCScraper
             // 
@@ -156,13 +107,6 @@
         private System.Windows.Forms.Button button_Scrape;
         private System.Windows.Forms.Button button_Save;
         private System.Windows.Forms.DataGridView dataGridView_CardList;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Category;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Number;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Team;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PrintRun;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Odds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
     }
 }
 

@@ -98,6 +98,7 @@
             this.dataGridView_Items.Name = "dataGridView_Items";
             this.dataGridView_Items.Size = new System.Drawing.Size(477, 368);
             this.dataGridView_Items.TabIndex = 5;
+            this.dataGridView_Items.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellValueChanged);
             // 
             // CardName
             // 
@@ -172,6 +173,7 @@
             // 
             // textBox_PriceSubtotal
             // 
+            this.textBox_PriceSubtotal.Enabled = false;
             this.textBox_PriceSubtotal.Location = new System.Drawing.Point(7, 33);
             this.textBox_PriceSubtotal.Name = "textBox_PriceSubtotal";
             this.textBox_PriceSubtotal.Size = new System.Drawing.Size(291, 20);
@@ -179,6 +181,7 @@
             // 
             // textBox_PriceTaxes
             // 
+            this.textBox_PriceTaxes.Enabled = false;
             this.textBox_PriceTaxes.Location = new System.Drawing.Point(7, 73);
             this.textBox_PriceTaxes.Name = "textBox_PriceTaxes";
             this.textBox_PriceTaxes.Size = new System.Drawing.Size(291, 20);
@@ -195,6 +198,7 @@
             // 
             // textBox_PriceTotal
             // 
+            this.textBox_PriceTotal.Enabled = false;
             this.textBox_PriceTotal.Location = new System.Drawing.Point(7, 113);
             this.textBox_PriceTotal.Name = "textBox_PriceTotal";
             this.textBox_PriceTotal.Size = new System.Drawing.Size(291, 20);
