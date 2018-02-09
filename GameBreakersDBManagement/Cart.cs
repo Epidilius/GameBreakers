@@ -107,7 +107,7 @@ namespace GameBreakersDBManagement
 
         private void button_CompleteSale_Click(object sender, EventArgs e)
         {
-
+            
         }
         private void button_Cancel_Click(object sender, EventArgs e)
         {

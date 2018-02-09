@@ -1051,7 +1051,7 @@ namespace GameBreakersDBManagement
         }
         private void button_NewCart_Click(object sender, EventArgs e)
         {
-            var query = "INSERT INTO ActiveCarts";
+            var query = "INSERT INTO ActiveCarts ";
 
             Dictionary<string, object> values = new Dictionary<string, object>
             {

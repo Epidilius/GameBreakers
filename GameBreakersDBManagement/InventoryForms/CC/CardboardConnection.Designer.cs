@@ -48,7 +48,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_Name = new System.Windows.Forms.TextBox();
             this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SubCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -78,7 +78,7 @@
             this.dataGridView_CardData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_CardData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Category,
-            this.SubCategory,
+            this.Expansion,
             this.Number,
             this.PlayerName,
             this.Team,
@@ -167,9 +167,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 157);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
+            this.label4.Size = new System.Drawing.Size(74, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "By Set:";
+            this.label4.Text = "By Expansion:";
             // 
             // textBox_Set
             // 
@@ -265,11 +265,11 @@
             this.Category.HeaderText = "Category";
             this.Category.Name = "Category";
             // 
-            // SubCategory
+            // Expansion
             // 
-            this.SubCategory.HeaderText = "Sub Category";
-            this.SubCategory.Name = "SubCategory";
-            this.SubCategory.ReadOnly = true;
+            this.Expansion.HeaderText = "Expansion";
+            this.Expansion.Name = "Expansion";
+            this.Expansion.ReadOnly = true;
             // 
             // Number
             // 
@@ -347,7 +347,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox_Name;
         private System.Windows.Forms.DataGridViewTextBoxColumn Category;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SubCategory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Expansion;
         private System.Windows.Forms.DataGridViewTextBoxColumn Number;
         private System.Windows.Forms.DataGridViewTextBoxColumn PlayerName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Team;

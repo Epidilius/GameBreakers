@@ -19,6 +19,7 @@ namespace GameBreakersDBManagement
     public partial class CCScraper : Form
     {
         static string FILE_LOCATION = @"C:\GameBreakersInventory\Data.xlsx";
+        Dictionary<string, string> SetData;
 
         public CCScraper()
         {
@@ -30,7 +31,8 @@ namespace GameBreakersDBManagement
         {
             try
             {
-                //dataGridView_CardList.Rows.Clear();
+                dataGridView_CardList.Columns.Clear();
+                //dataGridView_CardList.Rows.Clear();f
                 //TODO: Exception popup
                 if (!ValidateURL())
                     return;
@@ -49,7 +51,8 @@ namespace GameBreakersDBManagement
             try
             {
                 SaveData();
-                dataGridView_CardList.Rows.Clear();
+                dataGridView_CardList.Columns.Clear();
+                //dataGridView_CardList.Rows.Clear();
 
                 Logger.LogActivity("Successfuly saved data to database");
             }
@@ -106,7 +109,8 @@ namespace GameBreakersDBManagement
             doc.LoadHtml(html);
             var node = doc.DocumentNode.SelectNodes("//div[@class='postTabs_divs']")[0];
 
-            var setData = GetSetData(node);
+            SetData = GetSetData(node);
+            Text = "Cardboard Connections Data Scraper: " + SetData["Set"];
 
             var url = GetXLSXURL(node);
             if(DownloadXLSXFile(url))
@@ -168,13 +172,51 @@ namespace GameBreakersDBManagement
             OleDbDataAdapter sda = new OleDbDataAdapter(oconn);
             DataTable data = new DataTable();
             sda.Fill(data);
+
+            DataTable dataClone = data.Clone();
+            dataClone.Rows.Clear();
+
+            var misses = 0;
+
+            for(int i = 0; i < data.Rows.Count; i++)
+            {
+                DataRow row = data.Rows[i];
+
+                if (String.IsNullOrWhiteSpace(row[0].ToString()))
+                {
+                    misses++;
+                    var oldData = dataClone.Rows[i - misses];
+
+                    for(int j = 0; j < row.Table.Columns.Count; j++)
+                    {
+                        if(!String.IsNullOrWhiteSpace(row[j].ToString()))
+                        {
+                            oldData[j] += ", " + row[j];
+                        }
+                    }
+                }
+                else
+                {
+                    dataClone.ImportRow(row);
+                }
+            }
+
+            data = dataClone;
+
             dataGridView_CardList.DataSource = data;
         }
         void ParseHTMLData(HtmlNode node)
         {
             var htmlChunks = node.InnerHtml.Split(new string[] { "<div class=\"ezcol-divider\">" }, StringSplitOptions.None);
-            
-            for(int i = 0; i < htmlChunks.Count(); i++)
+
+            dataGridView_CardList.Columns.Add("Category", "Category");
+            dataGridView_CardList.Columns.Add("Number", "Number");
+            dataGridView_CardList.Columns.Add("Name", "Name");
+            dataGridView_CardList.Columns.Add("Team", "Team");
+            dataGridView_CardList.Columns.Add("PrintRun", "Print Run");
+            dataGridView_CardList.Columns.Add("ExtraData", "Extra");
+
+            for (int i = 0; i < htmlChunks.Count(); i++)
             {
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(htmlChunks[i]);
@@ -193,6 +235,7 @@ namespace GameBreakersDBManagement
                 }
                 foreach (var desc in listDescriptions)
                 {
+                    //"Shop for complete base sets on eBay:"
                     if (descriptionString != "")
                         descriptionString += "|";
                     descriptionString += desc.InnerText;
@@ -201,36 +244,10 @@ namespace GameBreakersDBManagement
                 {
                     cardString += card.InnerText;
                 }
-                //"Shop for complete base sets on eBay:"
 
-                //Multis come in different flavours
-                //AS2-CD Jeff Carter/Drew Doughty - Kings
-                //1 Nail Yakupov - Edmonton Oilers
-                //Nathan MacKinnon -Colorado Avalanche
+                titleString = Regex.Replace(titleString, " Set Checklist", String.Empty);
 
-                var cards = cardString.Split('\n');
-                
-
-                for(int j = 0; j < cards.Count(); j++)
-                {
-                    var card = cards[j];
-                    while (card[0] == ' ' || card[0] == '|')
-                    {
-                        card = card.Substring(1);
-                    }
-
-                    if (Char.IsDigit(card, 0))
-                    {
-                        //"1 Don Cherry - Boston Bruins #/ 49"
-                    }
-                    else
-                    {
-                        //"Eric Lindros - Philadelphia Flyers"
-                        var temp = -1;
-                    }
-                }
-
-                var test = -1;
+                AddCardToGridView(titleString, cardString);
             }
         }
         Dictionary<string, string> GetSetData(HtmlNode node)
@@ -265,42 +282,91 @@ namespace GameBreakersDBManagement
 
             return String.Empty;
         }
-        void AddCardToGridView(string category, string card)
+        void AddCardToGridView(string category, string cardString)
         {
             try
             {
-                card = Regex.Replace(card, "&nbsp;", String.Empty);
+                var cards    = cardString.Split('\n');
+                var cardData = "";
 
-                var number  = Regex.Match(card, @"([^\s]+)").Value;
-                var name    = Regex.Match(card, @"(?<=" + number + @" )(.*?)(?= -)").Value;
-                var team    = Regex.Match(card, @"(?<=- )(.*?)(?= #)").Value;
-                var printRun  = Regex.Match(card, @"(?<=#/ )(.*)").Value;
-                var odds    = Regex.Match(card, @"(?<=: )(.*)").Value;
-                
-                if (String.IsNullOrWhiteSpace(name))
-                {
-                    name = Regex.Replace(card, @"\b" + number + @" \b", String.Empty);
-                }
-                
-                if (String.IsNullOrWhiteSpace(team))
-                {
-                    team = Regex.Match(card, @"(?<=- )(.*?)(?= :)").Value;
+                var cardNumber   = "";
+                var names        = "";
+                var teams        = "";
+                var printRun     = "";
+                var extra        = "";
 
-                    if (String.IsNullOrWhiteSpace(team))
+                for (int j = 0; j < cards.Count(); j++)
+                {
+                    var line = cards[j];
+                    while (line[0] == ' ' || line[0] == '|')
                     {
-                        team = Regex.Match(card, @"(?<=- )(.*)").Value;
+                        line = line.Substring(1);
+                    }
+
+                    if (Char.IsDigit(line, 0))
+                    {
+                        if (cardData != "")
+                        {
+                            AddRow(category, cardNumber, names, teams, printRun, extra);
+
+                            cardData   = "";
+                            cardNumber = "";
+                            names      = "";
+                            teams      = "";
+                            printRun   = "";
+                            extra      = "";
+                        }
+                        //"Don Cherry - Boston Bruins
+                        cardData   += line;
+
+                        cardNumber += line.Split(' ').First();
+                        line       = Regex.Replace(line, cardNumber + " ", String.Empty);
+
+                        if (line.Contains("#/"))
+                        {
+                            printRun += line.Split(new string[] { "#/ " }, StringSplitOptions.None).Last();
+                            line     = Regex.Replace(line, " #/ " + printRun, String.Empty);
+                        }
+
+                        names      += Regex.Split(line, " - ").First();
+                        teams      += Regex.Split(line, " - ").Last();
+
+                        if (names.Contains("("))
+                            names = Regex.Split(names, "(").First();
+
+                        line       = Regex.Replace(line, names, String.Empty);
+                        line       = Regex.Replace(line, teams, String.Empty);
+                        line       = Regex.Replace(line, "-", String.Empty);
+
+                        if (!String.IsNullOrWhiteSpace(line))
+                            extra += line;
+                    }
+                    else
+                    {
+                        //"Eric Lindros - Philadelphia Flyers"
+                        cardData += line;
+                        var name = Regex.Split(line, " - ").First();
+                        var team = Regex.Split(line, " - ").Last();
+
+                        if (name.Contains("("))
+                            name = Regex.Split(names, "(").First();
+
+                        names    += ", " + name;
+                        teams    += ", " + team;
+
+                        line     = Regex.Replace(line, name, String.Empty);
+                        line     = Regex.Replace(line, team, String.Empty);
+                        line     = Regex.Replace(line, "-", String.Empty);
+                        
+                        if(!String.IsNullOrWhiteSpace(line))
+                            extra += line;
                     }
                 }
-                if (String.IsNullOrWhiteSpace(printRun))
-                {
-
-                }
-
-                AddRow(category, number, name, team, printRun, odds);
+                AddRow(category, cardNumber, names, teams, printRun, extra);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to parse Carboard Connection card", ex.ToString(), "Card: " + card + "\r\nCategory: " + category);
+                Logger.LogError("Failed to parse Carboard Connection card", ex.ToString(), "Card: " + cardString + "\r\nCategory: " + category);
             }
         }
         void AddCardMultiLineToGridView(string category, List<string> cards, int linesPerCard)
@@ -414,29 +480,70 @@ namespace GameBreakersDBManagement
 
         void SaveData()
         {
-            var fileName = "";
-            fileName = Regex.Match(textBox_URL.Text, @"(?<=com/)(.*)").Value;
             //TODO: Parse file name correctly
-            if (!DatabaseManager.CheckIfSetExists(fileName))
+            if (!DatabaseManager.CheckIfSetExists(SetData["Set"]))
             {
-                DatabaseManager.AddNewSet(fileName, null, null, "non_mtg");
-                Logger.LogActivity("Adding new set: " + fileName + " to databse");
+                DatabaseManager.AddNewSet(SetData["Set"], null, null, "non_mtg");
+                Logger.LogActivity("Adding new set: " + SetData["Set"] + " to databse");
             }
 
             for (int i = 0; i < dataGridView_CardList.Rows.Count - 1; i++)
             {
+                var row = dataGridView_CardList.Rows[i];
+
                 Dictionary<string, object> values = new Dictionary<string, object>();
+                values.Add("expansion", SetData["Set"]);
+                values.Add("year", SetData["Year"]);
+                values.Add("sport", SetData["Sport"]);
+                values.Add("brand", SetData["Brand"]);
+                
+                for (int j = 0; j < dataGridView_CardList.Columns.Count; j++)
+                {
+                    var columnName = Regex.Replace(dataGridView_CardList.Columns[j].Name, " ", String.Empty);
+                    columnName     = Regex.Replace(columnName, "'", String.Empty);
+                    var columnData = row.Cells[j].Value.ToString();
 
-                values.Add("category", fileName);
-                values.Add("subCategory", dataGridView_CardList.Rows[i].Cells[0].Value.ToString());
-                values.Add("number", dataGridView_CardList.Rows[i].Cells[1].Value.ToString());
-                values.Add("name", dataGridView_CardList.Rows[i].Cells[2].Value.ToString());
-                values.Add("team", dataGridView_CardList.Rows[i].Cells[3].Value.ToString());
-                values.Add("printRun", dataGridView_CardList.Rows[i].Cells[4].Value.ToString());
-                values.Add("odds", dataGridView_CardList.Rows[i].Cells[5].Value.ToString());
-                values.Add("inventory", dataGridView_CardList.Rows[i].Cells[6].Value.ToString());
+                    if (columnName == "Expansion")
+                    {
+                        //TODO: Something here
+                        continue;
+                    }
+                    if (columnName == "SetName") columnName = "Category";
+                    if (columnName == "Card") columnName = "Number";
+                    if (columnName == "Description") columnName = "Name";
+                    if (columnName == "TeamCity") columnName = "Team";
+                    if (columnName == "Mem") columnName = "ExtraData";
+                    if (columnName == "#d") columnName = "PrintRun";
+                    if (columnName == "TeamName")
+                    {
+                        values["Team"] += " " + columnData;
+                        continue;
+                    }
 
-                if (CheckForDuplicates(values)) continue;
+                    values.Add(columnName, columnData);
+                }
+
+                try
+                {
+                    if (CheckForDuplicates(values))
+                        continue;
+                }
+                catch(Exception ex)
+                {
+                    //TODO: Why wont this check work?
+                    //if (ex.Message.ToLower().Contains("invalid column name)"))
+
+                    try
+                    {
+                        CreateColumnIfNotExist(values);
+                        if (CheckForDuplicates(values))
+                            continue;
+                    }
+                    catch (Exception nestedEx)
+                    {
+                        Logger.LogError("Checking database for duplicate CC entries", nestedEx.Message, "");
+                    }
+                }
 
                 try
                 {
@@ -450,28 +557,45 @@ namespace GameBreakersDBManagement
         }
         bool CheckForDuplicates(Dictionary<string, object> values)
         {
-            var name = values["name"].ToString().Replace("'", "''");
+            var expansion = values["expansion"];
 
-            var potentialDuplicates = DatabaseManager.RunQuery("SELECT * FROM Non_Mtg WHERE NAME LIKE \'%" + name + "%\'");
+            var query = "SELECT * FROM Non_Mtg WHERE (";
 
-            if (potentialDuplicates.Rows.Count > 0)
+            for(int i = 0; i < values.Count; i++)
             {
-                foreach (DataRow match in potentialDuplicates.Rows)
+                var key   = "[" + Regex.Replace(values.ElementAt(i).Key.ToString(), "'", "") + "]";
+                var value = Regex.Replace(values.ElementAt(i).Value.ToString(), "'", "''");
+                query += key + " = '" + value + "'";
+
+                if(i == values.Count - 1)
                 {
-                    var matchCount = 1;
-
-                    if (match[1].ToString() == values["category"].ToString()) matchCount++;
-                    if (match[2].ToString() == values["number"].ToString()) matchCount++;
-                    if (match[3].ToString() == values["name"].ToString()) matchCount++;
-                    if (match[4].ToString() == values["team"].ToString()) matchCount++;
-                    if (match[5].ToString() == values["printRun"].ToString()) matchCount++;
-                    if (match[6].ToString() == values["odds"].ToString()) matchCount++;
-
-                    if (matchCount == 7)
-                        return true;
+                    query += ")";
+                }
+                else
+                {
+                    query += " AND ";
                 }
             }
+
+            var duplicates = DatabaseManager.RunQuery(query);
+
+            if (duplicates.Rows.Count > 0)
+            {
+                return true;
+            }
             return false;
+        }
+        void CreateColumnIfNotExist(Dictionary<string, object> values)
+        {
+            for (int i = 0; i < values.Count; i++)
+            {
+                var key = Regex.Replace(values.ElementAt(i).Key.ToString(), "'", "");
+                var query = "IF NOT EXISTS(SELECT * FROM sys.columns WHERE[name] = N'" +
+                    key + "' AND[object_id] = OBJECT_ID(N'non_mtg')) BEGIN ALTER TABLE non_mtg ADD " + 
+                    key + " varchar(MAX) END";
+
+                DatabaseManager.RunQuery(query);
+            }
         }
 
         //GRID VIEW HANDLERS
