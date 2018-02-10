@@ -39,7 +39,9 @@ namespace GameBreakersDBManagement
             new Thread(() =>
             {
                 CheckForNewSets();
-                BeginPriceUpdate();
+                //TODO: Fetch by set for MtGStocks
+                //TODO: Save the MTG Stocks ID to the database
+                //BeginPriceUpdate();
             }).Start();
         }
 
@@ -502,8 +504,8 @@ namespace GameBreakersDBManagement
         {
             object[] args = state as object[];
             var i = Int32.Parse(args[0].ToString());
-            var name = args[1].ToString();
-            var set = args[2].ToString();
+            var name = args[1].ToString().Replace("'", "''");
+            var set = args[2].ToString().Replace("'", "''");
             var price = float.Parse(args[3].ToString());
             var foilPrice = float.Parse(args[4].ToString());
             var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set.Replace("'", "''") + "')";
@@ -970,16 +972,16 @@ namespace GameBreakersDBManagement
         }
         private void button_AddToCart_Click(object sender, EventArgs e)
         {
-            var mtgIndex  = dataGridView_CardData.CurrentCell.RowIndex;
-            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-
             try
             {
-                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0];
-                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1];
-                var cartID   = dataGridView_Carts.Rows[cartIndex].Cells[0];
+                var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                //TODO: Make query to insert card into cart
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString();
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
+                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                CartManager.AddItemToCart(cartID, cardName, cardSet, 1);
             }
             catch(Exception ex)
             {
@@ -988,16 +990,16 @@ namespace GameBreakersDBManagement
         }
         private void button_AddFoilToCart_Click(object sender, EventArgs e)
         {
-            var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
-            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-
             try
             {
-                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0] + " *F*";
-                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1];
-                var cartID   = dataGridView_Carts.Rows[cartIndex].Cells[0];
+                var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                //TODO: Make query to insert card into cart
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString() + " *F*";
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
+                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                CartManager.AddItemToCart(cartID, cardName, cardSet, 1);
             }
             catch (Exception ex)
             {
@@ -1011,10 +1013,7 @@ namespace GameBreakersDBManagement
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
                 var cartID    = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
-                Cart cart = new Cart(cartID);
-                cart.Show();
-
-                //TODO: New Cart form
+                CartManager.DisplayCart(cartID);
             }
             catch (Exception ex)
             {
@@ -1023,24 +1022,20 @@ namespace GameBreakersDBManagement
         }
         private void button_DeleteCart_Click(object sender, EventArgs e)
         {
-
-            var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-
-            if (cartIndex < 1)
-                return;
-
             try
             {
-                var cartID = dataGridView_Carts.Rows[cartIndex].Cells[0].Value.ToString();
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+                if (cartIndex < 1)
+                    return;
+
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
                 var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?",
                                          "Delete cart: " + cartID,
                                          MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
-                    var query = "DELETE FROM ActiveCarts WHERE ID = " + cartID;
-                    DatabaseManager.RunQuery(query);
-
+                    CartManager.DeleteCart(cartID);
                     LoadCarts();
                 }
             }
@@ -1051,15 +1046,7 @@ namespace GameBreakersDBManagement
         }
         private void button_NewCart_Click(object sender, EventArgs e)
         {
-            var query = "INSERT INTO ActiveCarts ";
-
-            Dictionary<string, object> values = new Dictionary<string, object>
-            {
-                { "CustomerName", "GameBreakers" }
-            };
-
-            DatabaseManager.RunQueryWithArgs(query, values);
-
+            CartManager.CreateCart();
             LoadCarts();
         }
         

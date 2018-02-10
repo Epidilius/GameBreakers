@@ -107,19 +107,21 @@ namespace GameBreakersDBManagement
         {
             var doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(html);
-            var node = doc.DocumentNode.SelectNodes("//div[@class='postTabs_divs']")[0];
 
-            SetData = GetSetData(node);
+            //This URL needs better parsing: https://www.cardboardconnection.com/2017-bowman-draft-baseball-cards
+            var mainNode = doc.DocumentNode.SelectNodes("//div[@class='postTabs_divs']")[0];
+            
+            SetData = GetSetData(mainNode);
             Text = "Cardboard Connections Data Scraper: " + SetData["Set"];
 
-            var url = GetXLSXURL(node);
+            var url = GetXLSXURL(mainNode);
             if(DownloadXLSXFile(url))
             {
                 LoadXLSXIntoGridView();
             }
             else
             {
-                ParseHTMLData(node);
+                ParseHTMLData(mainNode);
             }
         }
         string GetXLSXURL(HtmlNode node)
@@ -257,7 +259,8 @@ namespace GameBreakersDBManagement
             var sport = FindSport(set);
             var brand = set;
             brand = Regex.Replace(set, year + " ", String.Empty);
-            brand = Regex.Replace(brand, " " + sport, String.Empty);
+            if(!String.IsNullOrWhiteSpace(sport))
+                brand = Regex.Replace(brand, " " + sport, String.Empty);
 
             return new Dictionary<string, string>
             {
@@ -286,14 +289,9 @@ namespace GameBreakersDBManagement
         {
             try
             {
-                var cards    = cardString.Split('\n');
-                var cardData = "";
+                var cards = cardString.Split('\n');                
 
-                var cardNumber   = "";
-                var names        = "";
-                var teams        = "";
-                var printRun     = "";
-                var extra        = "";
+                var noNumbers = true;
 
                 for (int j = 0; j < cards.Count(); j++)
                 {
@@ -302,71 +300,148 @@ namespace GameBreakersDBManagement
                     {
                         line = line.Substring(1);
                     }
-
                     if (Char.IsDigit(line, 0))
                     {
-                        if (cardData != "")
-                        {
-                            AddRow(category, cardNumber, names, teams, printRun, extra);
-
-                            cardData   = "";
-                            cardNumber = "";
-                            names      = "";
-                            teams      = "";
-                            printRun   = "";
-                            extra      = "";
-                        }
-                        //"Don Cherry - Boston Bruins
-                        cardData   += line;
-
-                        cardNumber += line.Split(' ').First();
-                        line       = Regex.Replace(line, cardNumber + " ", String.Empty);
-
-                        if (line.Contains("#/"))
-                        {
-                            printRun += line.Split(new string[] { "#/ " }, StringSplitOptions.None).Last();
-                            line     = Regex.Replace(line, " #/ " + printRun, String.Empty);
-                        }
-
-                        names      += Regex.Split(line, " - ").First();
-                        teams      += Regex.Split(line, " - ").Last();
-
-                        if (names.Contains("("))
-                            names = Regex.Split(names, "(").First();
-
-                        line       = Regex.Replace(line, names, String.Empty);
-                        line       = Regex.Replace(line, teams, String.Empty);
-                        line       = Regex.Replace(line, "-", String.Empty);
-
-                        if (!String.IsNullOrWhiteSpace(line))
-                            extra += line;
-                    }
-                    else
-                    {
-                        //"Eric Lindros - Philadelphia Flyers"
-                        cardData += line;
-                        var name = Regex.Split(line, " - ").First();
-                        var team = Regex.Split(line, " - ").Last();
-
-                        if (name.Contains("("))
-                            name = Regex.Split(names, "(").First();
-
-                        names    += ", " + name;
-                        teams    += ", " + team;
-
-                        line     = Regex.Replace(line, name, String.Empty);
-                        line     = Regex.Replace(line, team, String.Empty);
-                        line     = Regex.Replace(line, "-", String.Empty);
-                        
-                        if(!String.IsNullOrWhiteSpace(line))
-                            extra += line;
+                        noNumbers = false;
+                        break;
                     }
                 }
-                AddRow(category, cardNumber, names, teams, printRun, extra);
+
+                if (noNumbers) AddCardsWithNoNumbers(category, cards);
+                else AddCardsWithNumbers(category, cards);
             }
             catch (Exception ex)
             {
                 Logger.LogError("Failed to parse Carboard Connection card", ex.ToString(), "Card: " + cardString + "\r\nCategory: " + category);
+            }
+        }
+        void AddCardsWithNumbers(string category, string[] cards)
+        {
+            var cardData = "";
+
+            var cardNumber = "";
+            var names = "";
+            var teams = "";
+            var printRun = "";
+            var extra = "";
+
+            for (int j = 0; j < cards.Count(); j++)
+            {
+                var line = cards[j];
+                while (line[0] == ' ' || line[0] == '|')
+                {
+                    line = line.Substring(1);
+                }
+
+                if (Char.IsDigit(line, 0))
+                {
+                    if (cardData != "")
+                    {
+                        AddRow(category, cardNumber, names, teams, printRun, extra);
+
+                        cardData = "";
+                        cardNumber = "";
+                        names = "";
+                        teams = "";
+                        printRun = "";
+                        extra = "";
+                    }
+                    //"Don Cherry - Boston Bruins
+                    cardData += line;
+
+                    cardNumber += line.Split(' ').First();
+                    line = Regex.Replace(line, cardNumber + " ", String.Empty);
+
+                    if (line.Contains("#/"))
+                    {
+                        printRun += line.Split(new string[] { "#/ " }, StringSplitOptions.None).Last();
+                        line = Regex.Replace(line, " #/ " + printRun, String.Empty);
+                    }
+
+                    names += Regex.Split(line, " - ").First();
+
+                    if(line.Contains("-"))
+                        teams += Regex.Split(line, " - ").Last();
+
+                    if (names.Contains("("))
+                        names = Regex.Split(names, "(").First();
+
+                    line = Regex.Replace(line, names, String.Empty);
+                    line = Regex.Replace(line, teams, String.Empty);
+                    line = Regex.Replace(line, "-", String.Empty);
+
+                    if (!String.IsNullOrWhiteSpace(line))
+                        extra += line;
+                }
+                else
+                {
+                    //"Eric Lindros - Philadelphia Flyers"
+                    cardData += line;
+                    var name = Regex.Split(line, " - ").First();
+                    var team = Regex.Split(line, " - ").Last();
+
+                    if (name.Contains("("))
+                        name = Regex.Split(names, "(").First();
+
+                    names += ", " + name;
+                    teams += ", " + team;
+
+                    line = Regex.Replace(line, name, String.Empty);
+                    line = Regex.Replace(line, team, String.Empty);
+                    line = Regex.Replace(line, "-", String.Empty);
+
+                    if (!String.IsNullOrWhiteSpace(line))
+                        extra += line;
+                }
+            }
+            AddRow(category, cardNumber, names, teams, printRun, extra);
+        }
+        void AddCardsWithNoNumbers(string category, string[] cards)
+        {
+            for (int j = 0; j < cards.Count(); j++)
+            {
+                var line = cards[j];
+                while (line[0] == ' ' || line[0] == '|')
+                {
+                    line = line.Substring(1);
+                }
+                
+                var cardNumber = "";
+                var names = "";
+                var teams = "";
+                var printRun = "";
+                var extra = "";
+
+                if(category.ToLower().Contains("artists"))
+                {
+                    names = line;
+                    AddRow(category, cardNumber, names, teams, printRun, extra);
+                    continue;
+                }
+
+                cardNumber += line.Split(' ').First();
+                line = Regex.Replace(line, cardNumber + " ", String.Empty);
+
+                if (line.Contains("#/"))
+                {
+                    printRun += line.Split(new string[] { "#/ " }, StringSplitOptions.None).Last();
+                    line = Regex.Replace(line, " #/ " + printRun, String.Empty);
+                }
+
+                names += Regex.Split(line, " - ").First();
+                teams += Regex.Split(line, " - ").Last();
+
+                if (names.Contains("("))
+                    names = Regex.Split(names, "(").First();
+
+                line = Regex.Replace(line, names, String.Empty);
+                line = Regex.Replace(line, teams, String.Empty);
+                line = Regex.Replace(line, "-", String.Empty);
+
+                if (!String.IsNullOrWhiteSpace(line))
+                    extra += line;
+
+                AddRow(category, cardNumber, names, teams, printRun, extra);
             }
         }
         void AddCardMultiLineToGridView(string category, List<string> cards, int linesPerCard)
@@ -508,12 +583,13 @@ namespace GameBreakersDBManagement
                         //TODO: Something here
                         continue;
                     }
-                    if (columnName == "SetName") columnName = "Category";
+                    if (columnName == "SetName" || columnName == "CardSet") columnName = "Category";
                     if (columnName == "Card") columnName = "Number";
-                    if (columnName == "Description") columnName = "Name";
+                    if (columnName == "Description" || columnName == "Player") columnName = "Name";
                     if (columnName == "TeamCity") columnName = "Team";
                     if (columnName == "Mem") columnName = "ExtraData";
-                    if (columnName == "#d") columnName = "PrintRun";
+                    if (columnName.Contains("#")) columnName = "PrintRun";
+                    //if (columnName == "#d" || columnName == "Seq#") columnName = "PrintRun";
                     if (columnName == "TeamName")
                     {
                         values["Team"] += " " + columnData;

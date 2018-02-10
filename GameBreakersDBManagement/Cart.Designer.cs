@@ -41,16 +41,16 @@
             this.textBox_CustomerName = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox_PriceSubtotal = new System.Windows.Forms.TextBox();
-            this.textBox_PriceTaxes = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.textBox_PriceTotal = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.textBox_PriceTaxes = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_PriceSubtotal = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox_CustomerPhone = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox_CustomerEmail = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox_CustomerPhone = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Items)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -171,13 +171,22 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Price";
             // 
-            // textBox_PriceSubtotal
+            // textBox_PriceTotal
             // 
-            this.textBox_PriceSubtotal.Enabled = false;
-            this.textBox_PriceSubtotal.Location = new System.Drawing.Point(7, 33);
-            this.textBox_PriceSubtotal.Name = "textBox_PriceSubtotal";
-            this.textBox_PriceSubtotal.Size = new System.Drawing.Size(291, 20);
-            this.textBox_PriceSubtotal.TabIndex = 12;
+            this.textBox_PriceTotal.Enabled = false;
+            this.textBox_PriceTotal.Location = new System.Drawing.Point(7, 113);
+            this.textBox_PriceTotal.Name = "textBox_PriceTotal";
+            this.textBox_PriceTotal.Size = new System.Drawing.Size(291, 20);
+            this.textBox_PriceTotal.TabIndex = 16;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 96);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(31, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Total";
             // 
             // textBox_PriceTaxes
             // 
@@ -196,22 +205,13 @@
             this.label2.TabIndex = 13;
             this.label2.Text = "Taxes";
             // 
-            // textBox_PriceTotal
+            // textBox_PriceSubtotal
             // 
-            this.textBox_PriceTotal.Enabled = false;
-            this.textBox_PriceTotal.Location = new System.Drawing.Point(7, 113);
-            this.textBox_PriceTotal.Name = "textBox_PriceTotal";
-            this.textBox_PriceTotal.Size = new System.Drawing.Size(291, 20);
-            this.textBox_PriceTotal.TabIndex = 16;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 96);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(31, 13);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Total";
+            this.textBox_PriceSubtotal.Enabled = false;
+            this.textBox_PriceSubtotal.Location = new System.Drawing.Point(7, 33);
+            this.textBox_PriceSubtotal.Name = "textBox_PriceSubtotal";
+            this.textBox_PriceSubtotal.Size = new System.Drawing.Size(291, 20);
+            this.textBox_PriceSubtotal.TabIndex = 12;
             // 
             // groupBox2
             // 
@@ -227,22 +227,6 @@
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Customer";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 55);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(78, 13);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Phone Number";
-            // 
-            // textBox_CustomerPhone
-            // 
-            this.textBox_CustomerPhone.Location = new System.Drawing.Point(6, 71);
-            this.textBox_CustomerPhone.Name = "textBox_CustomerPhone";
-            this.textBox_CustomerPhone.Size = new System.Drawing.Size(294, 20);
-            this.textBox_CustomerPhone.TabIndex = 12;
             // 
             // label7
             // 
@@ -260,6 +244,22 @@
             this.textBox_CustomerEmail.Size = new System.Drawing.Size(294, 20);
             this.textBox_CustomerEmail.TabIndex = 14;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 55);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(78, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Phone Number";
+            // 
+            // textBox_CustomerPhone
+            // 
+            this.textBox_CustomerPhone.Location = new System.Drawing.Point(6, 71);
+            this.textBox_CustomerPhone.Name = "textBox_CustomerPhone";
+            this.textBox_CustomerPhone.Size = new System.Drawing.Size(294, 20);
+            this.textBox_CustomerPhone.TabIndex = 12;
+            // 
             // Cart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -274,6 +274,7 @@
             this.Controls.Add(this.button_Cancel);
             this.Name = "Cart";
             this.Text = "Cart";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnClose);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Items)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

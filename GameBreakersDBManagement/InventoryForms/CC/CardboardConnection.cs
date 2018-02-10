@@ -32,11 +32,12 @@ namespace GameBreakersDBManagement
         //TODO: Save to database in ccscraper
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
-        //string category, string number, string name, string team, string amount, string odds, string other, string inventory
         //TODO: Stop the service that keeps starting, I dont want it 
         public CardboardConnection()
         {
             InitializeComponent();
+
+            LoadCarts();
         }
 
         //BUTTONS
@@ -119,17 +120,17 @@ namespace GameBreakersDBManagement
                 {
                     Dictionary<string, object> values = new Dictionary<string, object>();
 
-                    var category    = card[1];
-                    var subCategory = card[2];
-                    var number      = card[3];
-                    var name        = card[4];
-                    var team        = card[5];
-                    var printRun    = card[6];
-                    var odds        = card[7];
-                    var inventory   = card[8];
+                    var expansion   = card["Expansion"];
+                    var category    = card["Category"];
+                    var number      = card["Number"];
+                    var name        = card["Name"];
+                    var team        = card["Team"];
+                    var printRun    = card["PrintRun"];
+                    var odds        = card["Odds"];
+                    var inventory   = card["Inventory"];
 
-                    values.Add("category", category);
-                    values.Add("subCategory", subCategory);
+                    values.Add("category", expansion);
+                    values.Add("subCategory", category);
                     values.Add("number", number);
                     values.Add("name", name);
                     values.Add("team", team);
@@ -273,6 +274,87 @@ namespace GameBreakersDBManagement
         private void textBox_Set_Enter(object sender, EventArgs e)
         {
             AcceptButton = button_Set;
+        }
+
+        //CART
+        void LoadCarts()
+        {
+            dataGridView_Carts.Rows.Clear();
+
+            var query = "SELECT ID, CustomerName FROM ActiveCarts";
+            var cartData = DatabaseManager.RunQuery(query);
+
+            foreach (DataRow cart in cartData.Rows)
+            {
+                var cartID = cart[0].ToString();
+                var cartCustomer = cart[1].ToString();
+
+                dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+            }
+        }
+        private void button_AddToCart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cardIndex = dataGridView_CardData.CurrentCell.RowIndex;
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+
+                var cardExpansion  = dataGridView_CardData.Rows[cardIndex].Cells[0].Value.ToString();
+                var cardCategory   = dataGridView_CardData.Rows[cardIndex].Cells[1].Value.ToString();
+                var cardNumber     = dataGridView_CardData.Rows[cardIndex].Cells[2].Value.ToString();
+                var cardName       = dataGridView_CardData.Rows[cardIndex].Cells[3].Value.ToString();
+                var cartID         = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                var name = cardName + " - " + cardNumber;
+                var set  = cardExpansion + ": " + cardCategory;
+
+                CartManager.AddItemToCart(cartID, name, set, 1);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Message? Issue is most likely having not selected a cart or card
+            }
+        }
+        private void button_OpenCart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                CartManager.DisplayCart(cartID);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Message? Issue is most likely having not selected a cart or card
+            }
+        }
+        private void button_DeleteCart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
+                if (cartIndex < 1)
+                    return;
+
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+
+                var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?", "Delete cart: " + cartID, MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    CartManager.DeleteCart(cartID);
+                    LoadCarts();
+                }
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log it
+            }
+        }
+        private void button_NewCart_Click(object sender, EventArgs e)
+        {
+            CartManager.CreateCart();
+            LoadCarts();
         }
     }
 }

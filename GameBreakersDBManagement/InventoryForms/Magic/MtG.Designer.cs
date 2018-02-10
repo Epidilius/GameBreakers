@@ -38,13 +38,6 @@
             this.button_Search = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.CardName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Set = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Rarity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FoilInventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FoilPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button_EditSet = new System.Windows.Forms.Button();
             this.pictureBox_Card = new System.Windows.Forms.PictureBox();
@@ -56,6 +49,13 @@
             this.button_DeleteCart = new System.Windows.Forms.Button();
             this.button_NewCart = new System.Windows.Forms.Button();
             this.button_AddFoilToCart = new System.Windows.Forms.Button();
+            this.CardName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Rarity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FoilInventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FoilPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
@@ -111,9 +111,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 63);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.Size = new System.Drawing.Size(74, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "By Set:";
+            this.label2.Text = "By Expansion:";
             // 
             // textBox_Set
             // 
@@ -154,7 +154,7 @@
             this.dataGridView_CardData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_CardData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.CardName,
-            this.Set,
+            this.Expansion,
             this.Rarity,
             this.Inventory,
             this.FoilInventory,
@@ -167,48 +167,6 @@
             this.dataGridView_CardData.Size = new System.Drawing.Size(798, 217);
             this.dataGridView_CardData.TabIndex = 12;
             this.dataGridView_CardData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellClick);
-            // 
-            // CardName
-            // 
-            this.CardName.HeaderText = "Name";
-            this.CardName.Name = "CardName";
-            this.CardName.ReadOnly = true;
-            // 
-            // Set
-            // 
-            this.Set.HeaderText = "Set";
-            this.Set.Name = "Set";
-            this.Set.ReadOnly = true;
-            // 
-            // Rarity
-            // 
-            this.Rarity.HeaderText = "Rarity";
-            this.Rarity.Name = "Rarity";
-            this.Rarity.ReadOnly = true;
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            this.Inventory.ReadOnly = true;
-            // 
-            // FoilInventory
-            // 
-            this.FoilInventory.HeaderText = "Foil Inventory";
-            this.FoilInventory.Name = "FoilInventory";
-            this.FoilInventory.ReadOnly = true;
-            // 
-            // Price
-            // 
-            this.Price.HeaderText = "Price";
-            this.Price.Name = "Price";
-            this.Price.ReadOnly = true;
-            // 
-            // FoilPrice
-            // 
-            this.FoilPrice.HeaderText = "Foil Price";
-            this.FoilPrice.Name = "FoilPrice";
-            this.FoilPrice.ReadOnly = true;
             // 
             // groupBox3
             // 
@@ -315,6 +273,48 @@
             this.button_AddFoilToCart.UseVisualStyleBackColor = true;
             this.button_AddFoilToCart.Click += new System.EventHandler(this.button_AddFoilToCart_Click);
             // 
+            // CardName
+            // 
+            this.CardName.HeaderText = "Name";
+            this.CardName.Name = "CardName";
+            this.CardName.ReadOnly = true;
+            // 
+            // Expansion
+            // 
+            this.Expansion.HeaderText = "Expansion";
+            this.Expansion.Name = "Expansion";
+            this.Expansion.ReadOnly = true;
+            // 
+            // Rarity
+            // 
+            this.Rarity.HeaderText = "Rarity";
+            this.Rarity.Name = "Rarity";
+            this.Rarity.ReadOnly = true;
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            this.Inventory.ReadOnly = true;
+            // 
+            // FoilInventory
+            // 
+            this.FoilInventory.HeaderText = "Foil Inventory";
+            this.FoilInventory.Name = "FoilInventory";
+            this.FoilInventory.ReadOnly = true;
+            // 
+            // Price
+            // 
+            this.Price.HeaderText = "Price";
+            this.Price.Name = "Price";
+            this.Price.ReadOnly = true;
+            // 
+            // FoilPrice
+            // 
+            this.FoilPrice.HeaderText = "Foil Price";
+            this.FoilPrice.Name = "FoilPrice";
+            this.FoilPrice.ReadOnly = true;
+            // 
             // MtG
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,13 +347,6 @@
         private System.Windows.Forms.DataGridView dataGridView_CardData;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button button_EditSet;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CardName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Set;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Rarity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FoilInventory;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Price;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FoilPrice;
         private System.Windows.Forms.Button button_SearchSet;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox_Set;
@@ -365,6 +358,13 @@
         private System.Windows.Forms.Button button_OpenCart;
         private System.Windows.Forms.Button button_NewCart;
         private System.Windows.Forms.Button button_AddFoilToCart;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CardName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Expansion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Rarity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FoilInventory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Price;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FoilPrice;
     }
 }
 

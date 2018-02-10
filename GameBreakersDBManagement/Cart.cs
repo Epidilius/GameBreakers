@@ -28,8 +28,15 @@ namespace GameBreakersDBManagement
             CartUpdated();
         }
 
+        public int GetID()
+        {
+            return ID;
+        }
+
         public void CartUpdated()
         {
+            dataGridView_Items.Rows.Clear();
+
             var query = "SELECT * FROM ActiveCarts WHERE ID = " + ID;
             var cartData = DatabaseManager.RunQuery(query);
             ParseCartData(cartData);
@@ -67,15 +74,20 @@ namespace GameBreakersDBManagement
                 {
                     query = "SELECT price FROM MtG WHERE (name = '" + cardName.Replace("'", "''") + "' and expansion = '" + cardSet.Replace("'", "''") + "')";
                 }
-                
-                var results = DatabaseManager.RunQuery(query).Rows;
 
-                var price = results[0][0].ToString();
+                try
+                {
+                    var results = DatabaseManager.RunQuery(query).Rows;
+                    var price = results[0][0].ToString();
 
-                dataGridView_Items.Rows.Add(cardNames[i], cardSets[i], price, cardAmounts[i]);
+                    dataGridView_Items.Rows.Add(cardNames[i], cardSets[i], price, cardAmounts[i]);
+                }
+                catch(Exception ex)
+                {
+                    //Not Magic, currently don't have price data
+                    dataGridView_Items.Rows.Add(cardNames[i], cardSets[i], "0", cardAmounts[i]);
+                }
             }
-
-            var temp = -1;
         }
 
         void UpdatePrice()
@@ -121,6 +133,12 @@ namespace GameBreakersDBManagement
         private void CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             UpdatePrice();
+        }
+
+        private void OnClose(object sender, FormClosedEventArgs e)
+        {
+            //TODO: Update DB with contact info
+            CartManager.CartClosed(ID);
         }
     }
 }

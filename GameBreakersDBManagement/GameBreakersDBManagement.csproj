@@ -74,6 +74,7 @@
       <DependentUpon>Cart.cs</DependentUpon>
     </Compile>
     <Compile Include="DatabaseManager.cs" />
+    <Compile Include="CartManager.cs" />
     <Compile Include="InventoryForms\CC\CCScraper.cs">
       <SubType>Form</SubType>
     </Compile>

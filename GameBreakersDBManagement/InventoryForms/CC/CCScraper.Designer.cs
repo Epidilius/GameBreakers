@@ -86,7 +86,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1194, 467);
+            this.ClientSize = new System.Drawing.Size(1194, 470);
             this.Controls.Add(this.dataGridView_CardList);
             this.Controls.Add(this.button_Save);
             this.Controls.Add(this.button_Scrape);
