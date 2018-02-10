@@ -123,6 +123,11 @@ namespace GameBreakersDBManagement
             {
                 ParseHTMLData(mainNode);
             }
+
+            foreach(DataGridViewRow row in dataGridView_CardList.Rows)
+            {
+                row.HeaderCell.Value = String.Format("{0}", row.Index + 1);
+            }
         }
         string GetXLSXURL(HtmlNode node)
         {            
@@ -231,20 +236,34 @@ namespace GameBreakersDBManagement
                 var descriptionString = "";
                 var cardString        = "";
 
-                foreach (var title in listTitle)
+                if (listTitle != null)
                 {
-                    titleString += title.InnerText;
+                    foreach (var title in listTitle)
+                    {
+                        titleString += title.InnerText;
+                    }
                 }
-                foreach (var desc in listDescriptions)
+                if (listDescriptions != null)
                 {
-                    //"Shop for complete base sets on eBay:"
-                    if (descriptionString != "")
-                        descriptionString += "|";
-                    descriptionString += desc.InnerText;
+                    foreach (var desc in listDescriptions)
+                    {
+                        //"Shop for complete base sets on eBay:"
+                        if (descriptionString != "")
+                            descriptionString += "|";
+                        descriptionString += desc.InnerText;
+                    }
                 }
-                foreach (var card in cardLists)
+                if (cardLists != null)
                 {
-                    cardString += card.InnerText;
+                    foreach (var card in cardLists)
+                    {
+                        cardString += card.InnerText;
+                    }
+                }
+                else
+                {
+                    cardString = descriptionString;
+                    descriptionString = "";
                 }
 
                 titleString = Regex.Replace(titleString, " Set Checklist", String.Empty);
@@ -354,8 +373,11 @@ namespace GameBreakersDBManagement
 
                     if (line.Contains("#/"))
                     {
-                        printRun += line.Split(new string[] { "#/ " }, StringSplitOptions.None).Last();
-                        line = Regex.Replace(line, " #/ " + printRun, String.Empty);
+                        printRun += line.Split(new string[] { "#/" }, StringSplitOptions.None).Last();
+                        line = Regex.Replace(line, "#/" + printRun, String.Empty);
+
+                        printRun = printRun.Trim();
+                        line = line.Trim();
                     }
 
                     names += Regex.Split(line, " - ").First();
@@ -363,8 +385,8 @@ namespace GameBreakersDBManagement
                     if(line.Contains("-"))
                         teams += Regex.Split(line, " - ").Last();
 
-                    if (names.Contains("("))
-                        names = Regex.Split(names, "(").First();
+                    //if (names.Contains("("))
+                    //    names = Regex.Split(names, "(").First();
 
                     line = Regex.Replace(line, names, String.Empty);
                     line = Regex.Replace(line, teams, String.Empty);
@@ -380,8 +402,8 @@ namespace GameBreakersDBManagement
                     var name = Regex.Split(line, " - ").First();
                     var team = Regex.Split(line, " - ").Last();
 
-                    if (name.Contains("("))
-                        name = Regex.Split(names, "(").First();
+                    //if (name.Contains("("))
+                    //    name = Regex.Split(names, "(").First();
 
                     names += ", " + name;
                     teams += ", " + team;
