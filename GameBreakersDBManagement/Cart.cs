@@ -37,7 +37,7 @@ namespace GameBreakersDBManagement
         {
             dataGridView_Items.Rows.Clear();
 
-            var query = "SELECT * FROM ActiveCarts WHERE ID = " + ID;
+            var query = "SELECT * FROM Carts WHERE (ID = " + ID + " AND Status = 'Active')";
             var cartData = DatabaseManager.RunQuery(query);
             ParseCartData(cartData);
             UpdatePrice();
@@ -117,9 +117,40 @@ namespace GameBreakersDBManagement
             textBox_PriceTotal.Text    = total.ToString();
         }
 
+        void SaveCustomerData()
+        {
+            var query = "UPDATE Carts SET " +
+                "CustomerName = '" + textBox_CustomerName.Text + "', " +
+                "CustomerEmail = '" + textBox_CustomerEmail.Text + "', " +
+                "CustomerNumber = '" + textBox_CustomerEmail.Text + "', " + 
+                "LastUpdated = '" + DateTime.Now + "' " +
+                "WHERE ID = '" + ID + "'";
+
+            DatabaseManager.RunQuery(query);
+        }
+
         private void button_CompleteSale_Click(object sender, EventArgs e)
         {
-            
+            var cardPrices = "";
+            for(int i = 0; i < dataGridView_Items.Rows.Count - 1; i++)
+            {
+                if (i != 0)
+                    cardPrices += "|";
+                cardPrices += dataGridView_Items.Rows[i].Cells[2].Value.ToString();
+            }
+
+            var query = "UPDATE Carts SET " + 
+                "CardPrices = '" + cardPrices + "', " +
+                "Subtotal = '" + textBox_PriceSubtotal.Text + "', " +
+                "Taxes = '" + textBox_PriceTaxes.Text + "', " +
+                "Total = '" + textBox_PriceTotal.Text + "', " +
+                "Status = 'Sale Complete'" + 
+                "WHERE ID = '" + ID + "'";
+
+            DatabaseManager.RunQuery(query);
+            SaveCustomerData();
+            CartManager.StatusChanged();
+            Close();
         }
         private void button_Cancel_Click(object sender, EventArgs e)
         {
@@ -137,7 +168,7 @@ namespace GameBreakersDBManagement
 
         private void OnClose(object sender, FormClosedEventArgs e)
         {
-            //TODO: Update DB with contact info
+            SaveCustomerData();
             CartManager.CartClosed(ID);
         }
     }

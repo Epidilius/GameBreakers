@@ -326,7 +326,6 @@ namespace GameBreakersDBManagement
         }
         JToken ParseCardData(JObject cardData, string set = "")
         {
-            //TODO: Seems to be failing on planeswalkers and lands
             var cardSetName = cardData["card_set"]["name"].ToString();
             if (cardSetName.Contains("Magic 2"))
                 cardSetName = cardSetName.Split(new string[] { " (" }, StringSplitOptions.None).First();
@@ -405,7 +404,7 @@ namespace GameBreakersDBManagement
         void BeginPriceUpdate()
         {
             //TODO: Deal with the transformed version of cards better
-            //TODO: Currently, B.F.M. (Big Furry Monster) is getting parsed to B.R.M. I have to fix this
+            //TODO: Currently, B.F.M. (Big Furry Monster) is getting parsed to B.F.M. I have to fix this
             var query = "select name, expansion, types, layout from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0 and layout != 'double-faced' and layout != 'meld')";
             var cardsToUpdate = DatabaseManager.RunQuery(query);
 
@@ -737,7 +736,6 @@ namespace GameBreakersDBManagement
         {
             string html = FetchDataFromURL(MTGJSON_URL);
 
-            //TODO: Throw exception
             if (html == "No Response")
                 return;
 
@@ -831,7 +829,6 @@ namespace GameBreakersDBManagement
         {
             return DatabaseManager.GetFoilInventory(card, set);
         }
-        //TODO: This in Python?
         void AddNewSet(string setData)
         {
             try
@@ -897,7 +894,6 @@ namespace GameBreakersDBManagement
                 }
                 catch (Exception ex)
                 {
-                    //TODO: THROW MY OWN EXCEPTIONS
                     Logger.LogError("Attempting to parse card", ex.Message, card.ToString());
                 }
             }
@@ -955,11 +951,11 @@ namespace GameBreakersDBManagement
         }
 
         //CART
-        void LoadCarts()
+        public void LoadCarts()
         {
             dataGridView_Carts.Rows.Clear();
 
-            var query = "SELECT ID, CustomerName FROM ActiveCarts";
+            var query = "SELECT ID, CustomerName FROM Carts WHERE Status = 'Active' ORDER BY ID";
             var cartData = DatabaseManager.RunQuery(query);
 
             foreach (DataRow cart in cartData.Rows)
@@ -1025,9 +1021,6 @@ namespace GameBreakersDBManagement
             try
             {
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                if (cartIndex < 1)
-                    return;
-
                 var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
                 var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?",
@@ -1041,7 +1034,7 @@ namespace GameBreakersDBManagement
             }
             catch(Exception ex)
             {
-                //TODO: Log it
+                Logger.LogError("Attempted to delete cart", ex.ToString(), "");
             }
         }
         private void button_NewCart_Click(object sender, EventArgs e)
@@ -1049,7 +1042,6 @@ namespace GameBreakersDBManagement
             CartManager.CreateCart();
             LoadCarts();
         }
-        
     }
 }
 

@@ -277,11 +277,11 @@ namespace GameBreakersDBManagement
         }
 
         //CART
-        void LoadCarts()
+        public void LoadCarts()
         {
             dataGridView_Carts.Rows.Clear();
 
-            var query = "SELECT ID, CustomerName FROM ActiveCarts";
+            var query = "SELECT ID, CustomerName FROM Carts WHERE Status = 'Active' ORDER BY ID";
             var cartData = DatabaseManager.RunQuery(query);
 
             foreach (DataRow cart in cartData.Rows)
@@ -334,9 +334,6 @@ namespace GameBreakersDBManagement
             try
             {
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                if (cartIndex < 1)
-                    return;
-
                 var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
                 var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?", "Delete cart: " + cartID, MessageBoxButtons.YesNo);

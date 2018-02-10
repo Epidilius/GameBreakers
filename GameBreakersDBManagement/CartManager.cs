@@ -13,11 +13,13 @@ namespace GameBreakersDBManagement
 
         public static void CreateCart()
         {
-            var query = "INSERT INTO ActiveCarts ";
+            var query = "INSERT INTO Carts ";
 
             Dictionary<string, object> values = new Dictionary<string, object>
             {
-                { "CustomerName", "GameBreakers" }
+                { "CustomerName", "GameBreakers" },
+                { "Status", "Active" },
+                { "LastUpdated", DateTime.Now }
             };
 
             DatabaseManager.RunQueryWithArgs(query, values);
@@ -27,8 +29,10 @@ namespace GameBreakersDBManagement
         {
             try
             {
-                var query = "DELETE FROM ActiveCarts WHERE ID = " + cartID;
+                var query = "UPDATE Carts SET Status = 'Deleted' WHERE ID = " + cartID;
                 DatabaseManager.RunQuery(query);
+
+                StatusChanged();
             }
             catch(Exception ex)
             {
@@ -56,7 +60,7 @@ namespace GameBreakersDBManagement
         {
             //TODO: How do I want to do this? Take in a dictionary of the items I list? Maybe just the ID? I'll have to condense all cards into a single card table
 
-            var fetchQuery = "Select CardNames, CardExpansions, CardAmounts FROM ActiveCarts WHERE ID = '" + cartID + "'";
+            var fetchQuery = "Select CardNames, CardExpansions, CardAmounts FROM Carts WHERE (ID = '" + cartID + "'" + " AND Status = 'Active')";
             var fetchResults = DatabaseManager.RunQuery(fetchQuery);
             var row = fetchResults.Rows[0];
 
@@ -112,10 +116,11 @@ namespace GameBreakersDBManagement
                 amountString += "|" + itemAmount;
             }
 
-            var query = "UPDATE ActiveCarts SET " +
+            var query = "UPDATE Carts SET " +
                 "CardNames = '" + nameString.Replace("'", "''") +
                 "', CardExpansions = '" + expansionString.Replace("'", "''") +
                 "', CardAmounts = '" + amountString +
+                "', LastUpdated = '" + DateTime.Now +
                 "' WHERE ID = '" + cartID + "'";
 
             DatabaseManager.RunQuery(query);
@@ -140,6 +145,11 @@ namespace GameBreakersDBManagement
                     return;
                 }
             }
+        }
+
+        public static void StatusChanged()
+        {
+            Startup.GetInstance().UpdateCarts();
         }
     }
 }

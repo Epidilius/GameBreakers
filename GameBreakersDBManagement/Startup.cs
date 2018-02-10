@@ -14,15 +14,26 @@ namespace GameBreakersDBManagement
     {
         MtG MtGForm;
         CardboardConnection CCForm;
+        static Startup StartupInstance;
+        
         public Startup()
         {
             InitializeComponent();
-            Logger.Prep();
             MtGForm = new MtG();
             CCForm = new CardboardConnection();
             DatabaseManager.UnlockAllSets();
 
-            //TODO: Query MtG Json for data. Do this here or in MtG form?
+            StartupInstance = this;
+        }
+        public static Startup GetInstance()
+        {
+            return StartupInstance;
+        }
+
+        public void UpdateCarts()
+        {
+            MtGForm.LoadCarts();
+            CCForm.LoadCarts();
         }
 
         private void button_MtG_Click(object sender, EventArgs e)
