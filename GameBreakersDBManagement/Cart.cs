@@ -144,7 +144,7 @@ namespace GameBreakersDBManagement
                 "Subtotal = '" + textBox_PriceSubtotal.Text + "', " +
                 "Taxes = '" + textBox_PriceTaxes.Text + "', " +
                 "Total = '" + textBox_PriceTotal.Text + "', " +
-                "Status = 'Sale Complete'" + 
+                "Status = 'Sale Complete' " + 
                 "WHERE ID = '" + ID + "'";
 
             DatabaseManager.RunQuery(query);
@@ -154,11 +154,15 @@ namespace GameBreakersDBManagement
         }
         private void button_Cancel_Click(object sender, EventArgs e)
         {
-
+            Close();
         }
         private void button_Save_Click(object sender, EventArgs e)
         {
-
+            var query = "UPDATE Carts SET " +
+                "CustomerName = '" + textBox_CustomerName.Text + "', " +
+                "CustomerNumber = '" + textBox_CustomerPhone.Text + "', " +
+                "CustomerEmail = '" + textBox_CustomerEmail.Text + "' " +
+                "WHERE ID = '" + ID + "'";
         }
 
         private void CellValueChanged(object sender, DataGridViewCellEventArgs e)

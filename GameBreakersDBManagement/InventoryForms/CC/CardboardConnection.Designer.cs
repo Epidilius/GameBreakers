@@ -30,8 +30,16 @@
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.button_AddSingle = new System.Windows.Forms.Button();
-            this.button_RemoveSingle = new System.Windows.Forms.Button();
+            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Rookie = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExtraData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button_SelectSet = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -54,14 +62,6 @@
             this.CartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CustomerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_AddToCart = new System.Windows.Forms.Button();
-            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -72,8 +72,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.dataGridView_CardData);
-            this.groupBox2.Controls.Add(this.button_AddSingle);
-            this.groupBox2.Controls.Add(this.button_RemoveSingle);
             this.groupBox2.Location = new System.Drawing.Point(12, 226);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(1044, 522);
@@ -92,32 +90,71 @@
             this.Team,
             this.PrintRun,
             this.Odds,
-            this.Inventory});
+            this.Rookie,
+            this.Inventory,
+            this.ExtraData});
             this.dataGridView_CardData.Location = new System.Drawing.Point(6, 20);
             this.dataGridView_CardData.Name = "dataGridView_CardData";
             this.dataGridView_CardData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_CardData.Size = new System.Drawing.Size(798, 231);
+            this.dataGridView_CardData.Size = new System.Drawing.Size(1032, 231);
             this.dataGridView_CardData.TabIndex = 12;
+            this.dataGridView_CardData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryChanged);
             // 
-            // button_AddSingle
+            // Expansion
             // 
-            this.button_AddSingle.Location = new System.Drawing.Point(828, 19);
-            this.button_AddSingle.Name = "button_AddSingle";
-            this.button_AddSingle.Size = new System.Drawing.Size(210, 100);
-            this.button_AddSingle.TabIndex = 11;
-            this.button_AddSingle.Text = "Add One To Inventory";
-            this.button_AddSingle.UseVisualStyleBackColor = true;
-            this.button_AddSingle.Click += new System.EventHandler(this.button_AddSingle_Click);
+            this.Expansion.HeaderText = "Expansion";
+            this.Expansion.Name = "Expansion";
+            this.Expansion.ReadOnly = true;
             // 
-            // button_RemoveSingle
+            // Category
             // 
-            this.button_RemoveSingle.Location = new System.Drawing.Point(828, 151);
-            this.button_RemoveSingle.Name = "button_RemoveSingle";
-            this.button_RemoveSingle.Size = new System.Drawing.Size(210, 100);
-            this.button_RemoveSingle.TabIndex = 10;
-            this.button_RemoveSingle.Text = "Remove One From Inventory";
-            this.button_RemoveSingle.UseVisualStyleBackColor = true;
-            this.button_RemoveSingle.Click += new System.EventHandler(this.button_RemoveSingle_Click);
+            this.Category.HeaderText = "Category";
+            this.Category.Name = "Category";
+            // 
+            // Number
+            // 
+            this.Number.HeaderText = "Number";
+            this.Number.Name = "Number";
+            this.Number.ReadOnly = true;
+            // 
+            // PlayerName
+            // 
+            this.PlayerName.HeaderText = "Name";
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.ReadOnly = true;
+            // 
+            // Team
+            // 
+            this.Team.HeaderText = "Team";
+            this.Team.Name = "Team";
+            this.Team.ReadOnly = true;
+            // 
+            // PrintRun
+            // 
+            this.PrintRun.HeaderText = "Print Run";
+            this.PrintRun.Name = "PrintRun";
+            this.PrintRun.ReadOnly = true;
+            // 
+            // Odds
+            // 
+            this.Odds.HeaderText = "Odds";
+            this.Odds.Name = "Odds";
+            this.Odds.ReadOnly = true;
+            // 
+            // Rookie
+            // 
+            this.Rookie.HeaderText = "Rookie";
+            this.Rookie.Name = "Rookie";
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            // 
+            // ExtraData
+            // 
+            this.ExtraData.HeaderText = "Extra Data";
+            this.ExtraData.Name = "ExtraData";
             // 
             // groupBox3
             // 
@@ -333,53 +370,6 @@
             this.button_AddToCart.UseVisualStyleBackColor = true;
             this.button_AddToCart.Click += new System.EventHandler(this.button_AddToCart_Click);
             // 
-            // Expansion
-            // 
-            this.Expansion.HeaderText = "Expansion";
-            this.Expansion.Name = "Expansion";
-            this.Expansion.ReadOnly = true;
-            // 
-            // Category
-            // 
-            this.Category.HeaderText = "Category";
-            this.Category.Name = "Category";
-            // 
-            // Number
-            // 
-            this.Number.HeaderText = "Number";
-            this.Number.Name = "Number";
-            this.Number.ReadOnly = true;
-            // 
-            // PlayerName
-            // 
-            this.PlayerName.HeaderText = "Name";
-            this.PlayerName.Name = "PlayerName";
-            this.PlayerName.ReadOnly = true;
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            this.Team.ReadOnly = true;
-            // 
-            // PrintRun
-            // 
-            this.PrintRun.HeaderText = "Print Run";
-            this.PrintRun.Name = "PrintRun";
-            this.PrintRun.ReadOnly = true;
-            // 
-            // Odds
-            // 
-            this.Odds.HeaderText = "Odds";
-            this.Odds.Name = "Odds";
-            this.Odds.ReadOnly = true;
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            this.Inventory.ReadOnly = true;
-            // 
             // CardboardConnection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -407,8 +397,6 @@
 
         #endregion
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button_AddSingle;
-        private System.Windows.Forms.Button button_RemoveSingle;
         private System.Windows.Forms.DataGridView dataGridView_CardData;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button button_SelectSet;
@@ -439,7 +427,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Team;
         private System.Windows.Forms.DataGridViewTextBoxColumn PrintRun;
         private System.Windows.Forms.DataGridViewTextBoxColumn Odds;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Rookie;
         private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ExtraData;
     }
 }
 

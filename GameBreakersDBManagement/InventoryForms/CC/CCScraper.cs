@@ -9,8 +9,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -38,6 +40,8 @@ namespace GameBreakersDBManagement
                     return;
 
                 FetchData();
+
+                AddRowIndices();
 
                 Logger.LogActivity("Successfuly fetched and parsed data for url: " + textBox_URL.Text);
             }
@@ -122,11 +126,6 @@ namespace GameBreakersDBManagement
             else
             {
                 ParseHTMLData(mainNode);
-            }
-
-            foreach(DataGridViewRow row in dataGridView_CardList.Rows)
-            {
-                row.HeaderCell.Value = String.Format("{0}", row.Index + 1);
             }
         }
         string GetXLSXURL(HtmlNode node)
@@ -559,6 +558,16 @@ namespace GameBreakersDBManagement
             }
         }
 
+        void AddRowIndices()
+        {
+            foreach (DataGridViewRow row in dataGridView_CardList.Rows)
+            {
+                row.HeaderCell.Value = String.Format("{0}", row.Index + 1);
+            }
+
+            //dataGridView_CardList.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.ColumnHeader;
+            //dataGridView_CardList.AutoResizeColumn(0);
+        }
         bool ValidateURL()
         {
             Uri uriResult;
@@ -574,7 +583,7 @@ namespace GameBreakersDBManagement
             }
             return newCardList;
         }
-
+        
         void SaveData()
         {
             //TODO: Parse file name correctly
@@ -617,14 +626,21 @@ namespace GameBreakersDBManagement
                         values["Team"] += " " + columnData;
                         continue;
                     }
+                    if(columnName == "Rookie")
+                    {
+                        if (String.IsNullOrWhiteSpace(columnData)) columnData = "0";
+                        else columnData = "1";
+                    }
 
                     values.Add(columnName, columnData);
                 }
 
                 try
                 {
-                    if (CheckForDuplicates(values))
+                    var md5 = CheckForDuplicates(values);
+                    if (md5 == String.Empty)
                         continue;
+                    values.Add("MD5Hash", md5);
                 }
                 catch(Exception ex)
                 {
@@ -634,8 +650,10 @@ namespace GameBreakersDBManagement
                     try
                     {
                         CreateColumnIfNotExist(values);
-                        if (CheckForDuplicates(values))
+                        var md5 = CheckForDuplicates(values);
+                        if (md5 == String.Empty)
                             continue;
+                        values.Add("MD5Hash", md5);
                     }
                     catch (Exception nestedEx)
                     {
@@ -653,35 +671,42 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        bool CheckForDuplicates(Dictionary<string, object> values)
+        string CheckForDuplicates(Dictionary<string, object> values)
         {
-            var expansion = values["expansion"];
-
-            var query = "SELECT * FROM Non_Mtg WHERE (";
+            var allString = "";
+            var md5String = "";
 
             for(int i = 0; i < values.Count; i++)
             {
-                var key   = "[" + Regex.Replace(values.ElementAt(i).Key.ToString(), "'", "") + "]";
-                var value = Regex.Replace(values.ElementAt(i).Value.ToString(), "'", "''");
-                query += key + " = '" + value + "'";
-
-                if(i == values.Count - 1)
-                {
-                    query += ")";
-                }
-                else
-                {
-                    query += " AND ";
-                }
+                allString += values.ElementAt(i).ToString();
             }
 
+            //using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            //{
+            //    byte[] inputBytes = Encoding.ASCII.GetBytes(allString);
+            //    byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            //    // Convert the byte array to hexadecimal string
+            //    StringBuilder sb = new StringBuilder();
+            //    for (int i = 0; i < hashBytes.Length; i++)
+            //    {
+            //        sb.Append(hashBytes[i].ToString("X2"));
+            //    }
+            //    md5String = sb.ToString();
+            //}
+
+            byte[] encodedPassword = new UTF8Encoding().GetBytes(allString);
+            byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
+            md5String = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+
+            var query      = "SELECT * FROM Non_Mtg WHERE MD5Hash = '" + md5String + "'";
             var duplicates = DatabaseManager.RunQuery(query);
 
             if (duplicates.Rows.Count > 0)
             {
-                return true;
+                return String.Empty;
             }
-            return false;
+            return md5String;
         }
         void CreateColumnIfNotExist(Dictionary<string, object> values)
         {

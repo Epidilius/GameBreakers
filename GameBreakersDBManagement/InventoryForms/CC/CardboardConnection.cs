@@ -109,7 +109,7 @@ namespace GameBreakersDBManagement
             SetEditorForm setEditor = new SetEditorForm();
             setEditor.Show();
         }
-        
+
         //UTIL
         void AddTableToRow(DataTable table)
         {
@@ -120,15 +120,19 @@ namespace GameBreakersDBManagement
                 {
                     Dictionary<string, object> values = new Dictionary<string, object>();
 
-                    var expansion   = card["Expansion"];
-                    var category    = card["Category"];
-                    var number      = card["Number"];
-                    var name        = card["Name"];
-                    var team        = card["Team"];
-                    var printRun    = card["PrintRun"];
-                    var odds        = card["Odds"];
-                    var inventory   = card["Inventory"];
+                    var id        = card["ID"];
+                    var expansion = card["Expansion"];
+                    var category  = card["Category"];
+                    var number    = card["Number"];
+                    var name      = card["Name"];
+                    var team      = card["Team"];
+                    var printRun  = card["PrintRun"];
+                    var odds      = card["Odds"];
+                    var rookie    = card["Rookie"].ToString() == "1" ? "Yes" : "No";
+                    var extraData = card["ExtraData"];
+                    var inventory = card["Inventory"];
 
+                    values.Add("id", id);
                     values.Add("category", expansion);
                     values.Add("subCategory", category);
                     values.Add("number", number);
@@ -136,7 +140,9 @@ namespace GameBreakersDBManagement
                     values.Add("team", team);
                     values.Add("printRun", printRun);
                     values.Add("odds", odds);
+                    values.Add("rookie", rookie);
                     values.Add("inventory", inventory);
+                    values.Add("extraData", extraData);
 
                     AddCardToRow(values);
                 }
@@ -144,13 +150,14 @@ namespace GameBreakersDBManagement
         }
         void AddCardToRow(Dictionary<string, object> cardData)
         {
-            if(dataGridView_CardData.InvokeRequired)
+            if (dataGridView_CardData.InvokeRequired)
             {
                 AddCardToRowDelegate addCardToRowDelegate = new AddCardToRowDelegate(AddCardToRow);
                 Invoke(addCardToRowDelegate, new object[] { cardData });
                 return;
             }
 
+            var id          = cardData["id"];
             var category    = cardData["category"];
             var subCategory = cardData["subCategory"];
             var number      = cardData["number"];
@@ -158,11 +165,14 @@ namespace GameBreakersDBManagement
             var team        = cardData["team"];
             var printRun    = cardData["printRun"];
             var odds        = cardData["odds"];
+            var rookie      = cardData["rookie"];
             var inventory   = cardData["inventory"];
+            var extraData   = cardData["extraData"];
 
-            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, inventory);
+            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, rookie, inventory, extraData);
+            dataGridView_CardData.Rows[dataGridView_CardData.Rows.Count - 2].HeaderCell.Value = String.Format("{0}", id);
         }
-        
+
         //INVENTORY
         void AddOneToInventory(string name, string category)
         {
@@ -176,7 +186,7 @@ namespace GameBreakersDBManagement
                 var query = "UPDATE Non_Mtg SET INVENTORY = INVENTORY - 1 WHERE NAME = \'" + name + "\' AND CATEGORY = \'" + category + "\'";
                 DatabaseManager.RunQuery(query);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -224,9 +234,9 @@ namespace GameBreakersDBManagement
                     values.Add("team", PrepareString(card, "team"));
                     values.Add("printRun", PrepareString(card, "printRun"));
                     values.Add("odds", PrepareString(card, "odds"));
-                    values.Add("other", PrepareString(card, "other"));                    
+                    values.Add("other", PrepareString(card, "other"));
                     values.Add("inventory", 0);
-                    
+
                     try
                     {
                         DatabaseManager.AddNewCard("non_mtg", values);
@@ -236,7 +246,7 @@ namespace GameBreakersDBManagement
                         Logger.LogError("Adding MtG card to database", ex.ToString(), card.ToString());
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     //TODO: THROW MY OWN EXCEPTIONS
                     Logger.LogError("Preparing MtG card data to be added to database", ex.ToString(), card.ToString());
@@ -299,14 +309,14 @@ namespace GameBreakersDBManagement
                 var cardIndex = dataGridView_CardData.CurrentCell.RowIndex;
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                var cardExpansion  = dataGridView_CardData.Rows[cardIndex].Cells[0].Value.ToString();
-                var cardCategory   = dataGridView_CardData.Rows[cardIndex].Cells[1].Value.ToString();
-                var cardNumber     = dataGridView_CardData.Rows[cardIndex].Cells[2].Value.ToString();
-                var cardName       = dataGridView_CardData.Rows[cardIndex].Cells[3].Value.ToString();
-                var cartID         = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cardExpansion = dataGridView_CardData.Rows[cardIndex].Cells[0].Value.ToString();
+                var cardCategory = dataGridView_CardData.Rows[cardIndex].Cells[1].Value.ToString();
+                var cardNumber = dataGridView_CardData.Rows[cardIndex].Cells[2].Value.ToString();
+                var cardName = dataGridView_CardData.Rows[cardIndex].Cells[3].Value.ToString();
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
                 var name = cardName + " - " + cardNumber;
-                var set  = cardExpansion + ": " + cardCategory;
+                var set = cardExpansion + ": " + cardCategory;
 
                 CartManager.AddItemToCart(cartID, name, set, 1);
             }
@@ -352,6 +362,26 @@ namespace GameBreakersDBManagement
         {
             CartManager.CreateCart();
             LoadCarts();
+        }
+
+        void UpdateInventory(int id, int amount)
+        {
+            var query = "UPDATE Non_Mtg SET " +
+                "Inventory = '" + amount + "' " +
+                "WHERE ID = '" + id + "'";
+
+            DatabaseManager.RunQuery(query);
+        }
+
+        private void InventoryChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
+            {
+                var id = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].HeaderCell.Value);
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[8].Value);
+
+                UpdateInventory(id, amount);
+            }
         }
     }
 }
