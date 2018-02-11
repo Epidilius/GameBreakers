@@ -64,6 +64,11 @@ namespace GameBreakersDBManagement
                 var cardSet    = cardSets[i];
                 var cardAmount = cardAmounts[i];
 
+                if(String.IsNullOrWhiteSpace(cardName) && String.IsNullOrWhiteSpace(cardSet) && String.IsNullOrWhiteSpace(cardAmount))
+                {
+                    continue;
+                }
+
                 var query = "";
 
                 if(cardName.Contains("*F*"))
@@ -131,12 +136,42 @@ namespace GameBreakersDBManagement
 
         private void button_CompleteSale_Click(object sender, EventArgs e)
         {
+            var idQuery   = "SELECT CardIDs FROM Carts WHERE ID = '" + ID + "'";
+            var idResults = DatabaseManager.RunQuery(idQuery).Rows;
+            var idArray   = idResults[0][0].ToString().Split('|');
+
             var cardPrices = "";
             for(int i = 0; i < dataGridView_Items.Rows.Count - 1; i++)
             {
+                var row = dataGridView_Items.Rows[i];
+
                 if (i != 0)
                     cardPrices += "|";
-                cardPrices += dataGridView_Items.Rows[i].Cells[2].Value.ToString();
+                cardPrices += row.Cells[2].Value.ToString();
+
+                var id = idArray[i + 1];
+                if (String.IsNullOrWhiteSpace(id))
+                    continue;
+
+                int multiverseID;
+                var updateQuery = "";
+                if (int.TryParse(id, out multiverseID))
+                {
+                    if (row.Cells[0].Value.ToString().Contains("*F*"))
+                    {
+                        updateQuery = "UPDATE Mtg SET foilInventory = (foilInventory - " + row.Cells[3].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
+                    }
+                    else
+                    {
+                        updateQuery = "UPDATE Mtg SET inventory = (inventory - " + row.Cells[3].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
+                    }
+                }
+                else
+                {
+                    updateQuery = "UPDATE Non_Mtg SET inventory = (inventory - " + row.Cells[3].Value.ToString() + ") WHERE MD5Hash = '" + id + "'";
+                }
+
+                DatabaseManager.RunQuery(updateQuery);
             }
 
             var query = "UPDATE Carts SET " + 
@@ -147,7 +182,8 @@ namespace GameBreakersDBManagement
                 "Status = 'Sale Complete' " + 
                 "WHERE ID = '" + ID + "'";
 
-            DatabaseManager.RunQuery(query);
+            DatabaseManager.RunQuery(query);       
+
             SaveCustomerData();
             CartManager.StatusChanged();
             Close();

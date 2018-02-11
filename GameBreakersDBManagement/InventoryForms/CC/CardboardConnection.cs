@@ -1,27 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
-using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Data.OleDb;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Configuration;
-using Microsoft.Scripting.Hosting;
-using System.Threading;
-using System.Globalization;
 
 namespace GameBreakersDBManagement
 {
@@ -32,12 +14,16 @@ namespace GameBreakersDBManagement
         //TODO: Save to database in ccscraper
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
+        ManualEntry ManualEntry;
+
         //TODO: Stop the service that keeps starting, I dont want it 
         public CardboardConnection()
         {
             InitializeComponent();
 
             LoadCarts();
+
+            ManualEntry = new ManualEntry();
         }
 
         //BUTTONS
@@ -73,35 +59,6 @@ namespace GameBreakersDBManagement
         {
             CCScraper ccScraper = new CCScraper();
             ccScraper.Show();
-        }
-        private void button_RemoveSingle_Click(object sender, EventArgs e)  //TODO: Condense these
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[2].Value.ToString();
-            var category = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-
-            RemoveOneFromInventory(name, category);
-
-            Logger.LogActivity("Removed one of card: " + name + " of set " + category + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[6].Value.ToString()) - 1;
-            if (value < 0) value = 0;
-            dataGridView_CardData.Rows[index].Cells[6].Value = value;
-        }
-        private void button_AddSingle_Click(object sender, EventArgs e)
-        {
-            var index = dataGridView_CardData.CurrentCell.RowIndex;
-
-            var name = dataGridView_CardData.Rows[index].Cells[2].Value.ToString();
-            var category = dataGridView_CardData.Rows[index].Cells[0].Value.ToString();
-
-            AddOneToInventory(name, category);
-
-            Logger.LogActivity("Added one of card: " + name + " of set " + category + " from inventory");
-
-            var value = Int32.Parse(dataGridView_CardData.Rows[index].Cells[6].Value.ToString()) + 1;
-            dataGridView_CardData.Rows[index].Cells[6].Value = value;
         }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
@@ -295,7 +252,14 @@ namespace GameBreakersDBManagement
                 var cartID = cart[0].ToString();
                 var cartCustomer = cart[1].ToString();
 
-                dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                try
+                {
+                    dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Log this? Most likely because form is closed
+                }
             }
         }
         private void button_AddToCart_Click(object sender, EventArgs e)
@@ -314,7 +278,9 @@ namespace GameBreakersDBManagement
                 var name = cardName + " - " + cardNumber;
                 var set = cardExpansion + ": " + cardCategory;
 
-                CartManager.AddItemToCart(cartID, name, set, 1);
+                var cardID = dataGridView_CardData.Rows[cardIndex].Cells[9].Value.ToString();
+
+                CartManager.AddItemToCart(cartID, cardID, name, set, 1);
             }
             catch (Exception ex)
             {
@@ -378,6 +344,13 @@ namespace GameBreakersDBManagement
 
                 UpdateInventory(md5, amount);
             }
+        }
+
+        private void button_AddCardManually_Click(object sender, EventArgs e)
+        {
+            if (!ManualEntry.Enabled)
+                ManualEntry = new ManualEntry();
+            ManualEntry.Show();
         }
     }
 }

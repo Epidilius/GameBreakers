@@ -62,6 +62,7 @@
             this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ExtraData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CardID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button_AddCardManually = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -102,6 +103,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.button_AddCardManually);
             this.groupBox3.Controls.Add(this.button_SelectSet);
             this.groupBox3.Location = new System.Drawing.Point(834, 12);
             this.groupBox3.Name = "groupBox3";
@@ -371,6 +373,16 @@
             this.CardID.Name = "CardID";
             this.CardID.Visible = false;
             // 
+            // button_AddCardManually
+            // 
+            this.button_AddCardManually.Location = new System.Drawing.Point(6, 69);
+            this.button_AddCardManually.Name = "button_AddCardManually";
+            this.button_AddCardManually.Size = new System.Drawing.Size(210, 41);
+            this.button_AddCardManually.TabIndex = 16;
+            this.button_AddCardManually.Text = "Add Card Manually";
+            this.button_AddCardManually.UseVisualStyleBackColor = true;
+            this.button_AddCardManually.Click += new System.EventHandler(this.button_AddCardManually_Click);
+            // 
             // CardboardConnection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -431,6 +443,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
         private System.Windows.Forms.DataGridViewTextBoxColumn ExtraData;
         private System.Windows.Forms.DataGridViewTextBoxColumn CardID;
+        private System.Windows.Forms.Button button_AddCardManually;
     }
 }
 

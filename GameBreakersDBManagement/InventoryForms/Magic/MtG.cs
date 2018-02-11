@@ -507,7 +507,7 @@ namespace GameBreakersDBManagement
             var set = args[2].ToString().Replace("'", "''");
             var price = float.Parse(args[3].ToString());
             var foilPrice = float.Parse(args[4].ToString());
-            var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set.Replace("'", "''") + "')";
+            var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set + "')";
             var card = DatabaseManager.RunQuery(query).Rows[0];
 
             if (price < 0 || foilPrice < 0)
@@ -963,7 +963,14 @@ namespace GameBreakersDBManagement
                 var cartID       = cart[0].ToString();
                 var cartCustomer = cart[1].ToString();
 
-                dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                try
+                {
+                    dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                }
+                catch(Exception ex)
+                {
+                    //TODO: Log this? Most likely because form is closed
+                }
             }
         }
         private void button_AddToCart_Click(object sender, EventArgs e)
@@ -977,7 +984,9 @@ namespace GameBreakersDBManagement
                 var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
                 var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
-                CartManager.AddItemToCart(cartID, cardName, cardSet, 1);
+                var cardID = DatabaseManager.GetMultiverseID(cardName, cardSet).ToString();
+
+                CartManager.AddItemToCart(cartID, cardID, cardName, cardSet, 1);
             }
             catch(Exception ex)
             {
@@ -991,11 +1000,13 @@ namespace GameBreakersDBManagement
                 var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString() + " *F*";
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString();
                 var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
                 var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
 
-                CartManager.AddItemToCart(cartID, cardName, cardSet, 1);
+                var cardID = DatabaseManager.GetMultiverseID(cardName, cardSet).ToString();
+
+                CartManager.AddItemToCart(cartID, cardID, cardName + " *F*", cardSet, 1);
             }
             catch (Exception ex)
             {
@@ -1041,6 +1052,41 @@ namespace GameBreakersDBManagement
         {
             CartManager.CreateCart();
             LoadCarts();
+        }
+
+
+        void UpdateInventory(int multiverseID, int amount, bool foil)
+        {
+            var query = "UPDATE Mtg SET ";
+
+            if(foil) query += "FoilInventory = '" + amount + "' " + "WHERE multiverseID = '" + multiverseID + "'";
+            else query += "Inventory = '" + amount + "' " + "WHERE multiverseID = '" + multiverseID + "'";
+
+            DatabaseManager.RunQuery(query);
+        }
+
+        private void InventoryChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
+            {
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[3].Value);
+                var name = dataGridView_CardData.Rows[e.RowIndex].Cells[0].Value.ToString();
+                var set = dataGridView_CardData.Rows[e.RowIndex].Cells[1].Value.ToString();
+
+                var multiverseID = DatabaseManager.GetMultiverseID(name, set);
+
+                UpdateInventory(multiverseID, amount, false);
+            }
+            else if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "FoilInventory")
+            {
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[4].Value);
+                var name = dataGridView_CardData.Rows[e.RowIndex].Cells[0].Value.ToString();
+                var set = dataGridView_CardData.Rows[e.RowIndex].Cells[1].Value.ToString();
+
+                var multiverseID = DatabaseManager.GetMultiverseID(name, set);
+
+                UpdateInventory(multiverseID, amount, true);
+            }
         }
     }
 }

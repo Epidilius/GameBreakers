@@ -614,10 +614,10 @@ namespace GameBreakersDBManagement
                 var row = dataGridView_CardList.Rows[i];
 
                 Dictionary<string, object> values = new Dictionary<string, object>();
-                values.Add("expansion", SetData["Set"]);
-                values.Add("year", SetData["Year"]);
-                values.Add("sport", SetData["Sport"]);
-                values.Add("brand", SetData["Brand"]);
+                values.Add("Expansion", SetData["Set"]);
+                values.Add("Year", SetData["Year"]);
+                values.Add("Sport", SetData["Sport"]);
+                values.Add("Brand", SetData["Brand"]);
                 
                 for (int j = 0; j < dataGridView_CardList.Columns.Count; j++)
                 {
@@ -685,21 +685,7 @@ namespace GameBreakersDBManagement
             {
                 allString += values.ElementAt(i).ToString();
             }
-
-            //using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-            //{
-            //    byte[] inputBytes = Encoding.ASCII.GetBytes(allString);
-            //    byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-            //    // Convert the byte array to hexadecimal string
-            //    StringBuilder sb = new StringBuilder();
-            //    for (int i = 0; i < hashBytes.Length; i++)
-            //    {
-            //        sb.Append(hashBytes[i].ToString("X2"));
-            //    }
-            //    md5String = sb.ToString();
-            //}
-
+            
             byte[] encodedPassword = new UTF8Encoding().GetBytes(allString);
             byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(encodedPassword);
             md5String = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();

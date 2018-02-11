@@ -87,6 +87,12 @@
     <Compile Include="InventoryForms\CC\CardboardConnection.Designer.cs">
       <DependentUpon>CardboardConnection.cs</DependentUpon>
     </Compile>
+    <Compile Include="InventoryForms\CC\ManualEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InventoryForms\CC\ManualEntry.Designer.cs">
+      <DependentUpon>ManualEntry.cs</DependentUpon>
+    </Compile>
     <Compile Include="InventoryForms\Magic\MtG.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,6 +122,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="InventoryForms\CC\CardboardConnection.resx">
       <DependentUpon>CardboardConnection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InventoryForms\CC\ManualEntry.resx">
+      <DependentUpon>ManualEntry.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InventoryForms\Magic\MtG.resx">
       <DependentUpon>MtG.cs</DependentUpon>

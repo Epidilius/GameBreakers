@@ -56,18 +56,20 @@ namespace GameBreakersDBManagement
             cart.Show();
         }
 
-        public static void AddItemToCart(int cartID, string itemName, string itemExpansion, int itemAmount)
+        public static void AddItemToCart(int cartID, string cardID, string itemName, string itemExpansion, int itemAmount)
         {
             //TODO: How do I want to do this? Take in a dictionary of the items I list? Maybe just the ID? I'll have to condense all cards into a single card table
 
-            var fetchQuery = "Select CardNames, CardExpansions, CardAmounts FROM Carts WHERE (ID = '" + cartID + "'" + " AND Status = 'Active')";
+            var fetchQuery = "Select CardIDs, CardNames, CardExpansions, CardAmounts FROM Carts WHERE (ID = '" + cartID + "'" + " AND Status = 'Active')";
             var fetchResults = DatabaseManager.RunQuery(fetchQuery);
             var row = fetchResults.Rows[0];
 
-            var nameString = row[0].ToString();
-            var expansionString = row[1].ToString();
-            var amountString = row[2].ToString();
+            var idString = row[0].ToString();
+            var nameString = row[1].ToString();
+            var expansionString = row[2].ToString();
+            var amountString = row[3].ToString();
 
+            var idSplit        = idString.Split('|');
             var nameSplit      = nameString.Split('|');
             var expansionSplit = expansionString.Split('|');
             var splitAmount    = amountString.Split('|');
@@ -82,11 +84,11 @@ namespace GameBreakersDBManagement
 
             if (!skipCheck)
             {
-                for (int i = 0; i < nameSplit.Count(); i++)
+                for (int i = 0; i < idSplit.Count(); i++)
                 {
-                    if (nameSplit[i] == itemName)
+                    if (idSplit[i] == cardID)
                     {
-                        if (expansionSplit[i] == itemExpansion)
+                        if (nameSplit[i] == itemName)
                         {
                             var currentAmount = Convert.ToInt32(splitAmount[i]);
                             currentAmount += itemAmount;
@@ -111,13 +113,15 @@ namespace GameBreakersDBManagement
             }
             else
             {
+                idString += "|" + cardID;
                 nameString += "|" + itemName;
                 expansionString += "|" + itemExpansion;
                 amountString += "|" + itemAmount;
             }
 
             var query = "UPDATE Carts SET " +
-                "CardNames = '" + nameString.Replace("'", "''") +
+                "CardIDs = '" + idString +
+                "', CardNames = '" + nameString.Replace("'", "''") +
                 "', CardExpansions = '" + expansionString.Replace("'", "''") +
                 "', CardAmounts = '" + amountString +
                 "', LastUpdated = '" + DateTime.Now +
