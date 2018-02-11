@@ -120,7 +120,7 @@ namespace GameBreakersDBManagement
                 {
                     Dictionary<string, object> values = new Dictionary<string, object>();
 
-                    var id        = card["ID"];
+                    var id        = card["MD5Hash"];
                     var expansion = card["Expansion"];
                     var category  = card["Category"];
                     var number    = card["Number"];
@@ -128,7 +128,6 @@ namespace GameBreakersDBManagement
                     var team      = card["Team"];
                     var printRun  = card["PrintRun"];
                     var odds      = card["Odds"];
-                    var rookie    = card["Rookie"].ToString() == "1" ? "Yes" : "No";
                     var extraData = card["ExtraData"];
                     var inventory = card["Inventory"];
 
@@ -140,7 +139,6 @@ namespace GameBreakersDBManagement
                     values.Add("team", team);
                     values.Add("printRun", printRun);
                     values.Add("odds", odds);
-                    values.Add("rookie", rookie);
                     values.Add("inventory", inventory);
                     values.Add("extraData", extraData);
 
@@ -165,12 +163,10 @@ namespace GameBreakersDBManagement
             var team        = cardData["team"];
             var printRun    = cardData["printRun"];
             var odds        = cardData["odds"];
-            var rookie      = cardData["rookie"];
             var inventory   = cardData["inventory"];
             var extraData   = cardData["extraData"];
 
-            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, rookie, inventory, extraData);
-            dataGridView_CardData.Rows[dataGridView_CardData.Rows.Count - 2].HeaderCell.Value = String.Format("{0}", id);
+            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, inventory, extraData, id);
         }
 
         //INVENTORY
@@ -364,11 +360,11 @@ namespace GameBreakersDBManagement
             LoadCarts();
         }
 
-        void UpdateInventory(int id, int amount)
+        void UpdateInventory(string md5, int amount)
         {
             var query = "UPDATE Non_Mtg SET " +
                 "Inventory = '" + amount + "' " +
-                "WHERE ID = '" + id + "'";
+                "WHERE MD5Hash = '" + md5 + "'";
 
             DatabaseManager.RunQuery(query);
         }
@@ -377,10 +373,10 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
             {
-                var id = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].HeaderCell.Value);
-                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[8].Value);
+                var md5 = dataGridView_CardData.Rows[e.RowIndex].Cells[9].Value.ToString();
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[7].Value);
 
-                UpdateInventory(id, amount);
+                UpdateInventory(md5, amount);
             }
         }
     }

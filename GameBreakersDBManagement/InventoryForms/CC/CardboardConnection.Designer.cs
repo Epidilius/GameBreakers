@@ -30,16 +30,6 @@
         {
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Rookie = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExtraData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button_SelectSet = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -62,6 +52,16 @@
             this.CartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CustomerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_AddToCart = new System.Windows.Forms.Button();
+            this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Category = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlayerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Team = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PrintRun = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Odds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExtraData = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CardID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             this.groupBox3.SuspendLayout();
@@ -90,71 +90,15 @@
             this.Team,
             this.PrintRun,
             this.Odds,
-            this.Rookie,
             this.Inventory,
-            this.ExtraData});
+            this.ExtraData,
+            this.CardID});
             this.dataGridView_CardData.Location = new System.Drawing.Point(6, 20);
             this.dataGridView_CardData.Name = "dataGridView_CardData";
             this.dataGridView_CardData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_CardData.Size = new System.Drawing.Size(1032, 231);
             this.dataGridView_CardData.TabIndex = 12;
             this.dataGridView_CardData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryChanged);
-            // 
-            // Expansion
-            // 
-            this.Expansion.HeaderText = "Expansion";
-            this.Expansion.Name = "Expansion";
-            this.Expansion.ReadOnly = true;
-            // 
-            // Category
-            // 
-            this.Category.HeaderText = "Category";
-            this.Category.Name = "Category";
-            // 
-            // Number
-            // 
-            this.Number.HeaderText = "Number";
-            this.Number.Name = "Number";
-            this.Number.ReadOnly = true;
-            // 
-            // PlayerName
-            // 
-            this.PlayerName.HeaderText = "Name";
-            this.PlayerName.Name = "PlayerName";
-            this.PlayerName.ReadOnly = true;
-            // 
-            // Team
-            // 
-            this.Team.HeaderText = "Team";
-            this.Team.Name = "Team";
-            this.Team.ReadOnly = true;
-            // 
-            // PrintRun
-            // 
-            this.PrintRun.HeaderText = "Print Run";
-            this.PrintRun.Name = "PrintRun";
-            this.PrintRun.ReadOnly = true;
-            // 
-            // Odds
-            // 
-            this.Odds.HeaderText = "Odds";
-            this.Odds.Name = "Odds";
-            this.Odds.ReadOnly = true;
-            // 
-            // Rookie
-            // 
-            this.Rookie.HeaderText = "Rookie";
-            this.Rookie.Name = "Rookie";
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            // 
-            // ExtraData
-            // 
-            this.ExtraData.HeaderText = "Extra Data";
-            this.ExtraData.Name = "ExtraData";
             // 
             // groupBox3
             // 
@@ -370,6 +314,63 @@
             this.button_AddToCart.UseVisualStyleBackColor = true;
             this.button_AddToCart.Click += new System.EventHandler(this.button_AddToCart_Click);
             // 
+            // Expansion
+            // 
+            this.Expansion.HeaderText = "Expansion";
+            this.Expansion.Name = "Expansion";
+            this.Expansion.ReadOnly = true;
+            // 
+            // Category
+            // 
+            this.Category.HeaderText = "Category";
+            this.Category.Name = "Category";
+            // 
+            // Number
+            // 
+            this.Number.HeaderText = "Number";
+            this.Number.Name = "Number";
+            this.Number.ReadOnly = true;
+            // 
+            // PlayerName
+            // 
+            this.PlayerName.HeaderText = "Name";
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.ReadOnly = true;
+            // 
+            // Team
+            // 
+            this.Team.HeaderText = "Team";
+            this.Team.Name = "Team";
+            this.Team.ReadOnly = true;
+            // 
+            // PrintRun
+            // 
+            this.PrintRun.HeaderText = "Print Run";
+            this.PrintRun.Name = "PrintRun";
+            this.PrintRun.ReadOnly = true;
+            // 
+            // Odds
+            // 
+            this.Odds.HeaderText = "Odds";
+            this.Odds.Name = "Odds";
+            this.Odds.ReadOnly = true;
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            // 
+            // ExtraData
+            // 
+            this.ExtraData.HeaderText = "Extra Data";
+            this.ExtraData.Name = "ExtraData";
+            // 
+            // CardID
+            // 
+            this.CardID.HeaderText = "CardID";
+            this.CardID.Name = "CardID";
+            this.CardID.Visible = false;
+            // 
             // CardboardConnection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -427,9 +428,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Team;
         private System.Windows.Forms.DataGridViewTextBoxColumn PrintRun;
         private System.Windows.Forms.DataGridViewTextBoxColumn Odds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Rookie;
         private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
         private System.Windows.Forms.DataGridViewTextBoxColumn ExtraData;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CardID;
     }
 }
 

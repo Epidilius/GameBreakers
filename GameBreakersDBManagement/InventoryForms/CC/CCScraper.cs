@@ -179,15 +179,20 @@ namespace GameBreakersDBManagement
             DataTable data = new DataTable();
             sda.Fill(data);
 
-            DataTable dataClone = data.Clone();
+            DataTable dataClone = data.Clone();//new DataTable();
             dataClone.Rows.Clear();
+            //dataClone.Columns.Add("Category");
+            //dataClone.Columns.Add("Number");
+            //dataClone.Columns.Add("Name");
+            //dataClone.Columns.Add("Team");
+            //dataClone.Columns.Add("PrintRun");
+            //dataClone.Columns.Add("ExtraData");
 
             var misses = 0;
 
             for(int i = 0; i < data.Rows.Count; i++)
             {
                 DataRow row = data.Rows[i];
-
                 if (String.IsNullOrWhiteSpace(row[0].ToString()))
                 {
                     misses++;
@@ -203,6 +208,17 @@ namespace GameBreakersDBManagement
                 }
                 else
                 {
+                    //for (int j = 0; j < row.Table.Columns.Count; j++)
+                    //{
+                    //    var columnName = row.Table.Columns[j].ColumnName.Replace(" ", String.Empty);
+
+                    //    if (columnName == "SetName" || columnName == "CardSet") columnName = "Category";
+                    //    if (columnName == "Card") columnName = "Number";
+                    //    if (columnName == "Description" || columnName == "Player") columnName = "Name";
+                    //    if (columnName == "TeamCity") columnName = "Team";
+                    //    if (columnName.Contains("#")) columnName = "PrintRun";
+
+                    //}
                     dataClone.ImportRow(row);
                 }
             }
@@ -611,55 +627,44 @@ namespace GameBreakersDBManagement
 
                     if (columnName == "Expansion")
                     {
-                        //TODO: Something here
+                        //TODO: Something here?
                         continue;
                     }
                     if (columnName == "SetName" || columnName == "CardSet") columnName = "Category";
                     if (columnName == "Card") columnName = "Number";
                     if (columnName == "Description" || columnName == "Player") columnName = "Name";
                     if (columnName == "TeamCity") columnName = "Team";
-                    if (columnName == "Mem") columnName = "ExtraData";
                     if (columnName.Contains("#")) columnName = "PrintRun";
-                    //if (columnName == "#d" || columnName == "Seq#") columnName = "PrintRun";
                     if (columnName == "TeamName")
                     {
                         values["Team"] += " " + columnData;
                         continue;
                     }
-                    if(columnName == "Rookie")
+
+                    columnName = PrepColumnName(columnName);
+
+                    if(columnName == "ExtraData")
                     {
-                        if (String.IsNullOrWhiteSpace(columnData)) columnData = "0";
-                        else columnData = "1";
+                        object entry;
+                        values.TryGetValue("ExtraData", out entry);
+
+                        if (entry != null)
+                        {
+                            if (!String.IsNullOrWhiteSpace(entry.ToString()) && !String.IsNullOrWhiteSpace(columnData))
+                            {
+                                values["ExtraData"] += ", " + columnData;
+                            }
+                            continue;
+                        }
                     }
 
                     values.Add(columnName, columnData);
                 }
 
-                try
-                {
-                    var md5 = CheckForDuplicates(values);
-                    if (md5 == String.Empty)
-                        continue;
-                    values.Add("MD5Hash", md5);
-                }
-                catch(Exception ex)
-                {
-                    //TODO: Why wont this check work?
-                    //if (ex.Message.ToLower().Contains("invalid column name)"))
-
-                    try
-                    {
-                        CreateColumnIfNotExist(values);
-                        var md5 = CheckForDuplicates(values);
-                        if (md5 == String.Empty)
-                            continue;
-                        values.Add("MD5Hash", md5);
-                    }
-                    catch (Exception nestedEx)
-                    {
-                        Logger.LogError("Checking database for duplicate CC entries", nestedEx.Message, "");
-                    }
-                }
+                var md5 = CheckForDuplicates(values);
+                if (md5 == String.Empty)
+                    continue;
+                values.Add("MD5Hash", md5);
 
                 try
                 {
@@ -719,6 +724,17 @@ namespace GameBreakersDBManagement
 
                 DatabaseManager.RunQuery(query);
             }
+        }
+
+        string PrepColumnName(string columnName)
+        {
+            if (columnName == "Category" || columnName == "Number" || columnName == "Name" ||
+               columnName == "Team" || columnName == "PrintRun" || columnName == "Odds")
+            {
+                return columnName;
+            }
+
+            else return "ExtraData";
         }
 
         //GRID VIEW HANDLERS
