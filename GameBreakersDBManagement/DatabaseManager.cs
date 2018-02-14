@@ -161,9 +161,9 @@ namespace GameBreakersDBManagement
 
             return data;
         }
-        public static DataTable GetAllSets()
+        public static DataTable GetAllMTGSets()
         {
-            var dataTable = RunQuery("SELECT * FROM Sets");
+            var dataTable = RunQuery("SELECT * FROM Sets WHERE Type = 'mtg'");
             return dataTable;
         }
         public static DataTable GetAllCardsForSet(string set)

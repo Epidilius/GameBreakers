@@ -30,17 +30,18 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetEditorForm));
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
-            this.CardName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Set = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Rarity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FoilInventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_Save = new System.Windows.Forms.Button();
             this.button_Close = new System.Windows.Forms.Button();
             this.comboBox_Sets = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox_Card = new System.Windows.Forms.PictureBox();
             this.button_LoadSet = new System.Windows.Forms.Button();
+            this.CardName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Set = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Rarity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Colour = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Inventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FoilInventory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Card)).BeginInit();
             this.SuspendLayout();
@@ -52,6 +53,7 @@
             this.CardName,
             this.Set,
             this.Rarity,
+            this.Colour,
             this.Inventory,
             this.FoilInventory});
             this.dataGridView_CardData.Location = new System.Drawing.Point(12, 12);
@@ -60,34 +62,6 @@
             this.dataGridView_CardData.Size = new System.Drawing.Size(798, 608);
             this.dataGridView_CardData.TabIndex = 13;
             this.dataGridView_CardData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellClick);
-            // 
-            // CardName
-            // 
-            this.CardName.HeaderText = "Name";
-            this.CardName.Name = "CardName";
-            this.CardName.ReadOnly = true;
-            // 
-            // Set
-            // 
-            this.Set.HeaderText = "Set";
-            this.Set.Name = "Set";
-            this.Set.ReadOnly = true;
-            // 
-            // Rarity
-            // 
-            this.Rarity.HeaderText = "Rarity";
-            this.Rarity.Name = "Rarity";
-            this.Rarity.ReadOnly = true;
-            // 
-            // Inventory
-            // 
-            this.Inventory.HeaderText = "Inventory";
-            this.Inventory.Name = "Inventory";
-            // 
-            // FoilInventory
-            // 
-            this.FoilInventory.HeaderText = "Foil Inventory";
-            this.FoilInventory.Name = "FoilInventory";
             // 
             // button_Save
             // 
@@ -147,6 +121,40 @@
             this.button_LoadSet.UseVisualStyleBackColor = true;
             this.button_LoadSet.Click += new System.EventHandler(this.button_LoadSet_Click);
             // 
+            // CardName
+            // 
+            this.CardName.HeaderText = "Name";
+            this.CardName.Name = "CardName";
+            this.CardName.ReadOnly = true;
+            // 
+            // Set
+            // 
+            this.Set.HeaderText = "Set";
+            this.Set.Name = "Set";
+            this.Set.ReadOnly = true;
+            // 
+            // Rarity
+            // 
+            this.Rarity.HeaderText = "Rarity";
+            this.Rarity.Name = "Rarity";
+            this.Rarity.ReadOnly = true;
+            // 
+            // Colour
+            // 
+            this.Colour.HeaderText = "Colour";
+            this.Colour.Name = "Colour";
+            this.Colour.ReadOnly = true;
+            // 
+            // Inventory
+            // 
+            this.Inventory.HeaderText = "Inventory";
+            this.Inventory.Name = "Inventory";
+            // 
+            // FoilInventory
+            // 
+            this.FoilInventory.HeaderText = "Foil Inventory";
+            this.FoilInventory.Name = "FoilInventory";
+            // 
             // SetEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -181,6 +189,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn CardName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Set;
         private System.Windows.Forms.DataGridViewTextBoxColumn Rarity;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Colour;
         private System.Windows.Forms.DataGridViewTextBoxColumn Inventory;
         private System.Windows.Forms.DataGridViewTextBoxColumn FoilInventory;
     }

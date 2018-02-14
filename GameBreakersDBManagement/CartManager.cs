@@ -149,6 +149,8 @@ namespace GameBreakersDBManagement
                     return;
                 }
             }
+
+            Startup.GetInstance().UpdateCarts();
         }
 
         public static void StatusChanged()

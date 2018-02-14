@@ -40,7 +40,7 @@ namespace GameBreakersDBManagement
 
         void IterateThroughSets()
         {
-            var sets = DatabaseManager.GetAllSets().Rows;
+            var sets = DatabaseManager.GetAllMTGSets().Rows;
 
             foreach (DataRow set in sets)
             {
@@ -75,7 +75,7 @@ namespace GameBreakersDBManagement
 
         bool PriceOldEnoughToUpdate(double timeLastUpdated)
         {
-            var timeBetweenUpdate = ConfigurationManager.AppSettings["daysBetweenPriceCheck"];
+            var timeBetweenUpdate = Properties.Settings.Default["DaysBetweenPriceCheck"].ToString();
             double timeBetweenInMilliseconds = TimeSpan.FromDays(double.Parse(timeBetweenUpdate)).TotalMilliseconds;
             if ((DateTimeOffset.Now.ToUnixTimeMilliseconds() + timeBetweenInMilliseconds) > timeLastUpdated)
                 return true;

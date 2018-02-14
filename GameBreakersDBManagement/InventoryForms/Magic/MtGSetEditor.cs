@@ -52,7 +52,7 @@ namespace GameBreakersDBManagement
 
         void LoadSets()
         {
-            var setList = DatabaseManager.GetAllSets();
+            var setList = DatabaseManager.GetAllMTGSets();
             
             foreach(DataRow set in setList.Rows)
             {
@@ -125,13 +125,16 @@ namespace GameBreakersDBManagement
 
             foreach (DataRow card in cards.Rows)
             {
-                var name = card[3];
-                var set = card[17];
-                var rarity = card[7];
-                var inventory = card[19];
-                var foilInventory = card[21];
+                var name = card["name"];
+                var set = card["expansion"];
+                var colour = Convert.ToString(card["colorIdentity"]) == "" ? "C" : card["colorIdentity"];
+                var rarity = card["rarity"];
+                var inventory = card["inventory"];
+                var foilInventory = card["foilInventory"];
 
-                dataGridView_CardData.Rows.Add(name, set, rarity, inventory, foilInventory);
+                
+
+                dataGridView_CardData.Rows.Add(name, set, rarity, colour, inventory, foilInventory);
             }
         }
 

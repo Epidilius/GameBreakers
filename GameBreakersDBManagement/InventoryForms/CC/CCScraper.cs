@@ -20,6 +20,8 @@ namespace GameBreakersDBManagement
 {
     public partial class CCScraper : Form
     {
+        //TODO: Something about this?
+        //https://www.cardboardconnection.com/2017-18-leaf-ultimate-hockey-cards
         static string FILE_LOCATION = @"C:\GameBreakersInventory\Data.xlsx";
         Dictionary<string, string> SetData;
 
@@ -40,7 +42,6 @@ namespace GameBreakersDBManagement
                     return;
 
                 FetchData();
-
                 AddRowIndices();
 
                 Logger.LogActivity("Successfuly fetched and parsed data for url: " + textBox_URL.Text);
@@ -121,12 +122,28 @@ namespace GameBreakersDBManagement
             var url = GetXLSXURL(mainNode);
             if(DownloadXLSXFile(url))
             {
-                LoadXLSXIntoGridView();
+                try
+                {
+                    LoadXLSXIntoGridViewMethodOne();
+                }
+                catch(Exception ex)
+                {
+                    try
+                    {
+                        LoadXLSXIntoGridViewMethodTwo();
+                    }
+                    catch (Exception nestEX)
+                    {
+                        ParseHTMLData(mainNode);
+                    }
+                }
             }
             else
             {
                 ParseHTMLData(mainNode);
             }
+
+            dataGridView_CardList.Columns.Add("Inventory", "Inventory");
         }
         string GetXLSXURL(HtmlNode node)
         {            
@@ -164,7 +181,7 @@ namespace GameBreakersDBManagement
 
             return false;
         }
-        void LoadXLSXIntoGridView()
+        void LoadXLSXIntoGridViewMethodOne()
         {
             String name = "Sheet1";
             String constr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" +
@@ -227,8 +244,72 @@ namespace GameBreakersDBManagement
 
             dataGridView_CardList.DataSource = data;
         }
+        void LoadXLSXIntoGridViewMethodTwo()
+        {
+            String name = "FINAL";
+            String constr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" +
+                            FILE_LOCATION +
+                            ";Extended Properties='Excel 12.0 XML;HDR=YES;';";
+
+            OleDbConnection con = new OleDbConnection(constr);
+            OleDbCommand oconn = new OleDbCommand("Select * From [" + name + "$]", con);
+            con.Open();
+
+            OleDbDataAdapter sda = new OleDbDataAdapter(oconn);
+            DataTable data = new DataTable();
+            sda.Fill(data);
+
+            DataTable dataClone = data.Clone();//new DataTable();
+            dataClone.Rows.Clear();
+            //dataClone.Columns.Add("Category");
+            //dataClone.Columns.Add("Number");
+            //dataClone.Columns.Add("Name");
+            //dataClone.Columns.Add("Team");
+            //dataClone.Columns.Add("PrintRun");
+            //dataClone.Columns.Add("ExtraData");
+
+            var misses = 0;
+
+            for (int i = 0; i < data.Rows.Count; i++)
+            {
+                DataRow row = data.Rows[i];
+                if (String.IsNullOrWhiteSpace(row[0].ToString()))
+                {
+                    misses++;
+                    var oldData = dataClone.Rows[i - misses];
+
+                    for (int j = 0; j < row.Table.Columns.Count; j++)
+                    {
+                        if (!String.IsNullOrWhiteSpace(row[j].ToString()))
+                        {
+                            oldData[j] += ", " + row[j];
+                        }
+                    }
+                }
+                else
+                {
+                    //for (int j = 0; j < row.Table.Columns.Count; j++)
+                    //{
+                    //    var columnName = row.Table.Columns[j].ColumnName.Replace(" ", String.Empty);
+
+                    //    if (columnName == "SetName" || columnName == "CardSet") columnName = "Category";
+                    //    if (columnName == "Card") columnName = "Number";
+                    //    if (columnName == "Description" || columnName == "Player") columnName = "Name";
+                    //    if (columnName == "TeamCity") columnName = "Team";
+                    //    if (columnName.Contains("#")) columnName = "PrintRun";
+
+                    //}
+                    dataClone.ImportRow(row);
+                }
+            }
+
+            data = dataClone;
+
+            dataGridView_CardList.DataSource = data;
+        }
         void ParseHTMLData(HtmlNode node)
         {
+            //TODO: Deal wih foils and shit
             var htmlChunks = node.InnerHtml.Split(new string[] { "<div class=\"ezcol-divider\">" }, StringSplitOptions.None);
 
             dataGridView_CardList.Columns.Add("Category", "Category");
@@ -603,10 +684,13 @@ namespace GameBreakersDBManagement
         void SaveData()
         {
             //TODO: Parse file name correctly
+            var setExists = true;
             if (!DatabaseManager.CheckIfSetExists(SetData["Set"]))
             {
                 DatabaseManager.AddNewSet(SetData["Set"], null, null, "non_mtg");
                 Logger.LogActivity("Adding new set: " + SetData["Set"] + " to databse");
+
+                setExists = false;
             }
 
             for (int i = 0; i < dataGridView_CardList.Rows.Count - 1; i++)
@@ -623,15 +707,19 @@ namespace GameBreakersDBManagement
                 {
                     var columnName = Regex.Replace(dataGridView_CardList.Columns[j].Name, " ", String.Empty);
                     columnName     = Regex.Replace(columnName, "'", String.Empty);
-                    var columnData = row.Cells[j].Value.ToString();
 
-                    if (columnName == "Expansion")
+                    if (columnName == "Inventory")
+                        continue;
+
+                    var columnData = Convert.ToString(row.Cells[j].Value);
+
+                    if (columnName == "Expansion" || columnName == "Set")
                     {
                         //TODO: Something here?
                         continue;
                     }
-                    if (columnName == "SetName" || columnName == "CardSet") columnName = "Category";
-                    if (columnName == "Card") columnName = "Number";
+                    if (columnName == "SetName" || columnName == "CardSet" || columnName == "Subset") columnName = "Category";
+                    if (columnName == "Card" || columnName == "Checklist") columnName = "Number";
                     if (columnName == "Description" || columnName == "Player") columnName = "Name";
                     if (columnName == "TeamCity") columnName = "Team";
                     if (columnName.Contains("#")) columnName = "PrintRun";
@@ -640,31 +728,54 @@ namespace GameBreakersDBManagement
                         values["Team"] += " " + columnData;
                         continue;
                     }
-
-                    columnName = PrepColumnName(columnName);
-
-                    if(columnName == "ExtraData")
+                    
+                    var newColumnName = PrepColumnName(columnName);
+                    if(newColumnName == "ExtraData")
                     {
                         object entry;
                         values.TryGetValue("ExtraData", out entry);
 
-                        if (entry != null)
+                        if (entry == null)
                         {
-                            if (!String.IsNullOrWhiteSpace(entry.ToString()) && !String.IsNullOrWhiteSpace(columnData))
-                            {
-                                values["ExtraData"] += ", " + columnData;
-                            }
-                            continue;
+                            values.Add("ExtraData", "");
+                            values.TryGetValue("ExtraData", out entry);
                         }
+                        if (!String.IsNullOrWhiteSpace(columnData))
+                        {
+                            if (columnName.Contains("("))
+                            {
+                                var firstPart = columnName.Split('(').First();
+                                var lastPart = columnName.Split(')').Last();
+
+                                columnName = firstPart + lastPart;
+                            }
+                            if (!String.IsNullOrWhiteSpace(entry.ToString()))
+                            {
+                                values["ExtraData"] += ", " + columnName + ": " + columnData;
+                            }
+                            else
+                            {
+                                values["ExtraData"] = columnName + ": " + columnData;
+                            }
+                        }
+                        continue;
                     }
+
+                    if (columnData == null)
+                        columnData = String.Empty;
 
                     values.Add(columnName, columnData);
                 }
 
-                var md5 = CheckForDuplicates(values);
+                var md5 = String.Empty;
+                if(setExists)
+                    md5 = CheckForDuplicates(values);
                 if (md5 == String.Empty)
                     continue;
                 values.Add("MD5Hash", md5);
+
+                var amount = String.IsNullOrWhiteSpace(Convert.ToString(row.Cells["Inventory"].Value)) ? "0" : row.Cells["Inventory"].Value.ToString();
+                values.Add("Inventory", amount);
 
                 try
                 {
@@ -724,10 +835,6 @@ namespace GameBreakersDBManagement
         }
 
         //GRID VIEW HANDLERS
-        void PopulateGridView()
-        {
-
-        }
         void AddRow(string category, string number, string name, string team, string amount, string odds)
         {
             if (number.ToLower() == "shop")

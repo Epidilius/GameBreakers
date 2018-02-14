@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Globalization;
+using System.Configuration;
 
 namespace GameBreakersDBManagement
 {
@@ -43,6 +44,9 @@ namespace GameBreakersDBManagement
                 //TODO: Save the MTG Stocks ID to the database
                 //BeginPriceUpdate();
             }).Start();
+
+            //WindowState = FormWindowState.Maximized;
+            FormBorderStyle = FormBorderStyle.None;
         }
 
         //BUTTONS
@@ -110,23 +114,29 @@ namespace GameBreakersDBManagement
             {
                 foreach (DataRow card in cards.Rows)
                 {
-                    name = card[3].ToString();
+                    name = card["name"].ToString();
 
-                    var set = card[17].ToString();
-                    var rarity = card[7].ToString();
-                    var inventory = float.Parse(card[19].ToString());
-                    var foilInventory = float.Parse(card[21].ToString());
-                    var price = float.Parse(card[18].ToString());
-                    var foilPrice = float.Parse(card[20].ToString());
+                    var set = card["expansion"].ToString();
+                    var rarity = card["rarity"].ToString();
+                    var colour = Convert.ToString(card["colorIdentity"]) == "" ? "C" : card["colorIdentity"];
+                    var inventory = float.Parse(card["inventory"].ToString());
+                    var foilInventory = float.Parse(card["foilInventory"].ToString());
+                    var price = float.Parse(card["price"].ToString());
+                    var foilPrice = float.Parse(card["foilPrice"].ToString());
+                    var lastUpdated = card["priceLastUpdated"];
 
-                    AddCardToRow(new Dictionary<string, object> {
+                    AddCardToRow(new Dictionary<string, object>
+                    {
                         { "name", name },
                         { "set", set },
                         { "rarity", rarity },
+                        { "colour", colour },
                         { "inventory", inventory },
                         { "foilInventory", foilInventory },
                         { "price", price },
-                        { "foilPrice", foilPrice } });
+                        { "foilPrice", foilPrice },
+                        { "lastUpdated", lastUpdated }
+                    });
                 }
                 return true;
             }
@@ -168,20 +178,25 @@ namespace GameBreakersDBManagement
                     var tokenSet = jObject["card_set"]["name"].ToString();
                     var cardRarity = jObject["rarity"].ToString();
                     var cardPrice = float.Parse(jObject["latest_price"]["avg"].ToString());
+                    var colour = "";    //TODO: Maybe parse the colour out of cost?
                     var cardFoilPrice = 0f;
                     var cardStrprice = jObject["latest_price"]["foil"].ToString(); //TODO: Market price? [market]
 
                     if (cardStrprice == "") cardFoilPrice = 0;
                     else cardFoilPrice = float.Parse(cardStrprice);
 
-                    AddCardToRow(new Dictionary<string, object> {
+                    AddCardToRow(new Dictionary<string, object>
+                    {
                             { "name", tokenName },
                             { "set", tokenSet },
                             { "rarity", cardRarity },
+                            { "colour", colour },
                             { "inventory", 0 },
                             { "foilInventory", 0 },
                             { "price", cardPrice },
-                            { "foilPrice", cardFoilPrice } });
+                            { "foilPrice", cardFoilPrice },
+                            { "lsatUpdated", DateTimeOffset.Now.ToUnixTimeMilliseconds() }
+                    });
                 }
             }
 
@@ -195,14 +210,18 @@ namespace GameBreakersDBManagement
             if (strprice == "") foilPrice = 0;
             else foilPrice = float.Parse(strprice);
 
-            AddCardToRow(new Dictionary<string, object> {
+            AddCardToRow(new Dictionary<string, object>
+            {
                     { "name", cardName },
                     { "set", set },
                     { "rarity", rarity },
+                    { "colour", "" },   //TODO: See above
                     { "inventory", 0 },
                     { "foilInventory", 0 },
                     { "price", price },
-                    { "foilPrice", foilPrice } });
+                    { "foilPrice", foilPrice },
+                    { "lastUpdated", DateTimeOffset.Now.ToUnixTimeMilliseconds() }
+            });
 
             return true;
         }
@@ -213,21 +232,28 @@ namespace GameBreakersDBManagement
             {
                 foreach (DataRow card in cards.Rows)
                 {
-                    var name = card[3].ToString();
-                    var rarity = card[7];
-                    var inventory = card[19];
-                    var foilInventory = card[21];
-                    var price = float.Parse(card[18].ToString());
-                    var foilPrice = float.Parse(card[20].ToString());
+                    var name = card["name"].ToString();
+                    var expansion = card["expansion"];
+                    var rarity = card["rarity"];
+                    var colour = Convert.ToString(card["colorIdentity"]) == "" ? "C" : card["colorIdentity"];
+                    var inventory = card["inventory"];
+                    var foilInventory = card["foilInventory"];
+                    var price = float.Parse(card["price"].ToString());
+                    var foilPrice = float.Parse(card["foilPrice"].ToString());
+                    var lastUpdated = card["priceLastUpdated"];
 
-                    AddCardToRow(new Dictionary<string, object> {
+                    AddCardToRow(new Dictionary<string, object>
+                    {
                         { "name", name },
-                        { "set", set },
+                        { "set", expansion },
+                        { "colour", colour },
                         { "rarity", rarity },
                         { "inventory", inventory },
                         { "foilInventory", foilInventory },
                         { "price", price },
-                        { "foilPrice", foilPrice } });
+                        { "foilPrice", foilPrice },
+                        { "lastUpdated", lastUpdated }
+                    });
                 }
             }
         }
@@ -379,9 +405,16 @@ namespace GameBreakersDBManagement
         void SearchComplete()
         {
             if (InvokeRequired)
-            {
-                SearchCompleteDelegate searchCompleteDelegate = new SearchCompleteDelegate(SearchComplete);
-                Invoke(searchCompleteDelegate);
+            { 
+                try
+                {
+                    SearchCompleteDelegate searchCompleteDelegate = new SearchCompleteDelegate(SearchComplete);
+                    Invoke(searchCompleteDelegate);
+                }
+                catch(Exception ex)
+                {
+
+                }
                 return;
             }
 
@@ -393,10 +426,11 @@ namespace GameBreakersDBManagement
             {
                 var name = dataGridView_CardData.Rows[i].Cells[0].Value.ToString();
                 var set = dataGridView_CardData.Rows[i].Cells[1].Value.ToString();
-                var price = float.Parse(dataGridView_CardData.Rows[i].Cells[5].Value.ToString());
-                var foilPrice = float.Parse(dataGridView_CardData.Rows[i].Cells[5].Value.ToString());
+                var price = float.Parse(dataGridView_CardData.Rows[i].Cells[6].Value.ToString());
+                var foilPrice = float.Parse(dataGridView_CardData.Rows[i].Cells[7].Value.ToString());
+                var lastUpdated = dataGridView_CardData.Rows[i].Cells["TimeLastUpdated"].Value;
                 
-                ThreadPool.QueueUserWorkItem(UpdatePrice, new object[] { i, name, set, price, foilPrice });
+                ThreadPool.QueueUserWorkItem(UpdatePrice, new object[] { i, name, set, price, foilPrice, lastUpdated });
             }
         }
 
@@ -405,7 +439,9 @@ namespace GameBreakersDBManagement
         {
             //TODO: Deal with the transformed version of cards better
             //TODO: Currently, B.F.M. (Big Furry Monster) is getting parsed to B.F.M. I have to fix this
-            var query = "select name, expansion, types, layout from MtG where ((price < 0 or foilPrice < 0) and onlineOnlyVersion = 0 and layout != 'double-faced' and layout != 'meld')";
+            double days = Convert.ToDouble(Properties.Settings.Default["DaysBetweenPriceCheck"]);
+            var time = DateTimeOffset.Now.AddDays(-days).ToUnixTimeMilliseconds().ToString();
+            var query = "select name, expansion, types, layout from MtG where ((price < 0 or foilPrice < 0 or priceLastUpdated < " + time + " ) and onlineOnlyVersion = 0 and layout != 'double-faced' and layout != 'meld')";
             var cardsToUpdate = DatabaseManager.RunQuery(query);
 
             for(int i = 0; i < cardsToUpdate.Rows.Count; i++)
@@ -501,17 +537,21 @@ namespace GameBreakersDBManagement
         }
         void UpdatePrice(object state)
         {
-            object[] args = state as object[];
-            var i = Int32.Parse(args[0].ToString());
-            var name = args[1].ToString().Replace("'", "''");
-            var set = args[2].ToString().Replace("'", "''");
-            var price = float.Parse(args[3].ToString());
-            var foilPrice = float.Parse(args[4].ToString());
-            var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set + "')";
-            var card = DatabaseManager.RunQuery(query).Rows[0];
+            object[] args   = state as object[];
+            var i           = Int32.Parse(args[0].ToString());
+            var name        = args[1].ToString().Replace("'", "''");
+            var set         = args[2].ToString().Replace("'", "''");
+            var price       = float.Parse(args[3].ToString());
+            var foilPrice   = float.Parse(args[4].ToString());
+            var lastupdated = long.Parse(args[5].ToString());
 
-            if (price < 0 || foilPrice < 0)
+            double days = Convert.ToDouble(Properties.Settings.Default["DaysBetweenPriceCheck"]);
+            var oldTIme = DateTimeOffset.FromUnixTimeMilliseconds(lastupdated).AddDays(days).ToUnixTimeMilliseconds();
+            
+            if (price < 0 || foilPrice < 0 || oldTIme < DateTimeOffset.Now.ToUnixTimeMilliseconds())
             {
+                var query = "select name, expansion, types, layout from MtG where (name = '" + name + "' and expansion = '" + set + "')";
+                var card = DatabaseManager.RunQuery(query).Rows[0];
                 var newPrices = GetPrice(card);
                 if (newPrices["price"] != -1)
                 {
@@ -531,8 +571,15 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.InvokeRequired)
             {
-                UpdatePriceOnGUIDelegate updateDel = new UpdatePriceOnGUIDelegate(UpdatePriceOnGUI);
-                Invoke(updateDel, new object[] { row, price, foil });
+                try
+                {
+                    UpdatePriceOnGUIDelegate updateDel = new UpdatePriceOnGUIDelegate(UpdatePriceOnGUI);
+                    Invoke(updateDel, new object[] { row, price, foil });
+                }
+                catch(Exception ex)
+                {
+
+                }
                 return;
             }
 
@@ -541,6 +588,52 @@ namespace GameBreakersDBManagement
 
             if (!foil)   dataGridView_CardData.Rows[row].Cells[5].Value = price;
             else        dataGridView_CardData.Rows[row].Cells[6].Value = price;
+        }
+        string CurrencyConversion(decimal amount, string fromCurrency, string toCurrency)
+        {
+            amount = amount * Convert.ToDecimal(Properties.Settings.Default["ExchangeRate"]);
+            amount = Decimal.Round(amount, 2);
+            return amount.ToString();
+
+            string urlPattern = "http://www.xe.com/ucc/convert.cgi?template=mobile&Amount={0}&From={1}&To={2}";
+            string url = string.Format(urlPattern, amount, fromCurrency, toCurrency);
+
+            HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(url);
+
+            try
+            {
+                webReq.CookieContainer = new CookieContainer();
+                webReq.Method = "GET";
+                using (WebResponse response = webReq.GetResponse())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        StreamReader reader = new StreamReader(stream);
+                        var html = reader.ReadToEnd();
+
+                        var doc = new HtmlAgilityPack.HtmlDocument();
+                        doc.LoadHtml(html);
+
+                        var converted = doc.DocumentNode.SelectNodes("//td[@class='resultColRght']");
+
+                        foreach(var item in converted)
+                        {
+                            if(item.InnerText.ToLower().Contains(toCurrency.ToLower()))
+                            {
+                                var price = Convert.ToDecimal(item.InnerText.Split(' ').First());
+                                price = Decimal.Round(price, 2);
+                                return price.ToString();
+                            }
+                        }                        
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Fetching price conversion data from url.", ex.ToString(), url);
+            }
+
+            return "";
         }
 
         //UTIL
@@ -717,20 +810,37 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.InvokeRequired)
             {
-                AddCardToRowDelegate addCardToRowDelegate = new AddCardToRowDelegate(AddCardToRow);
-                Invoke(addCardToRowDelegate, new object[] { cardData });
+                try
+                {
+                    AddCardToRowDelegate addCardToRowDelegate = new AddCardToRowDelegate(AddCardToRow);
+                    Invoke(addCardToRowDelegate, new object[] { cardData });
+                }
+                catch(Exception ex)
+                {
+
+                }
                 return;
             }
 
-            var name = cardData["name"].ToString().Replace("''", "'");
-            var set = cardData["set"].ToString().Replace("''", "'");
-            var rarity = cardData["rarity"];
-            var inventory = cardData["inventory"];
-            var foilInventory = cardData["foilInventory"];
-            var price = cardData["price"];
-            var foilPrice = cardData["foilPrice"];
+            var name          = cardData["name"].ToString().Replace("''", "'");
+            var set           = cardData["set"].ToString().Replace("''", "'");
+            var rarity        = cardData["rarity"];
+            var colour        = cardData["colour"];
+            var inventory     = cardData["inventory"].ToString();
+            var foilInventory = cardData["foilInventory"].ToString();
+            var price         = cardData["price"].ToString();
+            var foilPrice     = cardData["foilPrice"].ToString();
+            var lastUpdated   = cardData["lastUpdated"];
 
-            dataGridView_CardData.Rows.Add(name, set, rarity, inventory, foilInventory, price, foilPrice);
+            var currency = Properties.Settings.Default["Currency"].ToString();
+
+            if(currency != "USD")
+            {
+                price = (CurrencyConversion(Convert.ToDecimal(price), "USD", currency));
+                foilPrice = (CurrencyConversion(Convert.ToDecimal(foilPrice), "USD", currency));
+            }
+
+            dataGridView_CardData.Rows.Add(name, set, rarity, colour, float.Parse(inventory), float.Parse(foilInventory), float.Parse(price), float.Parse(foilPrice), lastUpdated);
         }
         void CheckForNewSets()
         {

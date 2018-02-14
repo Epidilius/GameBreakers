@@ -194,11 +194,8 @@ namespace GameBreakersDBManagement
         }
         private void button_Save_Click(object sender, EventArgs e)
         {
-            var query = "UPDATE Carts SET " +
-                "CustomerName = '" + textBox_CustomerName.Text + "', " +
-                "CustomerNumber = '" + textBox_CustomerPhone.Text + "', " +
-                "CustomerEmail = '" + textBox_CustomerEmail.Text + "' " +
-                "WHERE ID = '" + ID + "'";
+            SaveCustomerData();
+            Startup.GetInstance().UpdateCarts();
         }
 
         private void CellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -208,7 +205,6 @@ namespace GameBreakersDBManagement
 
         private void OnClose(object sender, FormClosedEventArgs e)
         {
-            SaveCustomerData();
             CartManager.CartClosed(ID);
         }
     }

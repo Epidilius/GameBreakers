@@ -4,6 +4,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace GameBreakersDBManagement
 {
@@ -20,6 +21,7 @@ namespace GameBreakersDBManagement
         public CardboardConnection()
         {
             InitializeComponent();
+            FormBorderStyle = FormBorderStyle.None;
 
             LoadCarts();
 
@@ -77,19 +79,23 @@ namespace GameBreakersDBManagement
                 {
                     Dictionary<string, object> values = new Dictionary<string, object>();
 
-                    var id        = card["MD5Hash"];
-                    var expansion = card["Expansion"];
-                    var category  = card["Category"];
-                    var number    = card["Number"];
-                    var name      = card["Name"];
-                    var team      = card["Team"];
-                    var printRun  = card["PrintRun"];
-                    var odds      = card["Odds"];
-                    var extraData = card["ExtraData"];
-                    var inventory = card["Inventory"];
-
+                    var id        = Convert.ToString(card["MD5Hash"]);
+                    var year      = Convert.ToString(card["Year"]);
+                    var sport     = Convert.ToString(card["Sport"]);
+                    var brand     = Convert.ToString(card["Brand"]);
+                    var category  = Convert.ToString(card["Category"]);
+                    var number    = Convert.ToString(card["Number"]);
+                    var name      = Convert.ToString(card["Name"]);
+                    var team      = Convert.ToString(card["Team"]);
+                    var printRun  = Convert.ToString(card["PrintRun"]);
+                    var odds      = Convert.ToString(card["Odds"]);
+                    var extraData = Convert.ToString(card["ExtraData"]);
+                    var inventory = Convert.ToString(card["Inventory"]);
+                    
                     values.Add("id", id);
-                    values.Add("category", expansion);
+                    values.Add("year", year);
+                    values.Add("sport", sport);
+                    values.Add("brand", brand);
                     values.Add("subCategory", category);
                     values.Add("number", number);
                     values.Add("name", name);
@@ -107,13 +113,22 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.InvokeRequired)
             {
-                AddCardToRowDelegate addCardToRowDelegate = new AddCardToRowDelegate(AddCardToRow);
-                Invoke(addCardToRowDelegate, new object[] { cardData });
+                try
+                {
+                    AddCardToRowDelegate addCardToRowDelegate = new AddCardToRowDelegate(AddCardToRow);
+                    Invoke(addCardToRowDelegate, new object[] { cardData });
+                }
+                catch(Exception ex)
+                {
+                    //Form was disposed
+                }
                 return;
             }
 
             var id          = cardData["id"];
-            var category    = cardData["category"];
+            var year        = cardData["year"];
+            var sport       = cardData["sport"];
+            var brand       = cardData["brand"];
             var subCategory = cardData["subCategory"];
             var number      = cardData["number"];
             var name        = cardData["name"];
@@ -123,7 +138,7 @@ namespace GameBreakersDBManagement
             var inventory   = cardData["inventory"];
             var extraData   = cardData["extraData"];
 
-            dataGridView_CardData.Rows.Add(category, subCategory, number, name, team, printRun, odds, inventory, extraData, id);
+            dataGridView_CardData.Rows.Add(year, brand, sport, subCategory, number, name, team, printRun, odds, inventory, extraData, id);
         }
 
         //INVENTORY
