@@ -37,14 +37,6 @@
             this.textBox_Set = new System.Windows.Forms.TextBox();
             this.button_Search = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button_AddFoilToCart = new System.Windows.Forms.Button();
-            this.button_NewCart = new System.Windows.Forms.Button();
-            this.button_DeleteCart = new System.Windows.Forms.Button();
-            this.button_OpenCart = new System.Windows.Forms.Button();
-            this.dataGridView_Carts = new System.Windows.Forms.DataGridView();
-            this.CartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CustomerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button_AddToCart = new System.Windows.Forms.Button();
             this.dataGridView_CardData = new System.Windows.Forms.DataGridView();
             this.CardName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Expansion = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,16 +47,20 @@
             this.Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FoilPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TimeLastUpdated = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button_EditSet = new System.Windows.Forms.Button();
             this.pictureBox_Card = new System.Windows.Forms.PictureBox();
+            this.button_AddFoilToCart = new System.Windows.Forms.Button();
+            this.button_NewCart = new System.Windows.Forms.Button();
+            this.button_OpenCart = new System.Windows.Forms.Button();
+            this.dataGridView_Carts = new System.Windows.Forms.DataGridView();
+            this.CartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CustomerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button_AddToCart = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Carts)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).BeginInit();
-            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Card)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Carts)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,14 +75,18 @@
             // 
             // textBox_Name
             // 
+            this.textBox_Name.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_Name.Location = new System.Drawing.Point(6, 32);
             this.textBox_Name.Name = "textBox_Name";
-            this.textBox_Name.Size = new System.Drawing.Size(671, 20);
+            this.textBox_Name.Size = new System.Drawing.Size(912, 20);
             this.textBox_Name.TabIndex = 0;
             this.textBox_Name.GotFocus += new System.EventHandler(this.textBox_Name_GotFocus);
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.button_SearchSet);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.textBox_Set);
@@ -95,14 +95,15 @@
             this.groupBox1.Controls.Add(this.textBox_Name);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(809, 116);
+            this.groupBox1.Size = new System.Drawing.Size(1050, 116);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search";
             // 
             // button_SearchSet
             // 
-            this.button_SearchSet.Location = new System.Drawing.Point(683, 63);
+            this.button_SearchSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_SearchSet.Location = new System.Drawing.Point(924, 66);
             this.button_SearchSet.Name = "button_SearchSet";
             this.button_SearchSet.Size = new System.Drawing.Size(120, 41);
             this.button_SearchSet.TabIndex = 5;
@@ -121,15 +122,18 @@
             // 
             // textBox_Set
             // 
+            this.textBox_Set.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_Set.Location = new System.Drawing.Point(6, 79);
             this.textBox_Set.Name = "textBox_Set";
-            this.textBox_Set.Size = new System.Drawing.Size(671, 20);
+            this.textBox_Set.Size = new System.Drawing.Size(912, 20);
             this.textBox_Set.TabIndex = 3;
             this.textBox_Set.GotFocus += new System.EventHandler(this.textBox_Set_GotFocus);
             // 
             // button_Search
             // 
-            this.button_Search.Location = new System.Drawing.Point(683, 16);
+            this.button_Search.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_Search.Location = new System.Drawing.Point(924, 19);
             this.button_Search.Name = "button_Search";
             this.button_Search.Size = new System.Drawing.Size(120, 41);
             this.button_Search.TabIndex = 2;
@@ -146,93 +150,10 @@
             this.groupBox2.Controls.Add(this.pictureBox_Card);
             this.groupBox2.Location = new System.Drawing.Point(12, 134);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1050, 351);
+            this.groupBox2.Size = new System.Drawing.Size(1050, 596);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Results";
-            // 
-            // button_AddFoilToCart
-            // 
-            this.button_AddFoilToCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_AddFoilToCart.Location = new System.Drawing.Point(92, 387);
-            this.button_AddFoilToCart.Name = "button_AddFoilToCart";
-            this.button_AddFoilToCart.Size = new System.Drawing.Size(80, 80);
-            this.button_AddFoilToCart.TabIndex = 19;
-            this.button_AddFoilToCart.Text = "Add Foil To Cart";
-            this.button_AddFoilToCart.UseVisualStyleBackColor = true;
-            this.button_AddFoilToCart.Click += new System.EventHandler(this.button_AddFoilToCart_Click);
-            // 
-            // button_NewCart
-            // 
-            this.button_NewCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_NewCart.Location = new System.Drawing.Point(178, 388);
-            this.button_NewCart.Name = "button_NewCart";
-            this.button_NewCart.Size = new System.Drawing.Size(80, 79);
-            this.button_NewCart.TabIndex = 18;
-            this.button_NewCart.Text = "New Cart";
-            this.button_NewCart.UseVisualStyleBackColor = true;
-            this.button_NewCart.Click += new System.EventHandler(this.button_NewCart_Click);
-            // 
-            // button_DeleteCart
-            // 
-            this.button_DeleteCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_DeleteCart.Location = new System.Drawing.Point(350, 388);
-            this.button_DeleteCart.Name = "button_DeleteCart";
-            this.button_DeleteCart.Size = new System.Drawing.Size(80, 79);
-            this.button_DeleteCart.TabIndex = 17;
-            this.button_DeleteCart.Text = "Delete Cart";
-            this.button_DeleteCart.UseVisualStyleBackColor = true;
-            this.button_DeleteCart.Click += new System.EventHandler(this.button_DeleteCart_Click);
-            // 
-            // button_OpenCart
-            // 
-            this.button_OpenCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_OpenCart.Location = new System.Drawing.Point(264, 388);
-            this.button_OpenCart.Name = "button_OpenCart";
-            this.button_OpenCart.Size = new System.Drawing.Size(80, 79);
-            this.button_OpenCart.TabIndex = 16;
-            this.button_OpenCart.Text = "View Cart";
-            this.button_OpenCart.UseVisualStyleBackColor = true;
-            this.button_OpenCart.Click += new System.EventHandler(this.button_OpenCart_Click);
-            // 
-            // dataGridView_Carts
-            // 
-            this.dataGridView_Carts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView_Carts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_Carts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.CartID,
-            this.CustomerName});
-            this.dataGridView_Carts.Location = new System.Drawing.Point(6, 16);
-            this.dataGridView_Carts.MultiSelect = false;
-            this.dataGridView_Carts.Name = "dataGridView_Carts";
-            this.dataGridView_Carts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_Carts.Size = new System.Drawing.Size(424, 366);
-            this.dataGridView_Carts.TabIndex = 15;
-            // 
-            // CartID
-            // 
-            this.CartID.HeaderText = "Cart ID";
-            this.CartID.Name = "CartID";
-            this.CartID.ReadOnly = true;
-            // 
-            // CustomerName
-            // 
-            this.CustomerName.HeaderText = "Customer Name";
-            this.CustomerName.Name = "CustomerName";
-            this.CustomerName.ReadOnly = true;
-            // 
-            // button_AddToCart
-            // 
-            this.button_AddToCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button_AddToCart.Location = new System.Drawing.Point(6, 387);
-            this.button_AddToCart.Name = "button_AddToCart";
-            this.button_AddToCart.Size = new System.Drawing.Size(80, 80);
-            this.button_AddToCart.TabIndex = 14;
-            this.button_AddToCart.Text = "Add To Cart";
-            this.button_AddToCart.UseVisualStyleBackColor = true;
-            this.button_AddToCart.Click += new System.EventHandler(this.button_AddToCart_Click);
             // 
             // dataGridView_CardData
             // 
@@ -254,7 +175,7 @@
             this.dataGridView_CardData.MultiSelect = false;
             this.dataGridView_CardData.Name = "dataGridView_CardData";
             this.dataGridView_CardData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_CardData.Size = new System.Drawing.Size(809, 325);
+            this.dataGridView_CardData.Size = new System.Drawing.Size(809, 570);
             this.dataGridView_CardData.TabIndex = 12;
             this.dataGridView_CardData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellClick);
             this.dataGridView_CardData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryChanged);
@@ -312,26 +233,6 @@
             this.TimeLastUpdated.ReadOnly = true;
             this.TimeLastUpdated.Visible = false;
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.button_EditSet);
-            this.groupBox3.Location = new System.Drawing.Point(827, 12);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(223, 116);
-            this.groupBox3.TabIndex = 11;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Sets";
-            // 
-            // button_EditSet
-            // 
-            this.button_EditSet.Location = new System.Drawing.Point(6, 16);
-            this.button_EditSet.Name = "button_EditSet";
-            this.button_EditSet.Size = new System.Drawing.Size(211, 41);
-            this.button_EditSet.TabIndex = 16;
-            this.button_EditSet.Text = "Edit Set";
-            this.button_EditSet.UseVisualStyleBackColor = true;
-            this.button_EditSet.Click += new System.EventHandler(this.button_EditSet_Click);
-            // 
             // pictureBox_Card
             // 
             this.pictureBox_Card.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -343,6 +244,78 @@
             this.pictureBox_Card.TabIndex = 2;
             this.pictureBox_Card.TabStop = false;
             // 
+            // button_AddFoilToCart
+            // 
+            this.button_AddFoilToCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_AddFoilToCart.Location = new System.Drawing.Point(92, 632);
+            this.button_AddFoilToCart.Name = "button_AddFoilToCart";
+            this.button_AddFoilToCart.Size = new System.Drawing.Size(80, 80);
+            this.button_AddFoilToCart.TabIndex = 19;
+            this.button_AddFoilToCart.Text = "Add Foil To Cart";
+            this.button_AddFoilToCart.UseVisualStyleBackColor = true;
+            this.button_AddFoilToCart.Click += new System.EventHandler(this.button_AddFoilToCart_Click);
+            // 
+            // button_NewCart
+            // 
+            this.button_NewCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_NewCart.Location = new System.Drawing.Point(178, 633);
+            this.button_NewCart.Name = "button_NewCart";
+            this.button_NewCart.Size = new System.Drawing.Size(80, 79);
+            this.button_NewCart.TabIndex = 18;
+            this.button_NewCart.Text = "New Cart";
+            this.button_NewCart.UseVisualStyleBackColor = true;
+            this.button_NewCart.Click += new System.EventHandler(this.button_NewCart_Click);
+            // 
+            // button_OpenCart
+            // 
+            this.button_OpenCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_OpenCart.Location = new System.Drawing.Point(264, 633);
+            this.button_OpenCart.Name = "button_OpenCart";
+            this.button_OpenCart.Size = new System.Drawing.Size(80, 79);
+            this.button_OpenCart.TabIndex = 16;
+            this.button_OpenCart.Text = "View Cart";
+            this.button_OpenCart.UseVisualStyleBackColor = true;
+            this.button_OpenCart.Click += new System.EventHandler(this.button_OpenCart_Click);
+            // 
+            // dataGridView_Carts
+            // 
+            this.dataGridView_Carts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_Carts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Carts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.CartID,
+            this.CustomerName});
+            this.dataGridView_Carts.Location = new System.Drawing.Point(6, 16);
+            this.dataGridView_Carts.MultiSelect = false;
+            this.dataGridView_Carts.Name = "dataGridView_Carts";
+            this.dataGridView_Carts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_Carts.Size = new System.Drawing.Size(337, 611);
+            this.dataGridView_Carts.TabIndex = 15;
+            // 
+            // CartID
+            // 
+            this.CartID.HeaderText = "Cart ID";
+            this.CartID.Name = "CartID";
+            this.CartID.ReadOnly = true;
+            // 
+            // CustomerName
+            // 
+            this.CustomerName.HeaderText = "Customer Name";
+            this.CustomerName.Name = "CustomerName";
+            this.CustomerName.ReadOnly = true;
+            // 
+            // button_AddToCart
+            // 
+            this.button_AddToCart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_AddToCart.Location = new System.Drawing.Point(6, 632);
+            this.button_AddToCart.Name = "button_AddToCart";
+            this.button_AddToCart.Size = new System.Drawing.Size(80, 80);
+            this.button_AddToCart.TabIndex = 14;
+            this.button_AddToCart.Text = "Add To Cart";
+            this.button_AddToCart.UseVisualStyleBackColor = true;
+            this.button_AddToCart.Click += new System.EventHandler(this.button_AddToCart_Click);
+            // 
             // groupBox4
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -351,11 +324,10 @@
             this.groupBox4.Controls.Add(this.dataGridView_Carts);
             this.groupBox4.Controls.Add(this.button_AddToCart);
             this.groupBox4.Controls.Add(this.button_NewCart);
-            this.groupBox4.Controls.Add(this.button_DeleteCart);
             this.groupBox4.Controls.Add(this.button_OpenCart);
             this.groupBox4.Location = new System.Drawing.Point(1068, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(436, 473);
+            this.groupBox4.Size = new System.Drawing.Size(353, 718);
             this.groupBox4.TabIndex = 12;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Carts";
@@ -364,9 +336,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1515, 497);
+            this.ClientSize = new System.Drawing.Size(1433, 742);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "MtG";
@@ -374,10 +345,9 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Carts)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_CardData)).EndInit();
-            this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Card)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Carts)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -391,8 +361,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button_Search;
         private System.Windows.Forms.DataGridView dataGridView_CardData;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button_EditSet;
         private System.Windows.Forms.Button button_SearchSet;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox_Set;
@@ -400,7 +368,6 @@
         private System.Windows.Forms.DataGridView dataGridView_Carts;
         private System.Windows.Forms.DataGridViewTextBoxColumn CartID;
         private System.Windows.Forms.DataGridViewTextBoxColumn CustomerName;
-        private System.Windows.Forms.Button button_DeleteCart;
         private System.Windows.Forms.Button button_OpenCart;
         private System.Windows.Forms.Button button_NewCart;
         private System.Windows.Forms.Button button_AddFoilToCart;

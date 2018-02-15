@@ -84,8 +84,7 @@ namespace GameBreakersDBManagement
         }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
-            SetEditorForm setEditor = new SetEditorForm();
-            setEditor.Show();
+            
         }
         
         //SEARCH
@@ -424,10 +423,10 @@ namespace GameBreakersDBManagement
         {
             for (int i = 0; i < dataGridView_CardData.Rows.Count - 1; i++)
             {
-                var name = dataGridView_CardData.Rows[i].Cells[0].Value.ToString();
-                var set = dataGridView_CardData.Rows[i].Cells[1].Value.ToString();
-                var price = float.Parse(dataGridView_CardData.Rows[i].Cells[6].Value.ToString());
-                var foilPrice = float.Parse(dataGridView_CardData.Rows[i].Cells[7].Value.ToString());
+                var name        = dataGridView_CardData.Rows[i].Cells["CardName"].Value.ToString();
+                var set         = dataGridView_CardData.Rows[i].Cells["Expansion"].Value.ToString();
+                var price       = float.Parse(dataGridView_CardData.Rows[i].Cells["Price"].Value.ToString());
+                var foilPrice   = float.Parse(dataGridView_CardData.Rows[i].Cells["FoilPrice"].Value.ToString());
                 var lastUpdated = dataGridView_CardData.Rows[i].Cells["TimeLastUpdated"].Value;
                 
                 ThreadPool.QueueUserWorkItem(UpdatePrice, new object[] { i, name, set, price, foilPrice, lastUpdated });
@@ -586,8 +585,8 @@ namespace GameBreakersDBManagement
             if (!SearchThread.IsAlive)
                 return;
 
-            if (!foil)   dataGridView_CardData.Rows[row].Cells[5].Value = price;
-            else        dataGridView_CardData.Rows[row].Cells[6].Value = price;
+            if (!foil)   dataGridView_CardData.Rows[row].Cells["Price"].Value = price;
+            else         dataGridView_CardData.Rows[row].Cells["FoilPrice"].Value = price;
         }
         string CurrencyConversion(decimal amount, string fromCurrency, string toCurrency)
         {
@@ -903,8 +902,8 @@ namespace GameBreakersDBManagement
             if (dataGridView_CardData.Rows.Count < 2)
                 return;
 
-            var name = dataGridView_CardData.Rows[0].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[0].Cells[1].Value.ToString();
+            var name = dataGridView_CardData.Rows[0].Cells["CardName"].Value.ToString();
+            var set  = dataGridView_CardData.Rows[0].Cells["Expansion"].Value.ToString();
 
             var mID = DatabaseManager.GetMultiverseID(name, set);
             GetImageForCard(mID);
@@ -1047,8 +1046,8 @@ namespace GameBreakersDBManagement
             var dgvIndex = dataGridView_CardData.CurrentCell.RowIndex;
             try
             {
-                var card = dataGridView_CardData.Rows[dgvIndex].Cells[0].Value.ToString();
-                var set = dataGridView_CardData.Rows[dgvIndex].Cells[1].Value.ToString();
+                var card = dataGridView_CardData.Rows[dgvIndex].Cells["CardName"].Value.ToString();
+                var set  = dataGridView_CardData.Rows[dgvIndex].Cells["Expansion"].Value.ToString();
 
                 multiverseID = DatabaseManager.GetMultiverseID(card, set);
 
@@ -1090,9 +1089,9 @@ namespace GameBreakersDBManagement
                 var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString();
-                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
-                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells["CardName"].Value.ToString();
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells["Expansion"].Value.ToString();
+                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 var cardID = DatabaseManager.GetMultiverseID(cardName, cardSet).ToString();
 
@@ -1110,9 +1109,9 @@ namespace GameBreakersDBManagement
                 var mtgIndex = dataGridView_CardData.CurrentCell.RowIndex;
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells[0].Value.ToString();
-                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells[1].Value.ToString();
-                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cardName = dataGridView_CardData.Rows[mtgIndex].Cells["CardName"].Value.ToString();
+                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells["Expansion"].Value.ToString();
+                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 var cardID = DatabaseManager.GetMultiverseID(cardName, cardSet).ToString();
 
@@ -1128,7 +1127,7 @@ namespace GameBreakersDBManagement
             try
             {
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                var cartID    = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cartID    = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 CartManager.DisplayCart(cartID);
             }
@@ -1139,24 +1138,7 @@ namespace GameBreakersDBManagement
         }
         private void button_DeleteCart_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
-
-                var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?",
-                                         "Delete cart: " + cartID,
-                                         MessageBoxButtons.YesNo);
-                if (confirmResult == DialogResult.Yes)
-                {
-                    CartManager.DeleteCart(cartID);
-                    LoadCarts();
-                }
-            }
-            catch(Exception ex)
-            {
-                Logger.LogError("Attempted to delete cart", ex.ToString(), "");
-            }
+            
         }
         private void button_NewCart_Click(object sender, EventArgs e)
         {
@@ -1179,9 +1161,9 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
             {
-                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[3].Value);
-                var name = dataGridView_CardData.Rows[e.RowIndex].Cells[0].Value.ToString();
-                var set = dataGridView_CardData.Rows[e.RowIndex].Cells[1].Value.ToString();
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells["Inventory"].Value);
+                var name = dataGridView_CardData.Rows[e.RowIndex].Cells["CardName"].Value.ToString();
+                var set = dataGridView_CardData.Rows[e.RowIndex].Cells["Expansion"].Value.ToString();
 
                 var multiverseID = DatabaseManager.GetMultiverseID(name, set);
 
@@ -1189,9 +1171,9 @@ namespace GameBreakersDBManagement
             }
             else if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "FoilInventory")
             {
-                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[4].Value);
-                var name = dataGridView_CardData.Rows[e.RowIndex].Cells[0].Value.ToString();
-                var set = dataGridView_CardData.Rows[e.RowIndex].Cells[1].Value.ToString();
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells["FoilInventory"].Value);
+                var name = dataGridView_CardData.Rows[e.RowIndex].Cells["CardName"].Value.ToString();
+                var set = dataGridView_CardData.Rows[e.RowIndex].Cells["Expansion"].Value.ToString();
 
                 var multiverseID = DatabaseManager.GetMultiverseID(name, set);
 

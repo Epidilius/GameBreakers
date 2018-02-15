@@ -59,8 +59,7 @@ namespace GameBreakersDBManagement
         }
         private void button_SelectSet_Click(object sender, EventArgs e)
         {
-            CCScraper ccScraper = new CCScraper();
-            ccScraper.Show();
+            
         }
         private void button_EditSet_Click(object sender, EventArgs e)
         {
@@ -284,16 +283,17 @@ namespace GameBreakersDBManagement
                 var cardIndex = dataGridView_CardData.CurrentCell.RowIndex;
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
-                var cardExpansion = dataGridView_CardData.Rows[cardIndex].Cells[0].Value.ToString();
-                var cardCategory = dataGridView_CardData.Rows[cardIndex].Cells[1].Value.ToString();
-                var cardNumber = dataGridView_CardData.Rows[cardIndex].Cells[2].Value.ToString();
-                var cardName = dataGridView_CardData.Rows[cardIndex].Cells[3].Value.ToString();
-                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cardExpansion = dataGridView_CardData.Rows[cardIndex].Cells["Year"].Value.ToString();
+                var cardCategory  = dataGridView_CardData.Rows[cardIndex].Cells["Brand"].Value.ToString();
+                var cardNumber    = dataGridView_CardData.Rows[cardIndex].Cells["Number"].Value.ToString();
+                var cardName      = dataGridView_CardData.Rows[cardIndex].Cells["Category"].Value.ToString();
+
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 var name = cardName + " - " + cardNumber;
                 var set = cardExpansion + ": " + cardCategory;
 
-                var cardID = dataGridView_CardData.Rows[cardIndex].Cells[9].Value.ToString();
+                var cardID = dataGridView_CardData.Rows[cardIndex].Cells["CardID"].Value.ToString();
 
                 CartManager.AddItemToCart(cartID, cardID, name, set, 1);
             }
@@ -307,32 +307,13 @@ namespace GameBreakersDBManagement
             try
             {
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 CartManager.DisplayCart(cartID);
             }
             catch (Exception ex)
             {
                 //TODO: Message? Issue is most likely having not selected a cart or card
-            }
-        }
-        private void button_DeleteCart_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
-                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells[0].Value);
-
-                var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?", "Delete cart: " + cartID, MessageBoxButtons.YesNo);
-                if (confirmResult == DialogResult.Yes)
-                {
-                    CartManager.DeleteCart(cartID);
-                    LoadCarts();
-                }
-            }
-            catch (Exception ex)
-            {
-                //TODO: Log it
             }
         }
         private void button_NewCart_Click(object sender, EventArgs e)
@@ -354,18 +335,11 @@ namespace GameBreakersDBManagement
         {
             if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
             {
-                var md5 = dataGridView_CardData.Rows[e.RowIndex].Cells[9].Value.ToString();
-                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells[7].Value);
+                var md5 = dataGridView_CardData.Rows[e.RowIndex].Cells["CardID"].Value.ToString();
+                var amount = Convert.ToInt32(dataGridView_CardData.Rows[e.RowIndex].Cells["Inventory"].Value);
 
                 UpdateInventory(md5, amount);
             }
-        }
-
-        private void button_AddCardManually_Click(object sender, EventArgs e)
-        {
-            if (!ManualEntry.Enabled)
-                ManualEntry = new ManualEntry();
-            ManualEntry.Show();
         }
     }
 }

@@ -103,8 +103,8 @@ namespace GameBreakersDBManagement
             {
                 try
                 {
-                    var price  = float.Parse(row.Cells[2].Value.ToString());
-                    var amount = float.Parse(row.Cells[3].Value.ToString());
+                    var price  = float.Parse(row.Cells["Price"].Value.ToString());
+                    var amount = float.Parse(row.Cells["Amount"].Value.ToString());
 
                     subtotal += (price * amount);
                 }
@@ -132,6 +132,7 @@ namespace GameBreakersDBManagement
                 "WHERE ID = '" + ID + "'";
 
             DatabaseManager.RunQuery(query);
+            Startup.GetInstance().UpdateCarts();
         }
 
         private void button_CompleteSale_Click(object sender, EventArgs e)
@@ -147,7 +148,7 @@ namespace GameBreakersDBManagement
 
                 if (i != 0)
                     cardPrices += "|";
-                cardPrices += row.Cells[2].Value.ToString();
+                cardPrices += row.Cells["Price"].Value.ToString();
 
                 var id = idArray[i + 1];
                 if (String.IsNullOrWhiteSpace(id))
@@ -157,18 +158,18 @@ namespace GameBreakersDBManagement
                 var updateQuery = "";
                 if (int.TryParse(id, out multiverseID))
                 {
-                    if (row.Cells[0].Value.ToString().Contains("*F*"))
+                    if (row.Cells["CardName"].Value.ToString().Contains("*F*"))
                     {
-                        updateQuery = "UPDATE Mtg SET foilInventory = (foilInventory - " + row.Cells[3].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
+                        updateQuery = "UPDATE Mtg SET foilInventory = (foilInventory - " + row.Cells["Amount"].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
                     }
                     else
                     {
-                        updateQuery = "UPDATE Mtg SET inventory = (inventory - " + row.Cells[3].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
+                        updateQuery = "UPDATE Mtg SET inventory = (inventory - " + row.Cells["Amount"].Value.ToString() + ") WHERE multiverseID = '" + multiverseID + "'";
                     }
                 }
                 else
                 {
-                    updateQuery = "UPDATE Non_Mtg SET inventory = (inventory - " + row.Cells[3].Value.ToString() + ") WHERE MD5Hash = '" + id + "'";
+                    updateQuery = "UPDATE Non_Mtg SET inventory = (inventory - " + row.Cells["Amount"].Value.ToString() + ") WHERE MD5Hash = '" + id + "'";
                 }
 
                 DatabaseManager.RunQuery(updateQuery);
@@ -190,6 +191,20 @@ namespace GameBreakersDBManagement
         }
         private void button_Cancel_Click(object sender, EventArgs e)
         {
+            try
+            {
+                var confirmResult = MessageBox.Show("Are you sure you want to delete the selected cart?",
+                                         "Delete cart: " + ID,
+                                         MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
+                {
+                    CartManager.DeleteCart(ID);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Attempted to delete cart", ex.ToString(), "");
+            }
             Close();
         }
         private void button_Save_Click(object sender, EventArgs e)

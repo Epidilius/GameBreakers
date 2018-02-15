@@ -25,10 +25,10 @@ namespace GameBreakersDBManagement
         {
             for(int i = 0; i < dataGridView_CardData.Rows.Count - 2; i++)   //-2 Because of the usual -1, then another because of the empty row at the end
             {
-                string name = dataGridView_CardData.Rows[i].Cells[0].Value.ToString();
-                string set = dataGridView_CardData.Rows[i].Cells[1].Value.ToString();
-                int inventory = Int32.Parse(dataGridView_CardData.Rows[i].Cells[3].Value.ToString());
-                int foilInventory = Int32.Parse(dataGridView_CardData.Rows[i].Cells[4].Value.ToString());
+                string name = dataGridView_CardData.Rows[i].Cells["CardName"].Value.ToString();
+                string set = dataGridView_CardData.Rows[i].Cells["Set"].Value.ToString();
+                int inventory = Int32.Parse(dataGridView_CardData.Rows[i].Cells["Inventory"].Value.ToString());
+                int foilInventory = Int32.Parse(dataGridView_CardData.Rows[i].Cells["FoilInventory"].Value.ToString());
 
                 try
                 {
@@ -40,7 +40,7 @@ namespace GameBreakersDBManagement
                 }
             }
 
-            Logger.LogActivity("Updated inventory of set: " + dataGridView_CardData.Rows[0].Cells[1].Value.ToString()); //TODO: Use CurrentSet?
+            Logger.LogActivity("Updated inventory of set: " + dataGridView_CardData.Rows[0].Cells["Set"].Value.ToString()); //TODO: Use CurrentSet?
         }
 
         private void button_Close_Click(object sender, EventArgs e)
@@ -99,8 +99,8 @@ namespace GameBreakersDBManagement
                 return;
             }
             var dgvIndex = dataGridView_CardData.CurrentCell.RowIndex;
-            var card = dataGridView_CardData.Rows[dgvIndex].Cells[0].Value.ToString();
-            var set = dataGridView_CardData.Rows[dgvIndex].Cells[1].Value.ToString();
+            var card = dataGridView_CardData.Rows[dgvIndex].Cells["CardName"].Value.ToString();
+            var set = dataGridView_CardData.Rows[dgvIndex].Cells["Set"].Value.ToString();
 
             GetImageForCard(card, set);
         }
@@ -116,6 +116,9 @@ namespace GameBreakersDBManagement
 
             dataGridView_CardData.Rows.Clear();
             var cards = DatabaseManager.GetAllCardsForSet(comboBox_Sets.Text);
+
+            if (cards.Rows.Count < 1)
+                return;
 
             DatabaseManager.LockSet(comboBox_Sets.Text);
             Logger.LogActivity("Locked set: " + comboBox_Sets.Text);

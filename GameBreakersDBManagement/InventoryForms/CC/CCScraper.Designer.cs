@@ -38,6 +38,9 @@
             // 
             // textBox_URL
             // 
+            this.textBox_URL.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox_URL.Location = new System.Drawing.Point(12, 29);
             this.textBox_URL.Name = "textBox_URL";
             this.textBox_URL.Size = new System.Drawing.Size(1005, 20);
@@ -56,6 +59,7 @@
             // 
             // button_Scrape
             // 
+            this.button_Scrape.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Scrape.Location = new System.Drawing.Point(1023, 12);
             this.button_Scrape.Name = "button_Scrape";
             this.button_Scrape.Size = new System.Drawing.Size(159, 83);
@@ -66,6 +70,7 @@
             // 
             // button_Save
             // 
+            this.button_Save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.button_Save.Location = new System.Drawing.Point(1023, 101);
             this.button_Save.Name = "button_Save";
             this.button_Save.Size = new System.Drawing.Size(159, 83);
@@ -76,6 +81,9 @@
             // 
             // dataGridView_CardList
             // 
+            this.dataGridView_CardList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView_CardList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_CardList.Location = new System.Drawing.Point(13, 56);
             this.dataGridView_CardList.Name = "dataGridView_CardList";
