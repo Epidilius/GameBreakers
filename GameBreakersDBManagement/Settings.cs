@@ -120,8 +120,8 @@ namespace GameBreakersDBManagement
         }
         void UpdateCardInSet(string set, JObject setData)
         {
-            DatabaseManager.LockSet(set);
-            var cardList = DatabaseManager.GetAllCardsForSet(set);
+            DatabaseManager.LockSet(set.Replace("'", "''"));
+            var cardList = DatabaseManager.GetAllCardsForSet(set.Replace("'", "''"));
 
             var json = setData["prints"];
 
@@ -138,7 +138,8 @@ namespace GameBreakersDBManagement
                 DatabaseManager.UpdatePrice(name, set, prices["foilPrice"], true);
             }
 
-            DatabaseManager.UnlockSet(set);
+            Logger.LogActivity("Updated price of cards in set:" + set);
+            DatabaseManager.UnlockSet(set.Replace("'", "''"));
         }
         JObject GetMTGStocksData(string id)
         {
@@ -166,6 +167,10 @@ namespace GameBreakersDBManagement
         JToken ParseCardData(JObject cardData, string set = "")
         {
             var cardSetName = cardData["card_set"]["name"].ToString();
+            if (set == "" || cardSetName == set)
+            {
+                return cardData;
+            }
             if (cardSetName.Contains("Magic 2"))
                 cardSetName = cardSetName.Split(new string[] { " (" }, StringSplitOptions.None).First();
             if (set == "" || cardSetName == set)
