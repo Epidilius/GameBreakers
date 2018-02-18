@@ -91,7 +91,7 @@ namespace GameBreakersDBManagement
                 }
 
                 var setName = json["name"].ToString();
-
+                
                 UpdateCardInSet(setName, json);
 
                 url_counter++;
@@ -229,8 +229,25 @@ namespace GameBreakersDBManagement
             }
             catch (Exception ex)
             {
-                prices["price"] = float.Parse(card["latest_price"].ToString());
-                if (prices["price"] == 0) prices["price"] = float.Parse(card["latest_price_mkm"].ToString());
+                try
+                {
+                    prices["price"] = float.Parse(card["latest_price"].ToString());
+                }
+                catch(Exception exNested)
+                {
+                    prices["price"] = 0;
+                }
+                if (prices["price"] == 0)
+                {
+                    try
+                    {
+                        prices["price"] = float.Parse(card["latest_price_mkm"].ToString());
+                    }
+                    catch(Exception exNested)
+                    {
+                        prices["price"] = float.Parse(card["latest_price_mkm"]["avg"].ToString());
+                    }
+                }
             }
 
             try
