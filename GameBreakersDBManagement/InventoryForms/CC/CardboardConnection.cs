@@ -15,7 +15,6 @@ namespace GameBreakersDBManagement
         //TODO: Save to database in ccscraper
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
-        ManualEntry ManualEntry;
 
         //TODO: Stop the service that keeps starting, I dont want it 
         public CardboardConnection()
@@ -23,51 +22,89 @@ namespace GameBreakersDBManagement
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.None;
 
+            comboBox_ParamType.SelectedIndex     = 0;
+            comboBox_InclusionType.SelectedIndex = 0;
+            comboBox_SearchType.SelectedIndex    = 0;
+
             LoadCarts();
-
-            ManualEntry = new ManualEntry();
         }
 
-        //BUTTONS
-        private void button_Name_Click(object sender, EventArgs e)
+        //SEARCH
+        private void button_AddParam_Click(object sender, EventArgs e)
         {
-            var query = "SELECT * FROM Non_Mtg WHERE NAME LIKE \'%" + textBox_Name.Text + "%\'";
-            var matches = DatabaseManager.RunQuery(query);
+            var param      = textBox_SearchParameter.Text;
+            var type       = comboBox_ParamType.Text;
+            var include    = comboBox_InclusionType.Text;
+            var searchType = comboBox_SearchType.Text;
 
-            AddTableToRow(matches);
-        }
-        private void button_Team_Click(object sender, EventArgs e)
-        {
-            var query = "SELECT * FROM Non_Mtg WHERE TEAM LIKE \'%" + textBox_Team.Text + "%\'";
-            var matches = DatabaseManager.RunQuery(query);
+            if (String.IsNullOrWhiteSpace(param))
+                return;
 
-            AddTableToRow(matches);
+            AddParamToView(param, type, include, searchType);
         }
-        private void button_Number_Click(object sender, EventArgs e)
+        private void button_Remove_Click(object sender, EventArgs e)
         {
-            var query = "SELECT * FROM Non_Mtg WHERE NUMBER LIKE \'" + textBox_Number.Text + "\'";
-            var matches = DatabaseManager.RunQuery(query);
+            var index = dataGridView_SearchParams.CurrentCell.RowIndex;
+            var row   = dataGridView_SearchParams.Rows[index];
+            if(!row.IsNewRow)
+            {
+                dataGridView_SearchParams.Rows.Remove(row);
+            }
+        }
+        void AddParamToView(string param, string type, string inclusion, string searchType)
+        {
+            dataGridView_SearchParams.Rows.Add(param, type, inclusion, searchType);
+        }
+        private void button_Search_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_SearchParams.Rows.Count <= 1)
+                return;
 
-            AddTableToRow(matches);
-        }
-        private void button_Set_Click(object sender, EventArgs e)
-        {
-            var query = "SELECT * FROM Non_Mtg WHERE CATEGORY LIKE \'%" + textBox_Set.Text + "%\'";
-            var matches = DatabaseManager.RunQuery(query);
+            var query = "SELECT * FROM Non_Mtg WHERE (";
 
-            AddTableToRow(matches);
-        }
-        private void button_SelectSet_Click(object sender, EventArgs e)
-        {
-            
-        }
-        private void button_EditSet_Click(object sender, EventArgs e)
-        {
-            //TODO: Setup a CC Set Editor?
-            SetEditorForm setEditor = new SetEditorForm();
-            setEditor.Show();
-        }
+            for(int i = 0; i < dataGridView_SearchParams.Rows.Count - 1; i++)
+            {
+                var param      = Convert.ToString(dataGridView_SearchParams.Rows[i].Cells["Parameter"].Value);
+                var type       = Convert.ToString(dataGridView_SearchParams.Rows[i].Cells["Type"].Value);
+                var include    = Convert.ToString(dataGridView_SearchParams.Rows[i].Cells["Inclusion"].Value);
+                var searchType = Convert.ToString(dataGridView_SearchParams.Rows[i].Cells["SearchType"].Value);
 
+                if(String.IsNullOrWhiteSpace(param) || String.IsNullOrWhiteSpace(type) || String.IsNullOrWhiteSpace(include) || String.IsNullOrWhiteSpace(searchType))
+                {
+                    continue;
+                }
+
+                query += PrepSearchData(param, type, include, searchType);
+
+                if (i != dataGridView_SearchParams.Rows.Count - 2)
+                {
+                    query += " AND ";
+                }
+            }
+
+            query += ")";
+
+            if(query.Contains("()"))
+                return;
+
+            var cards = DatabaseManager.RunQuery(query);
+            AddTableToRow(cards);
+        }
+        string PrepSearchData(string param, string type, string include, string searchType)
+        {
+            if (include == "And") include = " LIKE ";
+            else include = " NOT LIKE ";
+
+            if (type == "Card Number") type = "Number";
+            else if (type == "Player Name") type = "Name";
+            else if (type == "Print Run") type = "PrintRun";
+
+            if (searchType == "Exact") param = "'" + param + "'";
+            else param = "'%" + param + "%'";
+
+            return type + include + param;
+        }
+        
         //UTIL
         void AddTableToRow(DataTable table)
         {
@@ -82,7 +119,7 @@ namespace GameBreakersDBManagement
                     var year      = Convert.ToString(card["Year"]);
                     var sport     = Convert.ToString(card["Sport"]);
                     var brand     = Convert.ToString(card["Brand"]);
-                    var category  = Convert.ToString(card["Category"]);
+                    var subset    = Convert.ToString(card["Category"]);
                     var number    = Convert.ToString(card["Number"]);
                     var name      = Convert.ToString(card["Name"]);
                     var team      = Convert.ToString(card["Team"]);
@@ -95,7 +132,7 @@ namespace GameBreakersDBManagement
                     values.Add("year", year);
                     values.Add("sport", sport);
                     values.Add("brand", brand);
-                    values.Add("subCategory", category);
+                    values.Add("subset", subset);
                     values.Add("number", number);
                     values.Add("name", name);
                     values.Add("team", team);
@@ -128,7 +165,7 @@ namespace GameBreakersDBManagement
             var year        = cardData["year"];
             var sport       = cardData["sport"];
             var brand       = cardData["brand"];
-            var subCategory = cardData["subCategory"];
+            var subset      = cardData["subset"];
             var number      = cardData["number"];
             var name        = cardData["name"];
             var team        = cardData["team"];
@@ -137,7 +174,7 @@ namespace GameBreakersDBManagement
             var inventory   = cardData["inventory"];
             var extraData   = cardData["extraData"];
 
-            dataGridView_CardData.Rows.Add(year, brand, sport, subCategory, number, name, team, printRun, odds, inventory, extraData, id);
+            dataGridView_CardData.Rows.Add(year, brand, sport, subset, number, name, team, printRun, odds, inventory, extraData, id);
         }
 
         //INVENTORY
@@ -236,21 +273,9 @@ namespace GameBreakersDBManagement
             return data;
         }
 
-        private void textBox_Name_Enter(object sender, EventArgs e)
+        private void textBox_SearchParameter_Enter(object sender, EventArgs e)
         {
-            AcceptButton = button_Name;
-        }
-        private void textBox_Team_Enter(object sender, EventArgs e)
-        {
-            AcceptButton = button_Team;
-        }
-        private void textBox_Number_Enter(object sender, EventArgs e)
-        {
-            AcceptButton = button_Number;
-        }
-        private void textBox_Set_Enter(object sender, EventArgs e)
-        {
-            AcceptButton = button_Set;
+            AcceptButton = button_AddParam;
         }
 
         //CART
@@ -258,23 +283,47 @@ namespace GameBreakersDBManagement
         {
             dataGridView_Carts.Rows.Clear();
 
-            var query = "SELECT ID, CustomerName FROM Carts WHERE Status = 'Active' ORDER BY ID";
+            var query = "SELECT ID, CustomerName, CardAmounts FROM Carts WHERE Status = 'Active' ORDER BY ID";
             var cartData = DatabaseManager.RunQuery(query);
 
             foreach (DataRow cart in cartData.Rows)
             {
-                var cartID = cart[0].ToString();
-                var cartCustomer = cart[1].ToString();
+                var cartID       = Convert.ToString(cart[0]);
+                var cartCustomer = Convert.ToString(cart[1]);
+                var cardAmounts  = Convert.ToString(cart[2]);
+
+                var amount = GetCardAmount(cardAmounts);
 
                 try
                 {
-                    dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                    dataGridView_Carts.Rows.Add(cartID, cartCustomer, amount);
                 }
                 catch (Exception ex)
                 {
                     //TODO: Log this? Most likely because form is closed
                 }
             }
+        }
+        int GetCardAmount(string cardAmounts)
+        {
+            if (String.IsNullOrWhiteSpace(cardAmounts))
+                return 0;
+
+            while(cardAmounts.StartsWith("|"))
+            {
+                cardAmounts = cardAmounts.Substring(1);
+            }
+
+            var splitAmounts = cardAmounts.Split('|');
+
+            var totalAmount = 0;
+
+            foreach(var amount in splitAmounts)
+            {
+                totalAmount += Convert.ToInt32(amount);
+            }
+
+            return totalAmount;
         }
         private void button_AddToCart_Click(object sender, EventArgs e)
         {
@@ -319,7 +368,6 @@ namespace GameBreakersDBManagement
         private void button_NewCart_Click(object sender, EventArgs e)
         {
             CartManager.CreateCart();
-            LoadCarts();
         }
 
         void UpdateInventory(string md5, int amount)

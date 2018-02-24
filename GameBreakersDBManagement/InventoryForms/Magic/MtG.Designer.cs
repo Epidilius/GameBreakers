@@ -54,6 +54,7 @@
             this.dataGridView_Carts = new System.Windows.Forms.DataGridView();
             this.CartID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CustomerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Items = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_AddToCart = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
@@ -179,6 +180,7 @@
             this.dataGridView_CardData.TabIndex = 12;
             this.dataGridView_CardData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellClick);
             this.dataGridView_CardData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryChanged);
+            this.dataGridView_CardData.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnDoubleClick);
             // 
             // CardName
             // 
@@ -285,7 +287,8 @@
             this.dataGridView_Carts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Carts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.CartID,
-            this.CustomerName});
+            this.CustomerName,
+            this.Items});
             this.dataGridView_Carts.Location = new System.Drawing.Point(6, 16);
             this.dataGridView_Carts.MultiSelect = false;
             this.dataGridView_Carts.Name = "dataGridView_Carts";
@@ -304,6 +307,12 @@
             this.CustomerName.HeaderText = "Customer Name";
             this.CustomerName.Name = "CustomerName";
             this.CustomerName.ReadOnly = true;
+            // 
+            // Items
+            // 
+            this.Items.HeaderText = "Item Amount";
+            this.Items.Name = "Items";
+            this.Items.ReadOnly = true;
             // 
             // button_AddToCart
             // 
@@ -366,8 +375,6 @@
         private System.Windows.Forms.TextBox textBox_Set;
         private System.Windows.Forms.Button button_AddToCart;
         private System.Windows.Forms.DataGridView dataGridView_Carts;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CartID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CustomerName;
         private System.Windows.Forms.Button button_OpenCart;
         private System.Windows.Forms.Button button_NewCart;
         private System.Windows.Forms.Button button_AddFoilToCart;
@@ -381,6 +388,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FoilPrice;
         private System.Windows.Forms.DataGridViewTextBoxColumn TimeLastUpdated;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CartID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CustomerName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Items;
     }
 }
 

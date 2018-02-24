@@ -23,6 +23,8 @@ namespace GameBreakersDBManagement
             };
 
             DatabaseManager.RunQueryWithArgs(query, values);
+
+            StatusChanged();
         }
 
         public static void DeleteCart(int cartID)
@@ -137,6 +139,8 @@ namespace GameBreakersDBManagement
                     return;
                 }
             }
+
+            StatusChanged();
         }
 
         public static void CartClosed(int cartID)
@@ -150,7 +154,7 @@ namespace GameBreakersDBManagement
                 }
             }
 
-            Startup.GetInstance().UpdateCarts();
+            StatusChanged();
         }
 
         public static void StatusChanged()

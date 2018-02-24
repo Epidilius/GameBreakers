@@ -42,6 +42,7 @@ namespace GameBreakersDBManagement
             ParseCartData(cartData);
             UpdatePrice();
         }
+
         void ParseCartData(DataTable cartData)
         {
             var row           = cartData.Rows[0];
@@ -198,6 +199,7 @@ namespace GameBreakersDBManagement
                                          MessageBoxButtons.YesNo);
                 if (confirmResult == DialogResult.Yes)
                 {
+                    SaveCustomerData();
                     CartManager.DeleteCart(ID);
                 }
             }

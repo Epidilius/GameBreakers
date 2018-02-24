@@ -1064,17 +1064,20 @@ namespace GameBreakersDBManagement
         {
             dataGridView_Carts.Rows.Clear();
 
-            var query = "SELECT ID, CustomerName FROM Carts WHERE Status = 'Active' ORDER BY ID";
+            var query = "SELECT ID, CustomerName, CardAmounts FROM Carts WHERE Status = 'Active' ORDER BY ID";
             var cartData = DatabaseManager.RunQuery(query);
 
             foreach (DataRow cart in cartData.Rows)
             {
                 var cartID       = cart[0].ToString();
                 var cartCustomer = cart[1].ToString();
+                var cardAmounts = Convert.ToString(cart[2]);
+
+                var amount = GetCardAmount(cardAmounts);
 
                 try
                 {
-                    dataGridView_Carts.Rows.Add(cartID, cartCustomer);
+                    dataGridView_Carts.Rows.Add(cartID, cartCustomer, amount);
                 }
                 catch(Exception ex)
                 {
@@ -1082,7 +1085,28 @@ namespace GameBreakersDBManagement
                 }
             }
         }
-        private void button_AddToCart_Click(object sender, EventArgs e)
+        int GetCardAmount(string cardAmounts)
+        {
+            if (String.IsNullOrWhiteSpace(cardAmounts))
+                return 0;
+
+            while (cardAmounts.StartsWith("|"))
+            {
+                cardAmounts = cardAmounts.Substring(1);
+            }
+
+            var splitAmounts = cardAmounts.Split('|');
+
+            var totalAmount = 0;
+
+            foreach (var amount in splitAmounts)
+            {
+                totalAmount += Convert.ToInt32(amount);
+            }
+
+            return totalAmount;
+        }
+        void AddSelectedCardToCart()
         {
             try
             {
@@ -1090,17 +1114,21 @@ namespace GameBreakersDBManagement
                 var cartIndex = dataGridView_Carts.CurrentCell.RowIndex;
 
                 var cardName = dataGridView_CardData.Rows[mtgIndex].Cells["CardName"].Value.ToString();
-                var cardSet  = dataGridView_CardData.Rows[mtgIndex].Cells["Expansion"].Value.ToString();
-                var cartID   = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
+                var cardSet = dataGridView_CardData.Rows[mtgIndex].Cells["Expansion"].Value.ToString();
+                var cartID = Convert.ToInt32(dataGridView_Carts.Rows[cartIndex].Cells["CartID"].Value);
 
                 var cardID = DatabaseManager.GetMultiverseID(cardName, cardSet).ToString();
 
                 CartManager.AddItemToCart(cartID, cardID, cardName, cardSet, 1);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //TODO: Message? Issue is most likely having not selected a cart or card
             }
+        }
+        private void button_AddToCart_Click(object sender, EventArgs e)
+        {
+            AddSelectedCardToCart();
         }
         private void button_AddFoilToCart_Click(object sender, EventArgs e)
         {
@@ -1143,10 +1171,8 @@ namespace GameBreakersDBManagement
         private void button_NewCart_Click(object sender, EventArgs e)
         {
             CartManager.CreateCart();
-            LoadCarts();
         }
-
-
+        
         void UpdateInventory(int multiverseID, int amount, bool foil)
         {
             var query = "UPDATE Mtg SET ";
@@ -1156,7 +1182,6 @@ namespace GameBreakersDBManagement
 
             DatabaseManager.RunQuery(query);
         }
-
         private void InventoryChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridView_CardData.Columns[e.ColumnIndex].Name == "Inventory")
@@ -1179,6 +1204,11 @@ namespace GameBreakersDBManagement
 
                 UpdateInventory(multiverseID, amount, true);
             }
+        }
+
+        private void OnDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            AddSelectedCardToCart();
         }
     }
 }

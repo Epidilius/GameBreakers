@@ -129,7 +129,7 @@ namespace GameBreakersDBManagement
             {
                 var id   = card["id"].ToString();
                 var name = card["name"].ToString();
-
+                
                 var cardObject = GetMTGStocksData(id);
                 var cardData   = ParseCardData(cardObject, set);
                 var prices     = GetPriceFromData(cardData);
@@ -245,7 +245,14 @@ namespace GameBreakersDBManagement
                     }
                     catch(Exception exNested)
                     {
-                        prices["price"] = float.Parse(card["latest_price_mkm"]["avg"].ToString());
+                        try
+                        {
+                            prices["price"] = float.Parse(card["latest_price_mkm"]["avg"].ToString());
+                        }
+                        catch (Exception doubleNest)
+                        {
+                            prices["price"] = float.Parse(card["sets"][0]["latest_price"].ToString());
+                        }
                     }
                 }
             }

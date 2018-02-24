@@ -146,7 +146,8 @@ namespace GameBreakersDBManagement
             dataGridView_CardList.Columns.Add("Inventory", "Inventory");
         }
         string GetXLSXURL(HtmlNode node)
-        {            
+        {
+            return "";
             var checklistDescriptions = node.SelectNodes("//a[text()[contains(., 'xlsx')]]");
             var test = node.SelectNodes("//a[@href]");
             foreach(var desc in test)
@@ -339,21 +340,28 @@ namespace GameBreakersDBManagement
                         titleString += title.InnerText;
                     }
                 }
+                if (cardLists != null)
+                {
+                    foreach (var card in cardLists)
+                    {
+                        cardString += card.InnerText;
+                    }
+                }
                 if (listDescriptions != null)
                 {
+
+                    if (String.IsNullOrWhiteSpace(cardString))
+                    {
+                        cardString += listDescriptions.Last().InnerText;
+                        listDescriptions.Remove(listDescriptions.Last());
+                    }
+
                     foreach (var desc in listDescriptions)
                     {
                         //"Shop for complete base sets on eBay:"
                         if (descriptionString != "")
                             descriptionString += "|";
                         descriptionString += desc.InnerText;
-                    }
-                }
-                if (cardLists != null)
-                {
-                    foreach (var card in cardLists)
-                    {
-                        cardString += card.InnerText;
                     }
                 }
                 else
@@ -728,7 +736,17 @@ namespace GameBreakersDBManagement
                         values["Team"] += " " + columnData;
                         continue;
                     }
-                    
+
+                    if(columnName == "Plates" && !String.IsNullOrWhiteSpace(columnData))
+                    {
+                        //TODO: Create new record
+                    }
+
+                    if(columnName.Contains("Foil") && !String.IsNullOrWhiteSpace(columnData))
+                    {
+                        //TODO: Create new record
+                    }
+
                     var newColumnName = PrepColumnName(columnName);
                     if(newColumnName == "ExtraData")
                     {
