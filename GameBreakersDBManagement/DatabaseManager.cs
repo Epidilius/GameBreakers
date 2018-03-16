@@ -1,37 +1,37 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 
 namespace GameBreakersDBManagement
 {
     public static class DatabaseManager
     {
         //TODO: Refactor this class
-        static string ConnectionString = ConfigurationManager.ConnectionStrings["GameBreakers"].ConnectionString;
+        static string ConnectionString = "Server=parallelzodiac.com; Port=3306; Database=GameBreakers; Uid=GBMan;Pwd=Sch00n3r1;";
         private static readonly object _syncObject = new object();
 
         //Utility Functions
-        static SqlCommand CreateCommand(string query)
+        static MySqlCommand CreateCommand(string query)
         {
-            SqlConnection con = new SqlConnection(ConnectionString);
+            MySqlConnection con = new MySqlConnection(ConnectionString);
 
-            SqlCommand command = new SqlCommand();
+            MySqlCommand command = new MySqlCommand();
             command.Connection = con;
             command.CommandType = CommandType.Text;
             command.CommandText = query;
 
             return command;
         }
-        static SqlCommand CreateCommandWithArgs(string query, Dictionary<string, object> values)
+        static MySqlCommand CreateCommandWithArgs(string query, Dictionary<string, object> values)
         {
-            SqlConnection con = new SqlConnection(ConnectionString);
+            MySqlConnection con = new MySqlConnection(ConnectionString);
 
-            SqlCommand command = new SqlCommand();
+            MySqlCommand command = new MySqlCommand();
             command.Connection = con;
             command.CommandType = CommandType.Text;
 
@@ -86,13 +86,13 @@ namespace GameBreakersDBManagement
 
             return command;
         }
-        static SqlDataAdapter CreateDataAdapter(SqlCommand command)
+        static MySqlDataAdapter CreateDataAdapter(MySqlCommand command)
         {
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            MySqlDataAdapter adapter = new MySqlDataAdapter(command);
 
             return adapter;
         }
-        static DataTable CreateDataTable(SqlDataAdapter dataAdapter)
+        static DataTable CreateDataTable(MySqlDataAdapter dataAdapter)
         {
             DataTable table = new DataTable();
             dataAdapter.Fill(table);
@@ -103,8 +103,8 @@ namespace GameBreakersDBManagement
         {
             lock (_syncObject)
             {
-                SqlCommand command = CreateCommand(query);
-                SqlDataAdapter adapter = CreateDataAdapter(command);
+                MySqlCommand command = CreateCommand(query);
+                MySqlDataAdapter adapter = CreateDataAdapter(command);
                 DataTable table = CreateDataTable(adapter);
 
                 return table;
@@ -114,8 +114,8 @@ namespace GameBreakersDBManagement
         {
             lock (_syncObject)
             {
-                SqlCommand command = CreateCommandWithArgs(query, values);
-                SqlDataAdapter adapter = CreateDataAdapter(command);
+                MySqlCommand command = CreateCommandWithArgs(query, values);
+                MySqlDataAdapter adapter = CreateDataAdapter(command);
                 DataTable table = CreateDataTable(adapter);
 
                 return table;
@@ -172,10 +172,17 @@ namespace GameBreakersDBManagement
             var dataTable = RunQuery("SELECT * FROM MtG WHERE EXPANSION = \'" + set + "\'");
             return dataTable;
         }
-        public static DataTable GetMagicCard(string name)
+        public static DataTable GetMagicCard(string[] name)
         {
-            name = name.Replace(@"'", @"''");
-            var dataTable = RunQuery("SELECT * FROM MtG WHERE NAME LIKE \'%" + name + "%\' and onlineOnlyVersion = 0");
+            var query = "SELECT * FROM MtG WHERE NAME LIKE ";
+            for(int i = 0; i < name.Length; i++)
+            {
+                if (i != 0)
+                    query += "AND NAME LIKE ";
+                query += "\'%" + name[i] + "%\' ";
+            }
+            query += "AND onlineOnlyVersion = 0";
+            var dataTable = RunQuery(query);
             return dataTable;
         }
         

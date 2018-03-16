@@ -40,6 +40,9 @@ namespace GameBreakersDBManagement
         {
             lock (_syncObject)
             {
+                if (error == "Thread was being aborted.")
+                    return;
+
                 Dictionary<string, object> values = new Dictionary<string, object>
                 {
                     { "AttemptedAction", attemptedAction },

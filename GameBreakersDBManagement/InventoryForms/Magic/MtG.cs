@@ -27,6 +27,7 @@ namespace GameBreakersDBManagement
         static string MTGJSON_DATA_URL     = @"https://mtgjson.com/json/SET-x.json";
 
         Thread SearchThread;
+        Thread ImageThread;
 
         delegate void AddCardToRowDelegate(Dictionary<string, object> cardData);
         delegate void SearchCompleteDelegate();
@@ -37,6 +38,7 @@ namespace GameBreakersDBManagement
             InitializeComponent();
             LoadCarts();
             SearchThread = new Thread(BeginSearchThread);
+            ImageThread = new Thread(GetImageForSelectedCard);
             new Thread(() =>
             {
                 CheckForNewSets();
@@ -90,7 +92,8 @@ namespace GameBreakersDBManagement
         //SEARCH
         void BeginSearchThread()
         {
-            var cardFound = SearchForCard(textBox_Name.Text);
+            var searchParam = Regex.Replace(textBox_Name.Text, "[^0-9a-zA-Z ]+", "");
+            var cardFound = SearchForCard(searchParam);
 
             if (!cardFound)
                 return;
@@ -107,7 +110,8 @@ namespace GameBreakersDBManagement
         }
         bool SearchDatabaseForCard(string name)
         {
-            var cards = DatabaseManager.GetMagicCard(name);
+            var nameArray = name.Contains(" ") ? name.Split(' ') : new string[] { name };
+            var cards = DatabaseManager.GetMagicCard(nameArray);
 
             if (cards.Rows.Count > 0)
             {
@@ -423,6 +427,9 @@ namespace GameBreakersDBManagement
         {
             for (int i = 0; i < dataGridView_CardData.Rows.Count - 1; i++)
             {
+                if (!SearchThread.IsAlive)
+                    return;
+
                 var name        = dataGridView_CardData.Rows[i].Cells["CardName"].Value.ToString();
                 var set         = dataGridView_CardData.Rows[i].Cells["Expansion"].Value.ToString();
                 var price       = float.Parse(dataGridView_CardData.Rows[i].Cells["Price"].Value.ToString());
@@ -536,6 +543,9 @@ namespace GameBreakersDBManagement
         }
         void UpdatePrice(object state)
         {
+            if (!SearchThread.IsAlive)
+                return;
+
             object[] args   = state as object[];
             var i           = Int32.Parse(args[0].ToString());
             var name        = args[1].ToString().Replace("'", "''");
@@ -582,7 +592,7 @@ namespace GameBreakersDBManagement
                 return;
             }
 
-            if (!SearchThread.IsAlive)
+            if (!SearchThread.IsAlive || dataGridView_CardData.Rows.Count <= 1)
                 return;
 
             if (!foil)   dataGridView_CardData.Rows[row].Cells["Price"].Value = price;
@@ -843,12 +853,19 @@ namespace GameBreakersDBManagement
         }
         void CheckForNewSets()
         {
-            string html = FetchDataFromURL(MTGJSON_URL);
+            try
+            {
+                string html = FetchDataFromURL(MTGJSON_URL);
 
-            if (html == "No Response")
-                return;
+                if (html == "No Response")
+                    return;
 
-            ParseHTML(html);
+                ParseHTML(html);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Checking for new sets", ex.Message, "");
+            }
         }
         void ParseHTML(string html)
         {
@@ -895,6 +912,7 @@ namespace GameBreakersDBManagement
         //IMAGE
         void GetImageForCard(int multiverseID)
         {
+            //TODO: Locally store and check for images
             LoadImageFromURL(multiverseID);
         }
         void GetImageForFirstCard()
@@ -1034,29 +1052,6 @@ namespace GameBreakersDBManagement
             }
 
             return data;
-        }
-
-        private void dataGridView_CardData_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            int multiverseID = -1;
-            if (dataGridView_CardData.Rows.Count == 0 || dataGridView_CardData.CurrentCell == null)
-            {
-                return;
-            }
-            var dgvIndex = dataGridView_CardData.CurrentCell.RowIndex;
-            try
-            {
-                var card = dataGridView_CardData.Rows[dgvIndex].Cells["CardName"].Value.ToString();
-                var set  = dataGridView_CardData.Rows[dgvIndex].Cells["Expansion"].Value.ToString();
-
-                multiverseID = DatabaseManager.GetMultiverseID(card, set);
-
-                GetImageForCard(multiverseID);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Attempting tp fetch image for card", ex.Message, multiverseID.ToString());
-            }
         }
 
         //CART
@@ -1209,6 +1204,41 @@ namespace GameBreakersDBManagement
         private void OnDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             AddSelectedCardToCart();
+        }
+
+        void GetImageForSelectedCard()
+        {
+            int multiverseID = -1;
+            if (dataGridView_CardData.Rows.Count == 0 || dataGridView_CardData.CurrentCell == null)
+            {
+                return;
+            }
+            var dgvIndex = dataGridView_CardData.CurrentCell.RowIndex;
+            try
+            {
+                var card = dataGridView_CardData.Rows[dgvIndex].Cells["CardName"].Value.ToString();
+                var set = dataGridView_CardData.Rows[dgvIndex].Cells["Expansion"].Value.ToString();
+
+                multiverseID = DatabaseManager.GetMultiverseID(card, set);
+
+                GetImageForCard(multiverseID);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Attempting tp fetch image for card", ex.Message, multiverseID.ToString());
+            }
+        }
+        private void dataGridView_CardData_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (ImageThread.IsAlive) ImageThread.Abort();
+            ImageThread = new Thread(GetImageForSelectedCard);
+            ImageThread.Start();
+        }
+        private void dataGridView_CardData_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (ImageThread.IsAlive) ImageThread.Abort();
+            ImageThread = new Thread(GetImageForSelectedCard);
+            ImageThread.Start();
         }
     }
 }

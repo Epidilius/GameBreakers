@@ -180,6 +180,7 @@
             this.dataGridView_CardData.TabIndex = 12;
             this.dataGridView_CardData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellClick);
             this.dataGridView_CardData.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.InventoryChanged);
+            this.dataGridView_CardData.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CardData_CellEnter);
             this.dataGridView_CardData.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.OnDoubleClick);
             // 
             // CardName
